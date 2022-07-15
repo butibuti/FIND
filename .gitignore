@@ -1,0 +1,66 @@
+# Prerequisites
+*.d
+
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Fortran module files
+*.mod
+*.smod
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.lib
+
+# Executables
+*.exe
+*.out
+*.app
+
+*.suo
+*.db
+*.pdb
+*.opendb
+
+*.zip
+*.idb
+*.exp
+*.aps
+
+.vs/
+Temp/
+output/
+ButiEngine_User/Resources/*
+!ButiEngine_User/Resources/Shader/
+ButiEngine_User/Resources/Shader/Compiled/
+ButiEngine_User/ProtBuf/*
+!ButiEngine_User/ProtBuf/EngineEditorCommunicate.proto
+
+Libs/Library/cereal/
+Libs/Library/ButiScript/
+Libs/Library/ButiEventSystem/
+Libs/Library/ButiMemorySystem/
+Libs/Library/ButiRendering_Dx12/
+Libs/Library/ButiEngineEditor/
+Libs/Library/ButiEngineHeader/
+Libs/Library/ButiBulletWrap/
+Libs/Library/ButiUtil/
+Libs/Library/ButiMath/
+Libs/Library/ButiFont/
+Libs/Library/imGUI/
+Libs/Library/stb/
+Libs/Library/zlib/

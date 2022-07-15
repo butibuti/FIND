@@ -1,2 +1,3 @@
-# FIND
-BitSummit用FIND
+# ButiEngine
+
+DirectX12を使用した自作エンジン

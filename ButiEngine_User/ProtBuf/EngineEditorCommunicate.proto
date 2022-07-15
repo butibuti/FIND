@@ -1,0 +1,255 @@
+// Copyright 2015 gRPC authors.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "io.grpc.ButiEngine";
+option java_outer_classname = "ButiEngine";
+option objc_class_prefix = "BEC";
+
+package ButiEngine;
+
+
+
+service EngineCommunicate {
+  rpc SceneActive (Boolean) returns (Boolean) {};
+  rpc SceneReload (Integer) returns (Integer) {};
+  rpc SceneSave (Integer) returns (Integer) {};
+  rpc SceneChange (String) returns (Integer) {};
+  rpc ApplicationReload(Integer)returns (Integer){};
+  rpc ApplicationStartUp(Integer)returns (Integer){};
+  rpc ApplicationShutDown(Integer)returns (Integer){};
+  rpc SetAppInitData (AppInitData) returns (Integer){};
+  rpc GetFPS(Integer) returns( FPSData){};
+  rpc GetRenderTargetImage(String)returns(stream FileData){};
+  rpc GetRenderTargetImageStream(String)returns(stream FileData){};
+  rpc CompileHLSL(StringArray)returns(Integer){};
+  rpc CompileButiScript(StringArray)returns(Integer){};
+  rpc GetRenderTargetInformation(String)returns(RenderTargetInformation){};
+  rpc SetRenderTargetView(RenderTargetViewed)returns(Boolean){};
+  rpc StreamOutputMessage(Integer)returns(stream OutputMessage){};
+  rpc StreamOutputStop(Integer)returns(Integer){};
+  rpc SetWindowActive(Boolean)returns(Boolean){};
+  rpc SetEditorWindowHandle(LongInteger)returns(Integer){};
+
+  rpc CreateGameObject(GameObjectCreate_message)returns(String){};
+  rpc SetBaseTransform(String)returns(Integer){};
+  rpc SelectGameObject(String)returns(GameObjectGUIInformation){};
+  rpc RenameGameObject(Rename_message)returns(String){};
+  rpc DeleteGameObject(String)returns(Integer){};
+  rpc GetGameObjectList(GameObjectListRequest)returns(StringArray){};
+  rpc GUIEdit(GUIAction)returns (Integer){};
+
+  rpc GetDefaultRenderTargetImageName(Integer)returns(String){};
+
+  rpc GetLoadedResources(Integer)returns(ResourceLoadInformation){};
+  rpc LoadedResourcesToFile(ResourceLoadInformation)returns(Integer){};
+
+  rpc GetLoadedMeshes(Integer)returns(StringArray){};
+  rpc GetLoadedMaterials(Integer)returns(MaterialLoadInfoArray){};
+  rpc GetLoadedTextures(Integer)returns(StringArray){};
+
+  rpc LoadTexture(StringArray)returns(Integer){};
+  rpc LoadModel(StringArray)returns(Integer){};
+  rpc LoadMaterial(MaterialLoadInfoArray)returns(Integer){};
+  rpc LoadShader(ShaderLoadInfoArray)returns(Integer){};
+  rpc LoadVertexShader(StringArray)returns(Integer){};
+  rpc LoadPixelShader(StringArray)returns(Integer){};
+  rpc LoadGeometryShader(StringArray)returns(Integer){};
+  rpc LoadSound(StringArray)returns(Integer){};
+  rpc LoadFont(StringArray)returns(Integer){};
+  rpc LoadMotion(StringArray)returns(Integer){};
+  rpc LoadScript(StringArray)returns(Integer){};
+  rpc UnLoadTexture(StringArray)returns(Integer){};
+  rpc UnLoadModel(StringArray)returns(Integer){};
+  rpc UnLoadMaterial(StringArray)returns(Integer){};
+  rpc UnLoadSound(StringArray)returns(Integer){};
+  rpc UnLoadFont(StringArray)returns(Integer){};
+  rpc UnLoadMotion(StringArray)returns(Integer){};
+  rpc UnLoadScript(StringArray)returns(Integer){};
+  rpc UnLoadShader(StringArray)returns(Integer){};
+  rpc UnLoadVertexShader(StringArray)returns(Integer){};
+  rpc UnLoadPixelShader(StringArray)returns(Integer){};
+  rpc UnLoadGeometryShader(StringArray)returns(Integer){};
+}
+
+message Boolean {
+	bool value = 1;
+}
+message Float {
+	float value = 1;
+}
+message FPSData{
+	float current=1;
+	float average=2;
+	int32 drawMillSec=3;
+	int32 updateMillSec=4;
+}
+message String {
+	string value = 1;
+}
+message StringArray{
+	repeated string Values=1;
+}
+message MaterialLoadInfoArray{
+	repeated MaterialLoadInformation Values=1;
+}
+message ShaderLoadInfoArray{
+	repeated ShaderLoadInformation Values=1;
+}
+
+message OutputMessage{
+	string content=1;
+	float r=2;
+	float g=3;
+	float b=4;
+	float a=5;
+	MessageType messageType=6;
+	enum MessageType{
+		Console=0;
+		Error=1;
+		Warning=2;
+		End=3;
+	}
+}
+message Integer{
+	int32 value=1;
+}
+message LongInteger{
+	int64 value=1;
+}
+message AppInitData{
+	string appWindowName=1;
+	string initSceneName=2;
+	int32		popType=3;
+	int32		windowWidth=4;
+	int32		windowHeight=5;
+}
+message FileData{
+	bool Eof = 1;
+	bool StreamEnd = 2;
+    bytes Data = 3;
+}
+message RenderTargetInformation{
+	int32 format=1;
+	int32 size=2;
+	int32 stride=3;
+	int32 width=4;
+	int32 height=5;
+}
+message RenderTargetViewed{
+	string name=1;
+	bool isViewed=2;
+}
+
+message ResourceLoadInformation{
+	repeated string textures=1;
+	repeated string meshes=2;
+	repeated string models=3;
+	repeated string motions=4;
+	repeated string scripts=5;
+	repeated string sounds=6;
+	repeated string fonts=7;
+	repeated string vertexShaders=8;
+	repeated string pixelShaders=9;
+	repeated string geometryShaders=10;
+	repeated ShaderLoadInformation shaderLoadInfo=11;
+	repeated MaterialLoadInformation materialLoadInfo=12;
+	string filePath=13;
+}
+
+message Vector3_message{
+	float x=1;
+	float y=2;
+	float z=3;
+}
+message Vector4_message{
+	float x=1;
+	float y=2;
+	float z=3;
+	float w=4;
+}
+
+message Transform_message{
+	Vector3_message position=1;
+	Vector3_message rotation=2;
+	Vector3_message scaling=3;
+}
+message Rename_message{
+	string before=1;
+	string after=2;
+}
+message GameObjectListRequest{
+	string serchStr=1;
+	repeated string serchTags=2;
+}
+message GUIInformation{
+	string id=1;
+}
+message GUIAction{
+	string id=1;
+	int32 value_int=2;
+	Vector4_message value_float=3;
+	string value_string=4;
+	GUIType inpuType=5;
+}
+message GameObjectGUIInformation{
+	string objectName=1;
+	repeated GUIInformation guis=2;
+}
+
+message GameObjectCreate_message{
+	string gameObjectName=1;
+	Transform_message transform=2;
+}
+
+message MaterialLoadInformation{
+	string materialName=1;
+	string filePath=2;
+	Vector4_message diffuse=3;
+	Vector4_message ambient=4;
+	Vector4_message emissive=5;
+	Vector4_message specular=6;
+	repeated string textures=7;
+}
+message ShaderLoadInformation{
+	string shaderName=1;
+	string vertexShaderName=2;
+	string pixelShaderName=3;
+	string geometryShaderName=4;
+}
+
+enum GUIType{
+	GUIType_Integer=0;
+	GUIType_Float=1;
+	GUIType_String=2;
+	GUIType_Vector2=3;
+	GUIType_Vector3=4;
+	GUIType_Vector4=5;
+	GUIType_Matrix4x4=6;
+	GUIType_Enum=7;
+	GUIType_TextureTag=8;
+	GUIType_MeshTag=9;
+	GUIType_ModelTag=10;
+	GUIType_MotionTag=11;
+	GUIType_MaterialTag=12;
+	GUIType_ShaderTag=13;
+	GUIType_VSTag=14;
+	GUIType_PSTag=15;
+	GUIType_GSTag=16;
+	GUIType_ScriptTag=17;
+	GUIType_FontTag=18;
+	GUIType_SoundTag=19;
+}

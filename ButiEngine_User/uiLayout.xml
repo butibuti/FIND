@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LayoutRoot>
+  <RootPanel Orientation="Vertical">
+    <LayoutAnchorablePaneGroup Orientation="Horizontal" FloatingWidth="375" FloatingHeight="490" FloatingLeft="807" FloatingTop="66">
+      <LayoutAnchorablePane FloatingWidth="375" FloatingHeight="490" FloatingLeft="807" FloatingTop="66">
+        <LayoutAnchorable AutoHideMinWidth="100" AutoHideMinHeight="100" Title="シーン情報" IsSelected="True" ContentId="SceneControllerViewModel" FloatingLeft="807" FloatingTop="66" FloatingWidth="375" FloatingHeight="490" CanClose="True" LastActivationTimeStamp="01/10/2022 10:01:35" />
+      </LayoutAnchorablePane>
+    </LayoutAnchorablePaneGroup>
+    <LayoutPanel Orientation="Horizontal">
+      <LayoutPanel Orientation="Horizontal">
+        <LayoutDocumentPaneGroup Orientation="Horizontal">
+          <LayoutDocumentPane>
+            <LayoutAnchorable AutoHideMinWidth="100" AutoHideMinHeight="100" Title="ResourceLoad" IsSelected="True" IsLastFocusedDocument="True" ContentId="ResourceLoadViewModel" FloatingLeft="825" FloatingTop="775" FloatingWidth="375" FloatingHeight="490" CanClose="True" LastActivationTimeStamp="01/10/2022 10:01:49" />
+          </LayoutDocumentPane>
+        </LayoutDocumentPaneGroup>
+      </LayoutPanel>
+      <LayoutAnchorablePane Id="b2f82749-5f73-4267-843e-307590b9d9ad" DockWidth="200" />
+    </LayoutPanel>
+  </RootPanel>
+  <TopSide />
+  <RightSide />
+  <LeftSide />
+  <BottomSide />
+  <FloatingWindows>
+    <LayoutAnchorableFloatingWindow>
+      <LayoutAnchorablePaneGroup Orientation="Horizontal" FloatingWidth="375" FloatingHeight="490" FloatingLeft="1060" FloatingTop="376">
+        <LayoutAnchorablePane FloatingWidth="375" FloatingHeight="490" FloatingLeft="1060" FloatingTop="376">
+          <LayoutAnchorable AutoHideMinWidth="100" AutoHideMinHeight="100" Title="MaterialCreate" IsSelected="True" ContentId="MaterialCreateViewModel" FloatingLeft="1060" FloatingTop="376" FloatingWidth="375" FloatingHeight="490" IsFloating="True" CanClose="True" LastActivationTimeStamp="01/10/2022 10:01:26" PreviousContainerId="b2f82749-5f73-4267-843e-307590b9d9ad" PreviousContainerIndex="0" />
+        </LayoutAnchorablePane>
+      </LayoutAnchorablePaneGroup>
+    </LayoutAnchorableFloatingWindow>
+  </FloatingWindows>
+  <Hidden />
+</LayoutRoot>
