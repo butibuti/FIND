@@ -47,8 +47,8 @@ namespace ButiEngine {
 		bool isClear = false;
 		bool isBrast = false;
 
-		std::vector<std::shared_ptr<Transform>> vec_shp_transform;
-		std::vector<std::shared_ptr<GameObject>> vec_gameObjects;
+		//std::vector<std::shared_ptr<Transform>> vec_shp_transform;
+		//std::vector<std::shared_ptr<GameObject>> vec_gameObjects;
 		std::vector<FloatBlockData> vec_blockData;
 		//std::vector<std::shared_ptr<CBuffer<LightVariable>>>vec_shp_lightBuffer;
 	};
