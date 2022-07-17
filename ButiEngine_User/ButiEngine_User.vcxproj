@@ -360,10 +360,15 @@ cd ..\</Command>
     <ClCompile Include="GoalAura.cpp" />
     <ClCompile Include="HitChecker.cpp" />
     <ClCompile Include="InputManager.cpp" />
+    <ClCompile Include="InvisibleBlock.cpp" />
+    <ClCompile Include="InvisibleBlockAura.cpp" />
+    <ClCompile Include="InvisibleBlockManager.cpp" />
     <ClCompile Include="LogoSceneManager.cpp" />
     <ClCompile Include="main.cpp">
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release_imguiEditor|x64'">/wd4996 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
+    <ClCompile Include="Map.cpp" />
+    <ClCompile Include="NumberManager.cpp" />
     <ClCompile Include="Pause.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="ProtBuf\EngineEditorCommunicate.grpc.pb.cc">
@@ -416,12 +421,12 @@ cd ..\</Command>
     <ClInclude Include="GoalAura.h" />
     <ClInclude Include="HitChecker.h" />
     <ClInclude Include="InputManager.h" />
-    <ClInclude Include="InvisibleBlockAuraComponent.h" />
-    <ClInclude Include="InvisibleBlockComponent.h" />
-    <ClInclude Include="InvisibleBlockManagerComponent.h" />
+    <ClInclude Include="InvisibleBlockAura.h" />
+    <ClInclude Include="InvisibleBlock.h" />
+    <ClInclude Include="InvisibleBlockManager.h" />
     <ClInclude Include="LogoSceneManager.h" />
-    <ClInclude Include="MapComponent.h" />
-    <ClInclude Include="NumberManagerComponent.h" />
+    <ClInclude Include="Map.h" />
+    <ClInclude Include="NumberManager.h" />
     <ClInclude Include="Pause.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="ProtBuf\EngineEditorCommunicate.grpc.pb.h" />

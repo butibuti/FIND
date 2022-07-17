@@ -1,24 +1,21 @@
 #pragma once
 #include"Header/GameComponentHeader.h"
 namespace ButiEngine {
-	class NumberManagerComponent :public GameComponent
+	class NumberManager :public GameComponent
 	{
 	public:
-		NumberManagerComponent() {}
-
+		std::string GetGameComponentName()const override {
+			return "NumberManager";
+		}
 		void OnUpdate()override;
 		void OnSet()override;
 		void Start()override;
-		std::string GetGameComponentName()override {
-			return "NumberManagerComponent";
-		}
-		std::shared_ptr<GameComponent> Clone()override;
+		Value_ptr<GameComponent> Clone()override;
 		template<class Archive>
 		void serialize(Archive& archive)
 		{
 			archive(isActive);
 		}
-		void OnShowUI();
 
 		void SetNumber(int arg_number);
 
@@ -33,4 +30,4 @@ namespace ButiEngine {
 	};
 
 }
-BUTI_REGIST_GAMECOMPONENT(ButiEngine::NumberManagerComponent)
+BUTI_REGIST_GAMECOMPONENT(NumberManager, true)

@@ -102,6 +102,21 @@
     <ClCompile Include="GoalAura.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="InvisibleBlockAura.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="InvisibleBlock.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="InvisibleBlockManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Map.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="NumberManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx_u.h">
@@ -167,19 +182,19 @@
     <ClInclude Include="GoalAura.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="InvisibleBlockAuraComponent.h">
+    <ClInclude Include="InvisibleBlockAura.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="InvisibleBlockComponent.h">
+    <ClInclude Include="InvisibleBlock.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="InvisibleBlockManagerComponent.h">
+    <ClInclude Include="InvisibleBlockManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="MapComponent.h">
+    <ClInclude Include="Map.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="NumberManagerComponent.h">
+    <ClInclude Include="NumberManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Player.h">

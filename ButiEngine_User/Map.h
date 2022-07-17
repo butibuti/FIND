@@ -6,7 +6,6 @@ namespace ButiEngine {
 	{
 	public:
 		MapData(){}
-		MapData(int stageNum);
 		Vector3 GetSize() {
 			return Vector3(mapData[0][0].size(),mapData.size(),mapData[0].size());
 		}
@@ -18,25 +17,22 @@ namespace ButiEngine {
 		std::vector<std::vector<std::vector<int>>> mapData;
 	};
 
-	class MapComponent :public GameComponent
+	class Map :public GameComponent
 	{
 	public:
-		MapComponent() {}
-
+		std::string GetGameComponentName()const override {
+			return "Map";
+		}
 		void OnUpdate()override;
 		void OnSet()override;
 		void Start()override;
-		std::string GetGameComponentName()override {
-			return "MapComponent";
-		}
-		std::shared_ptr<GameComponent> Clone()override;
+		Value_ptr<GameComponent> Clone()override;
 		template<class Archive>
 		void serialize(Archive& archive)
 		{
 			archive(isActive);
 			archive(vec_mapData);
 		}
-		void OnShowUI();
 
 		void PutBlock(int stageNum);
 		std::shared_ptr< MapData >GetCurrentMapData() { return currentMapData; }
@@ -77,4 +73,4 @@ namespace ButiEngine {
 
 	void InputCereal(std::shared_ptr<MapData>& v, const std::string& path);
 }
-BUTI_REGIST_GAMECOMPONENT(ButiEngine::MapComponent)
+BUTI_REGIST_GAMECOMPONENT(Map, true)

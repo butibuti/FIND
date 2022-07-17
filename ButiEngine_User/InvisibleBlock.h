@@ -2,31 +2,23 @@
 #include"Header/GameComponentHeader.h"
 namespace ButiEngine {
 
-	class MapComponent;
-	namespace Collision
-	{
-		class CollisionPrimitive_Box_AABB;
-	}
+	class Map;
 
-	class InvisibleBlockComponent :public GameComponent
+	class InvisibleBlock :public GameComponent
 	{
 	public:
-		InvisibleBlockComponent() {}
-
+		std::string GetGameComponentName()const override {
+			return "InvisibleBlock";
+		}
 		void OnUpdate()override;
 		void OnSet()override;
 		void Start()override;
-		bool IsContaineVisibility();
-		std::string GetGameComponentName()override {
-			return "InvisibleBlockComponent";
-		}
-		std::shared_ptr<GameComponent> Clone()override;
+		Value_ptr<GameComponent> Clone()override;
 		template<class Archive>
 		void serialize(Archive& archive)
 		{
 			archive(isActive);
 		}
-		void OnShowUI();
 
 		void SetID(int arg_id) { id = arg_id; }
 		int GetID() { return id; }
@@ -44,4 +36,4 @@ namespace ButiEngine {
 	};
 
 }
-BUTI_REGIST_GAMECOMPONENT(ButiEngine::InvisibleBlockComponent)
+BUTI_REGIST_GAMECOMPONENT(InvisibleBlock, true)

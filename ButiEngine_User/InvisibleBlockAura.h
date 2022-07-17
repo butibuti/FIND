@@ -1,24 +1,21 @@
 #pragma once
 #include"Header/GameComponentHeader.h"
 namespace ButiEngine {
-	class InvisibleBlockAuraComponent :public GameComponent
+	class InvisibleBlockAura :public GameComponent
 	{
 	public:
-		InvisibleBlockAuraComponent() {}
-
+		std::string GetGameComponentName()const override {
+			return "InvisibleBlockAura";
+		}
 		void OnUpdate()override;
 		void OnSet()override;
 		void Start()override;
-		std::string GetGameComponentName()override {
-			return "InvisibleBlockAuraComponent";
-		}
-		std::shared_ptr<GameComponent> Clone()override;
+		Value_ptr<GameComponent> Clone()override;
 		template<class Archive>
 		void serialize(Archive& archive)
 		{
 			archive(isActive);
 		}
-		void OnShowUI();
 
 		void AnimInitialize();
 	private:
@@ -27,4 +24,4 @@ namespace ButiEngine {
 	};
 
 }
-BUTI_REGIST_GAMECOMPONENT(ButiEngine::InvisibleBlockAuraComponent)
+BUTI_REGIST_GAMECOMPONENT(InvisibleBlockAura, true)
