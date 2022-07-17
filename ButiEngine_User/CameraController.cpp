@@ -1,6 +1,6 @@
 #include "stdafx_u.h"
 #include "CameraController.h"
-#include "PlayerBehavior.h"
+#include "Player.h"
 #include "InputManager.h"
 
 void ButiEngine::CameraController::OnUpdate()

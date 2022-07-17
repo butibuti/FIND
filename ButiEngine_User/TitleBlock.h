@@ -1,24 +1,22 @@
 #pragma once
 #include"Header/GameComponentHeader.h"
 namespace ButiEngine {
-	class TitleBlockComponent :public GameComponent
+
+	class TitleBlock :public GameComponent
 	{
 	public:
-		TitleBlockComponent() {}
-
+		std::string GetGameComponentName()const override {
+			return "TitleBlock";
+		}
 		void OnUpdate()override;
 		void OnSet()override;
 		void Start()override;
-		std::string GetGameComponentName()override {
-			return "TitleBlockComponent";
-		}
-		std::shared_ptr<GameComponent> Clone()override;
+		Value_ptr<GameComponent> Clone()override;
 		template<class Archive>
 		void serialize(Archive& archive)
 		{
 			archive(isActive);
 		}
-		void OnShowUI();
 	private:
 		float defaultY;
 		float angle;
@@ -26,4 +24,4 @@ namespace ButiEngine {
 	};
 
 }
-BUTI_REGIST_GAMECOMPONENT(ButiEngine::TitleBlockComponent)
+BUTI_REGIST_GAMECOMPONENT(TitleBlock, true)

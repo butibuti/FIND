@@ -351,6 +351,7 @@ cd ..\</Command>
     <ClCompile Include="Block.cpp" />
     <ClCompile Include="BurstManager.cpp" />
     <ClCompile Include="CameraController.cpp" />
+    <ClCompile Include="CameraMesh.cpp" />
     <ClCompile Include="ConfigManager.cpp" />
     <ClCompile Include="DefaultGameComponent.cpp" />
     <ClCompile Include="DefaultGoal.cpp" />
@@ -391,6 +392,7 @@ cd ..\</Command>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_imguiEditor|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_imguiEditor|x64'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="Ripple.cpp" />
     <ClCompile Include="Server\RuntimeServer.cpp">
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug_imguiEditor|x64'">/wd4996 %(AdditionalOptions)</AdditionalOptions>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release_imguiEditor|x64'">/wd4996 %(AdditionalOptions)</AdditionalOptions>
@@ -398,7 +400,10 @@ cd ..\</Command>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="ShaderChecker.cpp" />
+    <ClCompile Include="Shake.cpp" />
     <ClCompile Include="SquareParticleEmitter.cpp" />
+    <ClCompile Include="StageSelectManager.cpp" />
+    <ClCompile Include="StartPlayerDirecting.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug_imguiEditor|x64'">Create</PrecompiledHeader>
@@ -406,6 +411,9 @@ cd ..\</Command>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release_imguiEditor|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="TestBehavior.cpp" />
+    <ClCompile Include="ThanksSceneManager.cpp" />
+    <ClCompile Include="TitleBlock.cpp" />
+    <ClCompile Include="TitleSceneManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ArrowEffect.h" />
@@ -413,6 +421,7 @@ cd ..\</Command>
     <ClInclude Include="Block.h" />
     <ClInclude Include="BurstManager.h" />
     <ClInclude Include="CameraController.h" />
+    <ClInclude Include="CameraMesh.h" />
     <ClInclude Include="ConfigManager.h" />
     <ClInclude Include="DefaultGoal.h" />
     <ClInclude Include="EasyGoal.h" />
@@ -431,18 +440,18 @@ cd ..\</Command>
     <ClInclude Include="Player.h" />
     <ClInclude Include="ProtBuf\EngineEditorCommunicate.grpc.pb.h" />
     <ClInclude Include="ProtBuf\EngineEditorCommunicate.pb.h" />
-    <ClInclude Include="RippleComponent.h" />
+    <ClInclude Include="Ripple.h" />
     <ClInclude Include="Server\RuntimeServer.h" />
     <ClInclude Include="ShaderChecker.h" />
-    <ClInclude Include="ShakeComponent.h" />
+    <ClInclude Include="Shake.h" />
     <ClInclude Include="SquareParticleEmitter.h" />
-    <ClInclude Include="StageSelectManagerComponent.h" />
-    <ClInclude Include="StartPlayerDirectingComponent.h" />
+    <ClInclude Include="StageSelectManager.h" />
+    <ClInclude Include="StartPlayerDirecting.h" />
     <ClInclude Include="stdafx_u.h" />
     <ClInclude Include="TestBehavior.h" />
     <ClInclude Include="ThanksSceneManager.h" />
-    <ClInclude Include="TitleBlockComponent.h" />
-    <ClInclude Include="TitleManagerComponent.h" />
+    <ClInclude Include="TitleBlock.h" />
+    <ClInclude Include="TitleSceneManager.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\output\UserSample\Debug\Resources\Application\ButiEngine.ini" />

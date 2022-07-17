@@ -1,6 +1,6 @@
 #include "stdafx_u.h"
 #include "EasyGoal.h"
-#include "MapComponent.h"
+#include "Map.h"
 #include "BackGround.h"
 
 void ButiEngine::EasyGoal::OnUpdate()

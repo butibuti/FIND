@@ -1,27 +1,25 @@
 #pragma once
 #include"Header/GameComponentHeader.h"
 namespace ButiEngine {
-	class ShakeComponent :public GameComponent
+
+	class Shake :public GameComponent
 	{
 	public:
-		ShakeComponent() {}
-
+		std::string GetGameComponentName()const override {
+			return "Shake";
+		}
 		void OnUpdate()override;
 		void OnSet()override;
 		void Start()override;
-		std::string GetGameComponentName()override {
-			return "ShakeComponent";
-		}
-		std::shared_ptr<GameComponent> Clone()override;
+		Value_ptr<GameComponent> Clone()override;
 		template<class Archive>
 		void serialize(Archive& archive)
 		{
 			archive(isActive);
 		}
-		void OnShowUI();
 
-		void Start(float arg_amplitude);
-		void Stop();
+		void ShakeStart(float arg_amplitude);
+		void ShakeStop();
 
 		void SetDefaultPos(Vector3 arg_defaultPos)
 		{
@@ -34,4 +32,4 @@ namespace ButiEngine {
 	};
 
 }
-BUTI_REGIST_GAMECOMPONENT(ButiEngine::ShakeComponent)
+BUTI_REGIST_GAMECOMPONENT(Shake, true)

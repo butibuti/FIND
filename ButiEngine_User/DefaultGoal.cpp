@@ -1,6 +1,6 @@
 #include "stdafx_u.h"
 #include "DefaultGoal.h"
-#include "MapComponent.h"
+#include "Map.h"
 #include "BackGround.h"
 
 

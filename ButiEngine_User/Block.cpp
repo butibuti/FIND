@@ -1,6 +1,6 @@
 #include "stdafx_u.h"
 #include "Block.h"
-#include "MapComponent.h"
+#include "Map.h"
 
 void ButiEngine::Block::OnUpdate()
 {

@@ -117,6 +117,30 @@
     <ClCompile Include="NumberManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Ripple.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Shake.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="StageSelectManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="StartPlayerDirecting.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CameraMesh.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ThanksSceneManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TitleBlock.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TitleSceneManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx_u.h">
@@ -200,28 +224,31 @@
     <ClInclude Include="Player.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="RippleComponent.h">
+    <ClInclude Include="Ripple.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ShakeComponent.h">
+    <ClInclude Include="Shake.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="StageSelectManagerComponent.h">
+    <ClInclude Include="StageSelectManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="StartPlayerDirectingComponent.h">
+    <ClInclude Include="StartPlayerDirecting.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ThanksSceneManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="TitleBlockComponent.h">
+    <ClInclude Include="TitleBlock.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="TitleManagerComponent.h">
+    <ClInclude Include="TitleSceneManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="InputManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CameraMesh.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

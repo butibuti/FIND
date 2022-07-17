@@ -2,6 +2,7 @@
 #include "InputManager.h"
 
 const float ButiEngine::InputManager::m_DEADZONE = 0.25f;
+ButiEngine::Vector2 ButiEngine::InputManager::m_currentLeftStick;
 
 void ButiEngine::InputManager::OnUpdate()
 {

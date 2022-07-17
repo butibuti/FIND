@@ -1,6 +1,6 @@
 #include "stdafx_u.h"
 #include "InvisibleBlock.h"
-#include "MapComponent.h"
+#include "Map.h"
 #include "Player.h"
 #include "GameSettings.h"
 

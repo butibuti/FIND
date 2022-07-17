@@ -2,11 +2,11 @@
 #include"Header/GameComponentHeader.h"
 namespace ButiEngine {
 
-	class ThanksSceneManager :public GameComponent
+	class CameraMesh :public GameComponent
 	{
 	public:
 		std::string GetGameComponentName()const override {
-			return "ThanksSceneManager";
+			return "CameraMesh";
 		}
 		void OnUpdate()override;
 		void OnSet()override;
@@ -17,14 +17,11 @@ namespace ButiEngine {
 		{
 			archive(isActive);
 		}
+
+		void Flash();
 	private:
-		//std::shared_ptr<RelativeTimer>shp_timer;
-		//std::shared_ptr<CBuffer<LightVariable>> buffer;
-		float t = 1.0f;
-		float power = 0.0f;
-		float pase = 0.016f;
-		bool isClicked = false;
+		float alpha;
 	};
 
 }
-BUTI_REGIST_GAMECOMPONENT(ThanksSceneManager, true)
+BUTI_REGIST_GAMECOMPONENT(CameraMesh, true)

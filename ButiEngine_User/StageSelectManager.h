@@ -1,29 +1,28 @@
 #pragma once
 #include"Header/GameComponentHeader.h"
 namespace ButiEngine {
-	class StageSelectManagerComponent :public GameComponent
+
+	class StageSelectManager :public GameComponent
 	{
 	public:
-		static int stageNum;
-		StageSelectManagerComponent() {}
-
+		std::string GetGameComponentName()const override {
+			return "StageSelectManager";
+		}
 		void OnUpdate()override;
 		void OnSet()override;
 		void Start()override;
-		std::string GetGameComponentName()override {
-			return "StageSelectManagerComponent";
-		}
-		std::shared_ptr<GameComponent> Clone()override;
+		Value_ptr<GameComponent> Clone()override;
 		template<class Archive>
 		void serialize(Archive& archive)
 		{
 			archive(isActive);
 		}
-		void OnShowUI();
 
 		static int GetStageNum() { return stageNum; }
 		static std::string GetNextSceneName();
 		static void SetMaxStageNum();
+
+		static int stageNum;
 	private:
 		std::shared_ptr<RelativeTimer> animTimer;
 		std::weak_ptr<GameObject> obj_stageNumber;
@@ -43,4 +42,4 @@ namespace ButiEngine {
 	};
 
 }
-BUTI_REGIST_GAMECOMPONENT(ButiEngine::StageSelectManagerComponent)
+BUTI_REGIST_GAMECOMPONENT(StageSelectManager, true)
