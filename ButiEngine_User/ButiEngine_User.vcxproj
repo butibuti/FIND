@@ -346,15 +346,26 @@ cd ..\</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="ArrowEffect.cpp" />
+    <ClCompile Include="BackGround.cpp" />
+    <ClCompile Include="Block.cpp" />
+    <ClCompile Include="BurstManager.cpp" />
+    <ClCompile Include="CameraController.cpp" />
     <ClCompile Include="ConfigManager.cpp" />
     <ClCompile Include="DefaultGameComponent.cpp" />
+    <ClCompile Include="DefaultGoal.cpp" />
+    <ClCompile Include="EasyGoal.cpp" />
     <ClCompile Include="FluidSimulation.cpp" />
+    <ClCompile Include="GameSettings.cpp" />
+    <ClCompile Include="GoalAura.cpp" />
     <ClCompile Include="HitChecker.cpp" />
+    <ClCompile Include="InputManager.cpp" />
     <ClCompile Include="LogoSceneManager.cpp" />
     <ClCompile Include="main.cpp">
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release_imguiEditor|x64'">/wd4996 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <ClCompile Include="Pause.cpp" />
+    <ClCompile Include="Player.cpp" />
     <ClCompile Include="ProtBuf\EngineEditorCommunicate.grpc.pb.cc">
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'"> /wd4996 %(AdditionalOptions)</AdditionalOptions>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release_imguiEditor|x64'"> /wd4996 %(AdditionalOptions)</AdditionalOptions>
@@ -392,18 +403,41 @@ cd ..\</Command>
     <ClCompile Include="TestBehavior.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ArrowEffect.h" />
+    <ClInclude Include="BackGround.h" />
+    <ClInclude Include="Block.h" />
+    <ClInclude Include="BurstManager.h" />
+    <ClInclude Include="CameraController.h" />
     <ClInclude Include="ConfigManager.h" />
+    <ClInclude Include="DefaultGoal.h" />
+    <ClInclude Include="EasyGoal.h" />
     <ClInclude Include="FluidSimulation.h" />
+    <ClInclude Include="GameSettings.h" />
+    <ClInclude Include="GoalAura.h" />
     <ClInclude Include="HitChecker.h" />
+    <ClInclude Include="InputManager.h" />
+    <ClInclude Include="InvisibleBlockAuraComponent.h" />
+    <ClInclude Include="InvisibleBlockComponent.h" />
+    <ClInclude Include="InvisibleBlockManagerComponent.h" />
     <ClInclude Include="LogoSceneManager.h" />
+    <ClInclude Include="MapComponent.h" />
+    <ClInclude Include="NumberManagerComponent.h" />
     <ClInclude Include="Pause.h" />
+    <ClInclude Include="Player.h" />
     <ClInclude Include="ProtBuf\EngineEditorCommunicate.grpc.pb.h" />
     <ClInclude Include="ProtBuf\EngineEditorCommunicate.pb.h" />
+    <ClInclude Include="RippleComponent.h" />
     <ClInclude Include="Server\RuntimeServer.h" />
     <ClInclude Include="ShaderChecker.h" />
+    <ClInclude Include="ShakeComponent.h" />
     <ClInclude Include="SquareParticleEmitter.h" />
+    <ClInclude Include="StageSelectManagerComponent.h" />
+    <ClInclude Include="StartPlayerDirectingComponent.h" />
     <ClInclude Include="stdafx_u.h" />
     <ClInclude Include="TestBehavior.h" />
+    <ClInclude Include="ThanksSceneManager.h" />
+    <ClInclude Include="TitleBlockComponent.h" />
+    <ClInclude Include="TitleManagerComponent.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\output\UserSample\Debug\Resources\Application\ButiEngine.ini" />

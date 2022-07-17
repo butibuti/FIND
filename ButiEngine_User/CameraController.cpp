@@ -1,10 +1,11 @@
 #include "stdafx_u.h"
 #include "CameraController.h"
 #include "PlayerBehavior.h"
+#include "InputManager.h"
 
 void ButiEngine::CameraController::OnUpdate()
 {
-    //if (GameDevice::GetInput()->TriggerKey(Keys::E)) {
+    //if (InputManager::IsTriggerCameraRotateRightKey()) {
     //    auto anim = shp_cameraAxis->GetGameComponent<TransformAnimation>();
     //    if (!anim) {
     //        anim = shp_cameraAxis->AddGameComponent<TransformAnimation>();
@@ -16,7 +17,7 @@ void ButiEngine::CameraController::OnUpdate()
 
     //    }
     //}
-    //if (GameDevice::GetInput()->TriggerKey(Keys::Q)) {
+    //if (InputManager::IsTriggerCameraRotateLeftKey()) {
     //    auto anim = shp_cameraAxis->GetGameComponent<TransformAnimation>();
     //    if (!anim) {
     //        anim = shp_cameraAxis->AddGameComponent<TransformAnimation>();

@@ -1,10 +1,11 @@
 #pragma once
-#include"Header/BehaviorHeader.h"
+#include"Header/GameComponentHeader.h"
 namespace ButiEngine {
 
-	class MapComponent;
-	class PlayerCameraComponent;
-	class InvisibleBlockManagerComponent;
+	class Map;
+	class PlayerCamera;
+	class InvisibleBlockManager;
+
 	enum class MoveDirection
 	{
 		Up,
@@ -32,25 +33,23 @@ namespace ButiEngine {
 		Right,
 	};
 
-	class PlayerBehavior :public Behavior
+	class Player :public GameComponent
 	{
 	public:
-		std::string GetBehaviorName()override {
-			return "PlayerBehavior";
+		std::string GetGameComponentName()const override {
+			return "Player";
 		}
 		void OnUpdate()override;
 		void OnSet()override;
+		void OnRemove()override;
+		void OnShowUI()override;
 		void Start()override;
-		std::shared_ptr<Behavior> Clone()override;
-		void OnCollisionEnter(std::weak_ptr<GameObject> arg_other)override;
-		void OnCollision(std::weak_ptr<GameObject> arg_other)override;
-		void OnCollisionEnd(std::weak_ptr<GameObject> arg_other)override;
+		Value_ptr<GameComponent> Clone()override;
 		template<class Archive>
 		void serialize(Archive& archive)
 		{
 			archive(isActive);
 		}
-		void OnShowUI()override;
 
 		bool GetGoal() { return goal; }
 
@@ -65,8 +64,8 @@ namespace ButiEngine {
 		void RollCameraDirection(const int rotateDir);
 	private:
 		float length;
-		std::shared_ptr<MapComponent> shp_map;
-		std::shared_ptr<InvisibleBlockManagerComponent> shp_invisibleBlockManager;
+		//std::shared_ptr<Map> shp_map;
+		//std::shared_ptr<InvisibleBlockManager> shp_invisibleBlockManager;
 		Vector3 mapPos;
 		Vector3 nextMapPos;
 		Vector3 offset;
@@ -80,8 +79,8 @@ namespace ButiEngine {
 		LookDirection lookDirection;
 		CameraDirection cameraDirection=CameraDirection::Front;
 
-		std::shared_ptr<RelativeTimer> timer;
-		std::shared_ptr<RelativeTimer> fallTimer;
+		//std::shared_ptr<RelativeTimer> timer;
+		//std::shared_ptr<RelativeTimer> fallTimer;
 
 		void CheckLookDirection();
 		void Contoroll();
@@ -103,20 +102,22 @@ namespace ButiEngine {
 		void MoveUpBack();
 		void MoveBack();
 		void MoveDownBack();
-		std::weak_ptr<GameObject> GetRightBlock(Vector3 mapPos);
-		std::weak_ptr<GameObject> GetLeftBlock(Vector3 mapPos);
-		std::weak_ptr<GameObject> GetUpBlock(Vector3 mapPos);
-		std::weak_ptr<GameObject> GetDownBlock(Vector3 mapPos);
-		std::weak_ptr<GameObject> GetFrontBlock(Vector3 mapPos);
-		std::weak_ptr<GameObject> GetBackBlock(Vector3 mapPos);
+		Value_weak_ptr<GameObject> GetRightBlock(Vector3 mapPos);
+		Value_weak_ptr<GameObject> GetLeftBlock(Vector3 mapPos);
+		Value_weak_ptr<GameObject> GetUpBlock(Vector3 mapPos);
+		Value_weak_ptr<GameObject> GetDownBlock(Vector3 mapPos);
+		Value_weak_ptr<GameObject> GetFrontBlock(Vector3 mapPos);
+		Value_weak_ptr<GameObject> GetBackBlock(Vector3 mapPos);
 
 
 		SoundTag moveSounds[3];
 		void Fall();
 		MoveDirection CheckMoveDirection(Vector3 movePos);
 		void CheckExistUnderBlock(Vector3 movePos);
+
+		bool IsBlock(std::uint8_t arg_mapChipNum);
 	};
 
 }
 
-BUTI_REGIST_BEHAVIOR(ButiEngine::PlayerBehavior);
+BUTI_REGIST_GAMECOMPONENT(Player, true);

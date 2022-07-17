@@ -1,24 +1,21 @@
 #pragma once
 #include"Header/GameComponentHeader.h"
 namespace ButiEngine {
-	class GoalAuraComponent :public GameComponent
+	class GoalAura :public GameComponent
 	{
 	public:
-		GoalAuraComponent() {}
-
+		std::string GetGameComponentName()const override {
+			return "GoalAura";
+		}
 		void OnUpdate()override;
 		void OnSet()override;
 		void Start()override;
-		std::string GetGameComponentName()override {
-			return "GoalAuraComponent";
-		}
-		std::shared_ptr<GameComponent> Clone()override;
+		Value_ptr<GameComponent> Clone()override;
 		template<class Archive>
 		void serialize(Archive& archive)
 		{
 			archive(isActive);
 		}
-		void OnShowUI();
 
 		void AnimInitialize();
 	private:
@@ -27,4 +24,4 @@ namespace ButiEngine {
 	};
 
 }
-BUTI_REGIST_GAMECOMPONENT(ButiEngine::GoalAuraComponent)
+BUTI_REGIST_GAMECOMPONENT(GoalAura, true)

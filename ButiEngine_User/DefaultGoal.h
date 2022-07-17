@@ -1,14 +1,13 @@
 #pragma once
 #include"Header/GameComponentHeader.h"
+
 namespace ButiEngine {
 
-	class Map;
-
-	class Block :public GameComponent
+	class DefaultGoal :public GameComponent
 	{
 	public:
 		std::string GetGameComponentName()const override {
-			return "Block";
+			return "DefaultGoal";
 		}
 		void OnUpdate()override;
 		void OnSet()override;
@@ -20,14 +19,14 @@ namespace ButiEngine {
 		void serialize(Archive& archive)
 		{
 			archive(isActive);
-			archive(pase);
-			archive(current);
 		}
+
+		bool IsActive() { return active; }
+
+		void Seen();
 	private:
-		//std::weak_ptr<Map> wkp_mapComponent;
-		float pase;
-		float current = 0.5f;
-		//std::shared_ptr<CBuffer<LightVariable>> shp_lightBuffer;
+		bool active;
 	};
+
 }
-BUTI_REGIST_GAMECOMPONENT(Block, true)
+BUTI_REGIST_GAMECOMPONENT(DefaultGoal, true)
