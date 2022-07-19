@@ -100,10 +100,10 @@ void ButiEngine::StageSelectManager::OnSet()
 
 void ButiEngine::StageSelectManager::Start()
 {
-	//auto player = GetManager().lock()->AddObjectFromCereal("PlayerModel");
+	//auto player = GetManager().lock()->GetGameObject("PlayerModel");
 
 	//player.lock()->transform->SetLocalScale(Vector3(0.5, 0.5, 0.5));
-	//obj_stageNumber = GetManager().lock()->AddObjectFromCereal("StageNumber");
+	//obj_stageNumber = GetManager().lock()->GetGameObject("StageNumber");
 	//obj_stageNumber.lock()->transform->SetLocalScale(Vector3(300, 300, 300));
 	//animTimer = ObjectFactory::Create<RelativeTimer>(15);
 

@@ -186,9 +186,6 @@ void ButiEngine::Map::PutBlock(int stageNum)
 	//					directing->SetStartPos(position);
 
 	//					auto cameraMesh = GetManager().lock()->AddObjectFromCereal("CameraMesh", ObjectFactory::Create<Transform>(Vector3(0, 0, -0.1f), Vector3::Zero, scale));
-	//					auto camera = GetCamera("playerCamera");
-	//					camera.lock()->shp_transform->SetLocalPosition().z = 0.5f;
-	//					camera.lock()->shp_transform->SetBaseTransform(gameObject.lock()->transform, true);
 	//					if (mapNum >= GameSettings::playerRotate_90 && mapNum <= GameSettings::playerRotate_min90) {
 	//						auto rotation = (mapNum - GameSettings::playerRotate_90 + 1) * 90;
 	//						gameObject.lock()->transform->RollLocalRotationY_Degrees(rotation);

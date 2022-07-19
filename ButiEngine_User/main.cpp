@@ -48,7 +48,8 @@ std::int32_t APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR arg, std::in
 
 #ifdef _IMGUIEDITOR
 	ButiTaskSystem::Start();
-	auto init = InputApplicationInitData();
+	GameAssetData::ApplicationInitData init;
+	InputCereal(init, "Application/ButiEngine.ini");
 	auto vlp_app = CreateApplicationInstance(init);
 
 	GameDevice::Initialize();

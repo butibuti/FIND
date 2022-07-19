@@ -44,7 +44,7 @@ void ButiEngine::CameraController::OnShowUI()
 
 void ButiEngine::CameraController::Start()
 {
-    //shp_cameraAxis = gameObject.lock()->GetGameObjectManager().lock()->AddObjectFromCereal("cameraAxis").lock();
+    //shp_cameraAxis = gameObject.lock()->GetGameObjectManager().lock()->AddObjectFromCereal("CameraAxis").lock();
     //gameObject.lock()->transform->SetBaseTransform(shp_cameraAxis->transform, true);
     //shp_player = gameObject.lock()->GetGameObjectManager().lock()->GetGameObject("Player").lock()->GetBehavior<PlayerBehavior>();
 }

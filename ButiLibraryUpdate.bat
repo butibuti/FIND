@@ -47,9 +47,9 @@ rmdir /s /q Libs\dll\dll
 rmdir /s /q Libs\lib\lib
 del Libs\dll.zip
 del Libs\lib.zip
-xcopy /y /d Libs\dll\Debug\ output\UserSample\Debug\
-xcopy /y /d Libs\dll\Debug_imguiEditor\ output\UserSample\Debug_imguiEditor\
-xcopy /y /d Libs\dll\Release\ output\UserSample\Release\
-xcopy /y /d Libs\dll\Release_imguiEditor\ output\UserSample\Release_imguiEditor\
+xcopy /y /d Libs\dll\Debug\ output\Debug\
+xcopy /y /d Libs\dll\Debug_imguiEditor\ output\Debug_imguiEditor\
+xcopy /y /d Libs\dll\Release\ output\Release\
+xcopy /y /d Libs\dll\Release_imguiEditor\ output\Release_imguiEditor\
 
 pause

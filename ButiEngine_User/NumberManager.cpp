@@ -11,8 +11,8 @@ void ButiEngine::NumberManager::OnSet()
 
 void ButiEngine::NumberManager::Start()
 {
-	//number1 = GetManager().lock()->AddObjectFromCereal("Number1", ObjectFactory::Create<Transform>(Vector3(0, 100, 30), Vector3::Zero, Vector3(300, 300, 1)));
-	//number10 = GetManager().lock()->AddObjectFromCereal("Number10", ObjectFactory::Create<Transform>(Vector3(-150, 100, 31), Vector3::Zero, Vector3(300, 300, 1)));
+	//number1 = GetManager().lock()->GetGameObject("Number1");
+	//number10 = GetManager().lock()->GetGameObject("Number10");
 	//StageSelectManagerComponent::stageNum = 0;
 	//SetNumber(StageSelectManagerComponent::GetStageNum());
 }
