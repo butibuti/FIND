@@ -18,7 +18,7 @@ namespace ButiEngine {
 			archive(isActive);
 		}
 	private:
-		//std::shared_ptr<RelativeTimer>shp_timer;
+		Value_ptr<RelativeTimer> m_vlp_timer;
 	};
 
 }
