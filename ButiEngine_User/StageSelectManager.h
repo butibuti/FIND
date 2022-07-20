@@ -18,23 +18,23 @@ namespace ButiEngine {
 			archive(isActive);
 		}
 
-		static int GetStageNum() { return stageNum; }
+		static std::uint8_t GetStageNum() { return m_stageNum; }
 		static std::string GetNextSceneName();
 		static void SetMaxStageNum();
 
-		static int stageNum;
+		static std::uint8_t m_stageNum;
 	private:
-		std::shared_ptr<RelativeTimer> animTimer;
-		std::weak_ptr<GameObject> obj_stageNumber;
+		Value_ptr<RelativeTimer> m_vlp_animTimer;
+		Value_weak_ptr<GameObject> m_vwp_stageNumber;
 
-		static int maxStageNum;
+		static std::uint8_t m_maxStageNum;
 
-		bool end;
-		unsigned int endTimer;
+		bool m_isEnd;
+		std::uint8_t m_endTimer;
 
-		float stageNumberObjectScale;
+		float m_stageNumberObjectScale;
 
-		int pushCount;
+		std::uint8_t m_pushCount;
 
 		void RestartAnimTimer();
 		void OnPushRight();

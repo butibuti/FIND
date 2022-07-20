@@ -1,6 +1,7 @@
 #pragma once
 #include"Header/GameComponentHeader.h"
 namespace ButiEngine {
+
 	class NumberManager :public GameComponent
 	{
 	public:
@@ -17,16 +18,16 @@ namespace ButiEngine {
 			archive(isActive);
 		}
 
-		void SetNumber(int arg_number);
+		void SetNumber(std::uint8_t arg_number);
 
-		void TranslateY(float y);
-		void SetScale(Vector3 scale);
+		void TranslateY(float arg_y);
+		void SetScale(const Vector3& arg_scale);
 
 		void Remove();
 	private:
-		std::weak_ptr<GameObject> number1;
-		std::weak_ptr<GameObject> number10;
-		int number;
+		Value_weak_ptr<GameObject> m_vwp_number1;
+		Value_weak_ptr<GameObject> m_vwp_number10;
+		std::uint8_t m_number;
 	};
 
 }

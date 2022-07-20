@@ -1,5 +1,6 @@
 #include "stdafx_u.h"
 #include "NumberManager.h"
+#include "StageSelectManager.h"
 
 void ButiEngine::NumberManager::OnUpdate()
 {
@@ -11,10 +12,10 @@ void ButiEngine::NumberManager::OnSet()
 
 void ButiEngine::NumberManager::Start()
 {
-	//number1 = GetManager().lock()->GetGameObject("Number1");
-	//number10 = GetManager().lock()->GetGameObject("Number10");
-	//StageSelectManagerComponent::stageNum = 0;
-	//SetNumber(StageSelectManagerComponent::GetStageNum());
+	m_vwp_number1 = GetManager().lock()->GetGameObject("Number1");
+	m_vwp_number10 = GetManager().lock()->GetGameObject("Number10");
+	StageSelectManager::m_stageNum = 0;
+	SetNumber(StageSelectManager::GetStageNum());
 }
 
 ButiEngine::Value_ptr<ButiEngine::GameComponent> ButiEngine::NumberManager::Clone()
@@ -22,49 +23,50 @@ ButiEngine::Value_ptr<ButiEngine::GameComponent> ButiEngine::NumberManager::Clon
 	return ObjectFactory::Create<NumberManager>();
 }
 
-void ButiEngine::NumberManager::SetNumber(int arg_number)
+void ButiEngine::NumberManager::SetNumber(std::uint8_t arg_number)
 {
-	//number = arg_number + 1;
+	m_number = arg_number + 1;
 
-	//int one = number % 10;
-	//int ten = number / 10;
+	int one = m_number % 10;
+	int ten = m_number / 10;
 
-	//auto meshDraw1 = number1.lock()->GetGameComponent<MeshDrawComponent>();
-	//auto meshDraw10 = number10.lock()->GetGameComponent<MeshDrawComponent>();
+	auto meshDraw1 = m_vwp_number1.lock()->GetGameComponent<MeshDrawComponent>();
+	auto meshDraw10 = m_vwp_number10.lock()->GetGameComponent<MeshDrawComponent>();
 
-	//if (number < 10)
-	//{
-	//	number1.lock()->transform->SetWorldPosition(Vector3(0, 100, 30));
-	//	meshDraw10->UnRegist();
-	//}
-	//else
-	//{
-	//	number1.lock()->transform->SetWorldPosition(Vector3(150, 100, 30));
-	//	number10.lock()->GetGameComponent<MeshDrawComponent>()->Regist();
-	//	std::string name10 = "number_" + std::to_string(ten);
-	//	meshDraw10->SetMaterialTag(gameObject.lock()->GetResourceContainer()->GetMaterialTag(name10));
-	//	meshDraw10->ReRegist();
-	//}
+	if (m_number < 10)
+	{
+		m_vwp_number1.lock()->transform->SetWorldPosition(Vector3(0, 100, 30));
+		meshDraw10->UnRegist();
+	}
+	else
+	{
+		m_vwp_number1.lock()->transform->SetWorldPosition(Vector3(150, 100, 30));
+		m_vwp_number10.lock()->GetGameComponent<MeshDrawComponent>()->Regist();
+
+		//std::string name10 = "number_" + std::to_string(ten);
+		//meshDraw10->SetMaterialTag(gameObject.lock()->GetResourceContainer()->GetMaterialTag(name10));
+		//meshDraw10->ReRegist();
+	}
 
 	//std::string name1 = "number_" + std::to_string(one);
 	//meshDraw1->SetMaterialTag(gameObject.lock()->GetResourceContainer()->GetMaterialTag(name1));
 	//meshDraw1->ReRegist();
 }
 
-void ButiEngine::NumberManager::TranslateY(float y)
+void ButiEngine::NumberManager::TranslateY(float arg_y)
 {
-	//number1.lock()->transform->TranslateY(y);
-	//number10.lock()->transform->TranslateY(y);
+	m_vwp_number1.lock()->transform->TranslateY(arg_y);
+	m_vwp_number10.lock()->transform->TranslateY(arg_y);
 }
 
-void ButiEngine::NumberManager::SetScale(Vector3 scale)
+void ButiEngine::NumberManager::SetScale(const Vector3& arg_scale)
 {
-	//number1.lock()->transform->SetLocalScale(scale);
-	//number10.lock()->transform->SetLocalScale(scale);
+	m_vwp_number1.lock()->transform->SetLocalScale(arg_scale);
+	m_vwp_number10.lock()->transform->SetLocalScale(arg_scale);
 }
 
 void ButiEngine::NumberManager::Remove()
 {
-	//number1.lock()->SetIsRemove(true);
-	//number10.lock()->SetIsRemove(true);
+	m_vwp_number1.lock()->SetIsRemove(true);
+	m_vwp_number10.lock()->SetIsRemove(true);
 }

@@ -20,8 +20,7 @@ namespace ButiEngine {
 			archive(isActive);
 		}
 	private:
-		int life;
-		int progressFrame;
+		Value_ptr<RelativeTimer> m_vlp_timer;
 	};
 }
 BUTI_REGIST_GAMECOMPONENT(Arroweffect, true)
