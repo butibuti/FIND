@@ -20,7 +20,7 @@ namespace ButiEngine {
 
 		void Flash();
 	private:
-		float alpha;
+		float m_alpha;
 	};
 
 }

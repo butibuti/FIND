@@ -19,6 +19,7 @@ namespace ButiEngine {
 		}
 	private:
 		Value_ptr<RelativeTimer> m_vlp_timer;
+		Value_weak_ptr<GameObject> m_vwp_camera;
 	};
 
 }

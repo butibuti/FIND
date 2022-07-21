@@ -18,19 +18,19 @@ namespace ButiEngine {
 			archive(isActive);
 		}
 
-		bool IsStart() { return start; }
-		void SetSpawnPos(Vector3 v) { spawnPos = v; }
-		Vector3 GetSpawnPos() { return spawnPos; }
-		void SetStartPos(Vector3 v) { startPos = v; }
+		bool IsStart() { return m_isStart; }
+		void SetSpawnPos(Vector3 v) { m_spawnPos = v; }
+		Vector3 GetSpawnPos() { return m_spawnPos; }
+		void SetStartPos(Vector3 v) { m_startPos = v; }
 
 		void Animation();
 	private:
-		std::shared_ptr<RelativeTimer> timer;
-		bool start;
-		bool fallStart;
+		Value_ptr<RelativeTimer> m_vlp_timer;
+		bool m_isStart;
+		bool m_isFallStart;
 
-		Vector3 spawnPos;
-		Vector3 startPos;
+		Vector3 m_spawnPos;
+		Vector3 m_startPos;
 	};
 
 }

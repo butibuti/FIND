@@ -20,17 +20,17 @@ namespace ButiEngine {
 		void serialize(Archive& archive)
 		{
 			archive(isActive);
-			archive(pase);
+			archive(m_pase);
 		}
 
 		void ZoomInOut();
 		void ZoomIn();
 		void ZoomOut();
 	private:
-		Vector3 offset;
-		//std::shared_ptr<GameObject> shp_cameraAxis;
-		//std::shared_ptr<Player> shp_player;
-		float pase;
+		Vector3 m_offset;
+		Value_weak_ptr<GameObject> m_vwp_cameraAxis;
+		Value_weak_ptr<Player> m_vwp_playerComponent;
+		float m_pase;
 	};
 
 }

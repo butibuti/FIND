@@ -1,41 +1,41 @@
 #include "stdafx_u.h"
 #include "StartPlayerDirecting.h"
 #include "Player.h"
-#include "InvisibleBlock.h"
 #include "CameraMesh.h"
+#include "InvisibleBlockManager.h"
 
 void ButiEngine::StartPlayerDirecting::OnUpdate()
 {
-	//if (start)
-	//{
-	//	return;
-	//}
-	//if (!fallStart && timer->Update())
-	//{
-	//	timer->Stop();
-	//	fallStart = true;
+	if (m_isStart)
+	{
+		return;
+	}
+	if (!m_isFallStart && m_vlp_timer->Update())
+	{
+		m_vlp_timer->Stop();
+		m_isFallStart = true;
 
-	//	Animation();
-	//}
-	//auto anim = gameObject.lock()->GetGameComponent<TransformAnimation>();
-	//if (fallStart && !anim)
-	//{
-	//	//波紋
-	//	auto pos = gameObject.lock()->transform->GetWorldPosition();
-	//	pos.y -= 0.3f;
-	//	GetManager().lock()->AddObjectFromCereal("Ripple", ObjectFactory::Create<Transform>(pos, Vector3(90, 0, 0), 0.0f));
+		Animation();
+	}
+	auto anim = gameObject.lock()->GetGameComponent<TransformAnimation>();
+	if (m_isFallStart && !anim)
+	{
+		//波紋
+		auto pos = gameObject.lock()->transform->GetWorldPosition();
+		pos.y -= 0.3f;
+		GetManager().lock()->AddObjectFromCereal("Ripple", ObjectFactory::Create<Transform>(pos, Vector3(90, 0, 0), 0.0f));
 
-	//	//フラッシュ
-	//	GetManager().lock()->GetGameObject("CameraMesh").lock()->GetGameComponent<CameraMeshComponent>()->Flash();
+		//フラッシュ
+		GetManager().lock()->GetGameObject("CameraMesh").lock()->GetGameComponent<CameraMesh>()->Flash();
 
-	//	gameObject.lock()->GetBehavior<PlayerBehavior>()->CheckLookBlock();
-	//	GetManager().lock()->GetGameObject("InvisibleBlockManager").lock()->GetGameComponent<InvisibleBlockManagerComponent>()->CheckSeen();
+		gameObject.lock()->GetGameComponent<Player>()->CheckLookBlock();
+		GetManager().lock()->GetGameObject("InvisibleBlockManager").lock()->GetGameComponent<InvisibleBlockManager>()->CheckSeen();
 
-	//	auto seTag = gameObject.lock()->GetResourceContainer()->GetSoundTag("Sound/BigMove_0.wav");
-	//	gameObject.lock()->GetGameObjectManager().lock()->GetScene().lock()->GetSoundManager()->Play(seTag, 0.1f);
+		//auto seTag = gameObject.lock()->GetResourceContainer()->GetSoundTag("Sound/BigMove_0.wav");
+		//gameObject.lock()->GetGameObjectManager().lock()->GetScene().lock()->GetSoundManager()->Play(seTag, 0.1f);
 
-	//	start = true;
-	//}
+		m_isStart = true;
+	}
 }
 
 void ButiEngine::StartPlayerDirecting::OnSet()
@@ -44,10 +44,10 @@ void ButiEngine::StartPlayerDirecting::OnSet()
 
 void ButiEngine::StartPlayerDirecting::Start()
 {
-	//timer = ObjectFactory::Create<RelativeTimer>(60);
-	//timer->Start();
-	//start = false;
-	//fallStart = false;
+	m_vlp_timer = ObjectFactory::Create<RelativeTimer>(60);
+	m_vlp_timer->Start();
+	m_isStart = false;
+	m_isFallStart = false;
 }
 
 ButiEngine::Value_ptr<ButiEngine::GameComponent> ButiEngine::StartPlayerDirecting::Clone()
@@ -57,15 +57,15 @@ ButiEngine::Value_ptr<ButiEngine::GameComponent> ButiEngine::StartPlayerDirectin
 
 void ButiEngine::StartPlayerDirecting::Animation()
 {
-	//start = false;
+	m_isStart = false;
 
-	//auto t = gameObject.lock()->transform;
+	auto t = gameObject.lock()->transform;
 
-	//auto anim = gameObject.lock()->AddGameComponent<TransformAnimation>();
-	//anim->SetSpeed(1.0f / 15);
-	//anim->SetTargetTransform(t->Clone());
-	//anim->GetTargetTransform()->TranslateY(startPos.y - spawnPos.y);
-	//anim->GetTargetTransform()->RollLocalRotationX_Degrees(0.1f);
+	auto anim = gameObject.lock()->AddGameComponent<TransformAnimation>();
+	anim->SetSpeed(1.0f / 15);
+	anim->SetTargetTransform(t->Clone());
+	anim->GetTargetTransform()->TranslateY(m_startPos.y - m_spawnPos.y);
+	anim->GetTargetTransform()->RollLocalRotationX_Degrees(0.1f);
 
-	//anim->SetEaseType(Easing::EasingType::Liner);
+	anim->SetEaseType(Easing::EasingType::Liner);
 }

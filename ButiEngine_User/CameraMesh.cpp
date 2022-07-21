@@ -3,15 +3,13 @@
 
 void ButiEngine::CameraMesh::OnUpdate()
 {
-	//alpha -= 0.1f;
-	//if (alpha < 0)
-	//{
-	//	alpha = 0;
-	//}
+	m_alpha -= 0.1f;
+	if (m_alpha < 0)
+	{
+		m_alpha = 0;
+	}
 
-	//auto meshDraw = gameObject.lock()->GetGameComponent<MeshDrawComponent>();
-	//auto lightBuff = meshDraw->GetCBuffer<LightVariable>("LightBuffer");
-	//lightBuff->Get().lightDir.w = alpha;
+	gameObject.lock()->GetGameComponent<MeshDrawComponent>()->GetCBuffer<ButiRendering::ObjectInformation>()->Get().color.w = m_alpha;
 }
 
 void ButiEngine::CameraMesh::OnSet()
@@ -20,7 +18,7 @@ void ButiEngine::CameraMesh::OnSet()
 
 void ButiEngine::CameraMesh::Start()
 {
-	alpha = 0.0f;
+	m_alpha = 0.0f;
 }
 
 ButiEngine::Value_ptr<ButiEngine::GameComponent> ButiEngine::CameraMesh::Clone()
@@ -30,5 +28,5 @@ ButiEngine::Value_ptr<ButiEngine::GameComponent> ButiEngine::CameraMesh::Clone()
 
 void ButiEngine::CameraMesh::Flash()
 {
-	alpha = 1.0f;
+	m_alpha = 1.0f;
 }
