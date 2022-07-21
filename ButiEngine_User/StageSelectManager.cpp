@@ -4,7 +4,7 @@
 #include "InputManager.h"
 
 std::uint8_t ButiEngine::StageSelectManager::m_stageNum = 0;
-std::uint8_t ButiEngine::StageSelectManager::m_maxStageNum = 15;
+std::uint8_t ButiEngine::StageSelectManager::m_maxStageNum = 1;
 
 void ButiEngine::StageSelectManager::OnUpdate()
 {
@@ -138,13 +138,13 @@ std::string ButiEngine::StageSelectManager::GetNextSceneName()
 
 void ButiEngine::StageSelectManager::SetMaxStageNum()
 {
-	//for (int i = 0;; i++) {
-	//	std::string path = "Resources/Scene/Stage_" + std::to_string(i) + "/mapInfo.map";
-	//	if (!Util::CheckFileExistence(path)) {
-	//		m_maxStageNum = i - 1;
-	//		break;
-	//	}
-	//}
+	for (int i = 0;; i++) {
+		std::string path = "Resources/Scene/Stage_" + std::to_string(i) + "/mapInfo.map";
+		if (!Util::ExistFile(path)) {
+			m_maxStageNum = i - 1;
+			break;
+		}
+	}
 }
 
 void ButiEngine::StageSelectManager::RestartAnimTimer()
