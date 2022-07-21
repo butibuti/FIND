@@ -68,9 +68,5 @@ namespace ButiEngine {
 		void CreateRandom();
 		void AddTransformAnimation(Value_weak_ptr<GameObject> arg_gameObject, float arg_y);
 	};
-
-	void OutputCereal(const Value_ptr<MapData>& v, const std::string& path);
-
-	void InputCereal(Value_ptr<MapData>& v, const std::string& path);
 }
 BUTI_REGIST_GAMECOMPONENT(Map, true)

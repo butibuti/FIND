@@ -71,10 +71,9 @@ void ButiEngine::Map::Start()
 
 	auto mapFilePath = "Scene/" + GetManager().lock()->GetScene().lock()->GetSceneInformation()->GetSceneName() + "/mapInfo.map";
 	if (Util::ExistFile(GlobalSettings::GetResourceDirectory() + mapFilePath)) {
-
-		auto input = ObjectFactory::Create<MapData>();
-		InputCereal(input, mapFilePath);
-		m_vec_vlp_mapDatas.push_back(input);
+		auto mapData= ObjectFactory::Create<MapData>();
+		InputCereal(*mapData, mapFilePath);
+		m_vec_vlp_mapDatas.push_back(mapData);
 	}
 
 	m_playerPos = Vector3Const::Zero;
@@ -369,33 +368,4 @@ void ButiEngine::Map::AddTransformAnimation(Value_weak_ptr<ButiEngine::GameObjec
 	anim->GetTargetTransform()->RollLocalRotationX_Degrees(0.1f);
 
 	anim->SetEaseType(Easing::EasingType::EaseInOutQuint);
-}
-
-void ButiEngine::OutputCereal(const Value_ptr<MapData>& v, const std::string& path)
-{
-	std::stringstream stream;
-
-	cereal::BinaryOutputArchive binOutArchive(stream);
-	binOutArchive(v);
-
-	std::ofstream outputFile(GlobalSettings::GetResourceDirectory() + path, std::ios::binary);
-
-	outputFile << stream.str();
-
-	outputFile.close();
-	stream.clear();
-}
-
-void ButiEngine::InputCereal(Value_ptr<MapData>& v, const std::string& path)
-{
-	std::stringstream stream;
-
-	std::ifstream inputFile(GlobalSettings::GetResourceDirectory() + path, std::ios::binary);
-
-	stream << inputFile.rdbuf();
-
-	cereal::BinaryInputArchive binInputArchive(stream);
-
-
-	binInputArchive(v);
 }
