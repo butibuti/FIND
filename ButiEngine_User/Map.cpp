@@ -188,7 +188,7 @@ void ButiEngine::Map::PutBlock(std::uint8_t arg_stageNum)
 						m_playerPos = Vector3(x, y, z);
 						Vector3 spawnPos = position;
 						spawnPos.y += 30.0f;
-						gameObject = GetManager().lock()->AddObjectFromCereal("Player", ObjectFactory::Create<Transform>(position, Vector3Const::Zero, scale * 0.005f));
+						gameObject = GetManager().lock()->AddObjectFromCereal("Player", ObjectFactory::Create<Transform>(position, Vector3Const::Zero, scale));
 						gameObject->transform->SetWorldPosition(spawnPos);
 						auto playerBehavior = gameObject->GetGameComponent<Player>();
 						playerBehavior->SetStartPos(position);

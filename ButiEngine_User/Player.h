@@ -51,36 +51,36 @@ namespace ButiEngine {
 			archive(isActive);
 		}
 
-		bool GetGoal() { return goal; }
+		bool GetGoal() { return m_isGoal; }
 
 		bool IsRollFinish();
-		const Vector3 &GetMapPos() const{ return mapPos; }
-		const Vector3 &GetNextMapPos() { return nextMapPos; }
+		const Vector3 &GetMapPos() const{ return m_mapPos; }
+		const Vector3 &GetNextMapPos() { return m_nextMapPos; }
 
-		void SetStartPos(Vector3 pos) { startPos = pos; }
-		void SetStartRotation(float rot) { startRotation = rot; }
+		void SetStartPos(const Vector3& arg_pos) { m_startPos = arg_pos; }
+		void SetStartRotation(float arg_rot) { m_startRotation = arg_rot; }
 
 		void CheckLookBlock();
-		void RollCameraDirection(const int rotateDir);
+		void RollCameraDirection(const std::uint8_t arg_rotateDir);
 	private:
-		float length;
-		//std::shared_ptr<Map> shp_map;
-		//std::shared_ptr<InvisibleBlockManager> shp_invisibleBlockManager;
-		Vector3 mapPos;
-		Vector3 nextMapPos;
-		Vector3 offset;
-		Vector3 startPos;
-		float startRotation;
-		bool goal;
-		bool fall;
-		bool fallStart;
-		Vector3 afterFallPos;
-		float scale;
-		LookDirection lookDirection;
-		CameraDirection cameraDirection=CameraDirection::Front;
+		float m_length;
+		Value_weak_ptr<Map> m_vwp_mapComponent;
+		Value_weak_ptr<InvisibleBlockManager> m_vwp_invisibleBlockManagerComponent;
+		Vector3 m_mapPos;
+		Vector3 m_nextMapPos;
+		Vector3 m_offset;
+		Vector3 m_startPos;
+		float m_startRotation;
+		bool m_isGoal;
+		bool m_isFall;
+		bool m_isFallStart;
+		Vector3 m_afterFallPos;
+		float m_scale;
+		LookDirection m_lookDirection;
+		CameraDirection m_cameraDirection=CameraDirection::Front;
 
-		//std::shared_ptr<RelativeTimer> timer;
-		//std::shared_ptr<RelativeTimer> fallTimer;
+		Value_ptr<RelativeTimer> m_vlp_timer;
+		Value_ptr<RelativeTimer> m_vlp_fallTimer;
 
 		void CheckLookDirection();
 		void Contoroll();
@@ -102,18 +102,18 @@ namespace ButiEngine {
 		void MoveUpBack();
 		void MoveBack();
 		void MoveDownBack();
-		Value_weak_ptr<GameObject> GetRightBlock(Vector3 mapPos);
-		Value_weak_ptr<GameObject> GetLeftBlock(Vector3 mapPos);
-		Value_weak_ptr<GameObject> GetUpBlock(Vector3 mapPos);
-		Value_weak_ptr<GameObject> GetDownBlock(Vector3 mapPos);
-		Value_weak_ptr<GameObject> GetFrontBlock(Vector3 mapPos);
-		Value_weak_ptr<GameObject> GetBackBlock(Vector3 mapPos);
+		Value_weak_ptr<GameObject> GetRightBlock(const Vector3& arg_mapPos);
+		Value_weak_ptr<GameObject> GetLeftBlock(const Vector3& arg_mapPos);
+		Value_weak_ptr<GameObject> GetUpBlock(const Vector3& arg_mapPos);
+		Value_weak_ptr<GameObject> GetDownBlock(const Vector3& arg_mapPos);
+		Value_weak_ptr<GameObject> GetFrontBlock(const Vector3& arg_mapPos);
+		Value_weak_ptr<GameObject> GetBackBlock(const Vector3& arg_mapPos);
 
 
-		SoundTag moveSounds[3];
+		SoundTag m_moveSounds[3];
 		void Fall();
-		MoveDirection CheckMoveDirection(Vector3 movePos);
-		void CheckExistUnderBlock(Vector3 movePos);
+		MoveDirection CheckMoveDirection(const Vector3& arg_movePos);
+		void CheckExistUnderBlock(const Vector3& arg_movePos);
 
 		bool IsBlock(std::uint8_t arg_mapChipNum);
 	};
