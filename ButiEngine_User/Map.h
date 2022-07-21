@@ -6,6 +6,7 @@ namespace ButiEngine {
 	{
 	public:
 		MapData(){}
+		MapData(std::uint8_t arg_stageNum);
 		Vector3 GetSize() {
 			return Vector3(m_vec_mapDatas[0][0].size(),m_vec_mapDatas.size(),m_vec_mapDatas[0].size());
 		}

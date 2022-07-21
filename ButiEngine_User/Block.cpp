@@ -4,16 +4,16 @@
 
 void ButiEngine::Block::OnUpdate()
 {
-    //current += pase;
+    //m_current += m_pase;
 
-    //if (current >= 1.0f) {
-    //    current = 1.0f;
-    //    pase *= -1;
+    //if (m_current >= 1.0f) {
+    //    m_current = 1.0f;
+    //    m_pase *= -1;
     //}
     //else
-    //    if (current <= 0.0f) {
-    //        current = 0.0f;
-    //        pase *= -1;
+    //    if (m_current <= 0.0f) {
+    //        m_current = 0.0f;
+    //        m_pase *= -1;
     //    }
 
     //shp_lightBuffer->Get().lightDir = wkp_mapComponent.lock()->GetMapStartColor() * (1 - current) + wkp_mapComponent.lock()->GetMapEndColor() * current;
@@ -29,10 +29,10 @@ void ButiEngine::Block::OnRemove()
 
 void ButiEngine::Block::OnShowUI()
 {
-    GUI::BulletText("CurrentGlowPower");
-    GUI::DragFloat("##currentGlowPower", current, 0.01f, 0, 1);
-    GUI::BulletText("GlowPowerPase");
-    GUI::DragFloat("##tGlowPowerPase", pase, 0.01f, 0, 1);
+    //GUI::BulletText("CurrentGlowPower");
+    //GUI::DragFloat("##currentGlowPower", current, 0.01f, 0, 1);
+    //GUI::BulletText("GlowPowerPase");
+    //GUI::DragFloat("##tGlowPowerPase", pase, 0.01f, 0, 1);
 }
 
 void ButiEngine::Block::Start()
@@ -50,7 +50,7 @@ ButiEngine::Value_ptr<ButiEngine::GameComponent> ButiEngine::Block::Clone()
 {
     auto output = ObjectFactory::Create<Block>();
     //output->wkp_mapComponent = wkp_mapComponent;
-    output->pase = pase;
-    output->current = current;
+    output->m_pase = m_pase;
+    output->m_current = m_current;
     return output;
 }

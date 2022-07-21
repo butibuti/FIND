@@ -70,11 +70,13 @@ void ButiEngine::Map::Start()
 	m_vec_randomBlockPoss.clear();
 
 	auto mapFilePath = "Scene/" + GetManager().lock()->GetScene().lock()->GetSceneInformation()->GetSceneName() + "/mapInfo.map";
-	if (Util::ExistFile(GlobalSettings::GetResourceDirectory() + mapFilePath)) {
-		auto mapData= ObjectFactory::Create<MapData>();
-		InputCereal(*mapData, mapFilePath);
-		m_vec_vlp_mapDatas.push_back(mapData);
-	}
+	//if (Util::ExistFile(GlobalSettings::GetResourceDirectory() + mapFilePath)) {
+	//	auto mapData= ObjectFactory::Create<MapData>();
+	//	InputCereal(*mapData, mapFilePath);
+	//	m_vec_vlp_mapDatas.push_back(mapData);
+	//}
+
+	m_vec_vlp_mapDatas.push_back(ObjectFactory::Create<MapData>(0));
 
 	m_playerPos = Vector3Const::Zero;
 	m_currentStageNum = 0;
@@ -357,15 +359,77 @@ void ButiEngine::Map::CreateRandom()
 
 void ButiEngine::Map::AddTransformAnimation(Value_weak_ptr<ButiEngine::GameObject> arg_gameObject, float arg_y)
 {
-	auto transform = gameObject.lock()->transform;
+	auto transform = arg_gameObject.lock()->transform;
 
 	float d = arg_y - transform->GetWorldPosition().y;
 
-	auto anim = gameObject.lock()->AddGameComponent<TransformAnimation>();
+	auto anim = arg_gameObject.lock()->AddGameComponent<TransformAnimation>();
 	anim->SetSpeed(1.0f / (d * 2));
 	anim->SetTargetTransform(transform->Clone());
 	anim->GetTargetTransform()->TranslateY(d);
 	anim->GetTargetTransform()->RollLocalRotationX_Degrees(0.1f);
 
 	anim->SetEaseType(Easing::EasingType::EaseInOutQuint);
+}
+
+ButiEngine::MapData::MapData(std::uint8_t arg_stageNum)
+{
+	if (arg_stageNum == 0)
+	{
+		m_vec_mapDatas =
+		{
+			{
+				{2,2,2,2,2,2,2,2,2,2,2},
+				{2,2,2,2,2,2,2,2,2,2,2},
+				{2,2,2,2,2,2,2,2,2,2,2},
+				{2,2,2,2,2,2,2,2,2,2,2},
+				{2,2,2,2,2,2,2,2,2,2,2},
+				{2,2,2,2,2,2,2,2,2,2,2},
+				{2,2,2,2,2,2,2,2,2,2,2},
+				{2,2,2,2,2,2,2,2,2,2,2},
+				{2,2,2,2,0,2,2,2,2,2,2},
+				{2,2,2,2,2,2,2,2,2,2,2},
+				{2,2,2,2,2,2,2,2,2,2,2},
+			},
+			{
+				{3,0,0,0,0,0,0,0,0,0,4},
+				{0,0,0,0,0,0,100,0,0,0,0},
+				{0,0,0,0,0,2,0,0,0,0,0},
+				{0,0,2,2,0,0,0,0,101,0,0},
+				{0,0,0,0,0,0,0,0,0,0,0},
+				{0,0,0,0,0,1,4,0,0,0,0},
+				{0,0,101,0,0,0,0,0,0,0,0},
+				{0,0,0,0,0,0,0,0,0,0,0},
+				{0,0,101,0,0,2,2,2,2,2,0},
+				{0,0,0,0,0,100,100,100,0,0,0},
+				{0,0,0,0,0,0,0,0,0,0,5},
+			},
+			{
+				{0,0,0,0,0,0,0,0,0,0,0},
+				{0,0,0,0,0,0,0,0,0,0,0},
+				{0,0,0,0,0,0,0,0,0,0,0},
+				{0,0,0,2,0,0,0,0,0,0,0},
+				{0,0,0,0,0,0,0,0,0,0,0},
+				{0,0,0,0,0,0,0,0,0,0,0},
+				{0,0,0,0,0,0,0,0,0,0,0},
+				{0,0,0,0,0,0,0,0,0,0,0},
+				{0,0,0,0,0,0,0,0,0,2,0},
+				{0,0,0,0,0,0,0,0,0,0,0},
+				{0,0,0,0,0,0,0,0,0,0,0},
+			},
+			{
+				{0,0,0,0,0,0,0,0,0,0,0},
+				{0,0,0,0,0,0,0,0,0,0,0},
+				{0,0,0,0,0,0,0,0,0,0,0},
+				{0,0,0,0,0,0,0,0,0,0,0},
+				{0,0,0,0,0,0,0,0,0,0,0},
+				{0,0,0,0,0,0,0,0,0,0,0},
+				{0,0,0,0,0,0,0,0,0,0,0},
+				{0,0,0,0,0,0,0,0,0,0,0},
+				{0,0,0,0,0,0,0,0,0,2,0},
+				{0,0,0,0,0,0,0,0,0,0,0},
+				{0,0,0,0,0,0,0,0,0,0,0},
+			},
+		};
+	}
 }
