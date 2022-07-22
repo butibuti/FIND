@@ -134,7 +134,7 @@ void ButiEngine::Map::PutBlock(std::uint8_t arg_stageNum)
 				auto gameObject = ObjectFactory::Create<GameObject>();
 				std::uint8_t mapNum = vec_mapDatas[y][z][x];
 				if (mapNum == 0) {
-					m_vec_vwp_mapObjectDatas[y][z][x] = gameObject;
+					m_vec_vwp_mapObjectDatas[y][z][x] = nullptr;
 					continue;
 				}
 				else if (mapNum == GameSettings::MAP_CHIP_BLOCK)
@@ -392,7 +392,7 @@ ButiEngine::MapData::MapData(std::uint8_t arg_stageNum)
 				{2,2,2,2,2,2,2,2,2,2,2},
 			},
 			{
-				{0,0,0,0,0,0,0,0,0,0,4},
+				{0,0,0,0,0,0,0,0,0,0,0},
 				{0,0,0,0,0,0,100,0,0,0,0},
 				{0,0,0,0,0,2,0,0,0,0,0},
 				{0,0,2,2,0,0,0,0,101,0,0},

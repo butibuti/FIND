@@ -1,6 +1,7 @@
 #pragma once
 #include"Header/GameComponentHeader.h"
 namespace ButiEngine {
+
 	class GoalAura :public GameComponent
 	{
 	public:
@@ -19,8 +20,7 @@ namespace ButiEngine {
 
 		void AnimInitialize();
 	private:
-		unsigned int life;
-		unsigned int progressFrame;
+		Value_ptr<RelativeTimer> m_vlp_timer;
 	};
 
 }

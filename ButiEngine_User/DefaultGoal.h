@@ -21,11 +21,11 @@ namespace ButiEngine {
 			archive(isActive);
 		}
 
-		bool IsActive() { return active; }
+		bool IsActive() { return m_isActive; }
 
 		void Seen();
 	private:
-		bool active;
+		bool m_isActive;
 	};
 
 }
