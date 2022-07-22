@@ -93,7 +93,7 @@ void ButiEngine::Player::Start()
 	m_mapPos = m_vwp_mapComponent.lock()->GetPlayerPos();
 	m_offset = m_mapPos - m_startPos;
 
-	m_vlp_timer = ObjectFactory::Create<RelativeTimer>(10);
+	m_vlp_timer = ObjectFactory::Create<RelativeTimer>(11);
 	m_vlp_fallTimer = ObjectFactory::Create<RelativeTimer>(24);
 	m_vlp_fallTimer->Stop();
 	m_vwp_invisibleBlockManagerComponent = gameObject.lock()->GetGameObjectManager().lock()->GetGameObject("InvisibleBlockManager").lock()->GetGameComponent<InvisibleBlockManager>();
@@ -107,14 +107,13 @@ ButiEngine::Value_ptr<ButiEngine::GameComponent> ButiEngine::Player::Clone()
 bool ButiEngine::Player::IsRollFinish()
 {
 	return !m_vlp_timer->IsOn();
-	return false;
 }
 
 void ButiEngine::Player::CheckLookBlock()
 {
 	m_vwp_invisibleBlockManagerComponent.lock()->Reset();
 	CheckLookDirection();
-	Value_weak_ptr<GameObject> hitObject;
+	Value_weak_ptr<GameObject> lookObject;
 
 	Vector3 pos = gameObject.lock()->transform->GetWorldPosition();
 	Vector3 bPos = pos;
@@ -122,37 +121,37 @@ void ButiEngine::Player::CheckLookBlock()
 	if (m_lookDirection == LookDirection::Right)
 	{
 		bPos.x += 100;
-		hitObject = GetRightBlock(m_mapPos);
+		lookObject = GetRightBlock(m_mapPos);
 	}
 	else if (m_lookDirection == LookDirection::Left)
 	{
 		bPos.x -= 100;
-		hitObject = GetLeftBlock(m_mapPos);
+		lookObject = GetLeftBlock(m_mapPos);
 	}
 	else if (m_lookDirection == LookDirection::Up)
 	{
 		bPos.y += 100;
-		hitObject = GetUpBlock(m_mapPos);
+		lookObject = GetUpBlock(m_mapPos);
 	}
 	else if (m_lookDirection == LookDirection::Down)
 	{
 		bPos.y -= 100;
-		hitObject = GetDownBlock(m_mapPos);
+		lookObject = GetDownBlock(m_mapPos);
 	}
 	else if (m_lookDirection == LookDirection::Front)
 	{
 		bPos.z += 100;
-		hitObject = GetFrontBlock(m_mapPos);
+		lookObject = GetFrontBlock(m_mapPos);
 	}
 	else if (m_lookDirection == LookDirection::Back)
 	{
 		bPos.z -= 100;
-		hitObject = GetBackBlock(m_mapPos);
+		lookObject = GetBackBlock(m_mapPos);
 	}
 
-	if (hitObject.lock())
+	if (lookObject.lock())
 	{
-		bPos = hitObject.lock()->transform->GetWorldPosition();
+		bPos = lookObject.lock()->transform->GetWorldPosition();
 	}
 	Vector3 midPoint = Vector3((pos.x + bPos.x) * 0.5f, (pos.y + bPos.y) * 0.5f, (pos.z + bPos.z) * 0.5f);
 
@@ -174,15 +173,15 @@ void ButiEngine::Player::CheckLookBlock()
 	}
 	cameraMesh.lock()->transform->SetLocalScale(cameraMeshScale);
 
-	if (!hitObject.lock())
+	if (!lookObject.lock())
 	{
 		return;
 	}
 
-	if (hitObject.lock()->HasGameObjectTag("Goal"))
+	if (lookObject.lock()->HasGameObjectTag("Goal"))
 	{
-		auto eGoalComp = hitObject.lock()->GetGameComponent<EasyGoal>();
-		auto dGoalComp = hitObject.lock()->GetGameComponent<DefaultGoal>();
+		auto eGoalComp = lookObject.lock()->GetGameComponent<EasyGoal>();
+		auto dGoalComp = lookObject.lock()->GetGameComponent<DefaultGoal>();
 		if (eGoalComp)
 		{
 			eGoalComp->Seen();
@@ -192,9 +191,9 @@ void ButiEngine::Player::CheckLookBlock()
 			dGoalComp->Seen();
 		}
 	}
-	else if (hitObject.lock()->HasGameObjectTag("InvisibleBlock"))
+	else if (lookObject.lock()->HasGameObjectTag("InvisibleBlock"))
 	{
-		auto invBlockComp = hitObject.lock()->GetGameComponent<InvisibleBlock>();
+		auto invBlockComp = lookObject.lock()->GetGameComponent<InvisibleBlock>();
 		if (invBlockComp)
 		{
 			invBlockComp->Seen();
@@ -216,7 +215,7 @@ void ButiEngine::Player::RollCameraDirection(const std::uint8_t arg_rotateDir)
 
 void ButiEngine::Player::CheckGoal()
 {
-	if (!IsRollFinish() || m_isGoal)
+	if (m_isGoal)
 	{
 		return;
 	}
@@ -528,7 +527,7 @@ void ButiEngine::Player::MoveRightUp()
 		anim->SetTargetTransform(t->Clone());
 		anim->GetTargetTransform()->Translate(Vector3(m_length, m_length, 0));
 
-		anim->GetTargetTransform()->RollWorldRotationZ_Degrees(-179.99f);
+		anim->GetTargetTransform()->RollWorldRotationZ_Degrees(-179.9999f);
 		anim->SetEaseType(Easing::EasingType::Liner);
 		anim->SetXEaseType(Easing::EasingType::CubeRotateMin180);
 		anim->SetYEaseType(Easing::EasingType::CubeRotate180);
@@ -572,7 +571,7 @@ void ButiEngine::Player::MoveRightDown()
 		anim->SetTargetTransform(t->Clone());
 		anim->GetTargetTransform()->Translate(Vector3(m_length, -m_length, 0));
 
-		anim->GetTargetTransform()->RollWorldRotationZ_Degrees(-179.99f);
+		anim->GetTargetTransform()->RollWorldRotationZ_Degrees(-179.9999f);
 		anim->SetEaseType(Easing::EasingType::Liner);
 		anim->SetXEaseType(Easing::EasingType::CubeRotate180);
 		anim->SetYEaseType(Easing::EasingType::CubeRotate180);
@@ -596,7 +595,7 @@ void ButiEngine::Player::MoveLeftUp()
 		anim->SetTargetTransform(t->Clone());
 		anim->GetTargetTransform()->Translate(Vector3(-m_length, m_length, 0));
 
-		anim->GetTargetTransform()->RollWorldRotationZ_Degrees(179.99f);
+		anim->GetTargetTransform()->RollWorldRotationZ_Degrees(179.9999f);
 		anim->SetEaseType(Easing::EasingType::Liner);
 		anim->SetXEaseType(Easing::EasingType::CubeRotate180);
 		anim->SetYEaseType(Easing::EasingType::CubeRotate180);
@@ -640,7 +639,7 @@ void ButiEngine::Player::MoveLeftDown()
 		anim->SetTargetTransform(t->Clone());
 		anim->GetTargetTransform()->Translate(Vector3(-m_length, -m_length, 0));
 
-		anim->GetTargetTransform()->RollWorldRotationZ_Degrees(179.99f);
+		anim->GetTargetTransform()->RollWorldRotationZ_Degrees(179.9999f);
 		anim->SetEaseType(Easing::EasingType::Liner);
 		anim->SetXEaseType(Easing::EasingType::CubeRotateMin180);
 		anim->SetYEaseType(Easing::EasingType::CubeRotate180);
@@ -664,7 +663,7 @@ void ButiEngine::Player::MoveUpFront()
 		anim->SetTargetTransform(t->Clone());
 		anim->GetTargetTransform()->Translate(Vector3(0, m_length, m_length));
 
-		anim->GetTargetTransform()->RollWorldRotationX_Degrees(179.99f);
+		anim->GetTargetTransform()->RollWorldRotationX_Degrees(179.9999f);
 		anim->SetEaseType(Easing::EasingType::Liner);
 		anim->SetYEaseType(Easing::EasingType::CubeRotate180);
 		anim->SetZEaseType(Easing::EasingType::CubeRotateMin180);
@@ -708,7 +707,7 @@ void ButiEngine::Player::MoveDownFront()
 		anim->SetTargetTransform(t->Clone());
 		anim->GetTargetTransform()->Translate(Vector3(0, -m_length, m_length));
 
-		anim->GetTargetTransform()->RollWorldRotationX_Degrees(179.99f);
+		anim->GetTargetTransform()->RollWorldRotationX_Degrees(179.9999f);
 		anim->SetEaseType(Easing::EasingType::Liner);
 		anim->SetYEaseType(Easing::EasingType::CubeRotate180);
 		anim->SetZEaseType(Easing::EasingType::CubeRotate180);
@@ -732,7 +731,7 @@ void ButiEngine::Player::MoveUpBack()
 		anim->SetTargetTransform(t->Clone());
 		anim->GetTargetTransform()->Translate(Vector3(0, m_length, -m_length));
 
-		anim->GetTargetTransform()->RollWorldRotationX_Degrees(-179.99f);
+		anim->GetTargetTransform()->RollWorldRotationX_Degrees(-179.9999f);
 		anim->SetEaseType(Easing::EasingType::Liner);
 		anim->SetYEaseType(Easing::EasingType::CubeRotate180);
 		anim->SetZEaseType(Easing::EasingType::CubeRotate180);
@@ -776,7 +775,7 @@ void ButiEngine::Player::MoveDownBack()
 		anim->SetTargetTransform(t->Clone());
 		anim->GetTargetTransform()->Translate(Vector3(0, -m_length, -m_length));
 
-		anim->GetTargetTransform()->RollWorldRotationX_Degrees(-179.99f);
+		anim->GetTargetTransform()->RollWorldRotationX_Degrees(-179.9999f);
 		anim->SetEaseType(Easing::EasingType::Liner);
 		anim->SetYEaseType(Easing::EasingType::CubeRotate180);
 		anim->SetZEaseType(Easing::EasingType::CubeRotateMin180);
