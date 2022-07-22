@@ -3,19 +3,21 @@
 
 void ButiEngine::Ripple::OnUpdate()
 {
-	//if (progressFrame > life)
-	//{
-	//	gameObject.lock()->SetIsRemove(true);
-	//	count--;
-	//	return;
-	//}
-	//progressFrame++;
-	//auto meshDraw = gameObject.lock()->GetGameComponent<MeshDrawComponent>();
-	//auto lightBuff = meshDraw->GetCBuffer<LightVariable>("LightBuffer");
-	//lightBuff->Get().lightDir.w = 1.0f - Easing::EaseOutExpo(float(progressFrame) / life);
-	//scale = Easing::EaseOutExpo(float(progressFrame) / life) * 3.0f;
-	//gameObject.lock()->transform->SetLocalScale(scale);
-	//gameObject.lock()->transform->TranslateY(-0.01f);
+	if (m_vlp_timer->Update())
+	{
+		m_vlp_timer->Stop();
+		gameObject.lock()->SetIsRemove(true);
+		return;
+	}
+
+	float progress = m_vlp_timer->GetPercent();
+
+	float alpha = 1.0f - Easing::EaseOutExpo(progress);
+	gameObject.lock()->GetGameComponent<MeshDrawComponent>()->GetCBuffer<ButiRendering::ObjectInformation>()->Get().color.w = alpha;
+
+	scale = Easing::EaseOutExpo(progress) * 3.0f;
+	gameObject.lock()->transform->SetLocalScale(scale);
+	gameObject.lock()->transform->TranslateY(-0.01f);
 }
 
 void ButiEngine::Ripple::OnSet()
@@ -24,27 +26,13 @@ void ButiEngine::Ripple::OnSet()
 
 void ButiEngine::Ripple::Start()
 {
-	//count++;
-	//life = 60;
-	//scale = 0.0f;
-	//progressFrame = 0;
+	m_vlp_timer = ObjectFactory::Create<RelativeTimer>(60);
+	m_vlp_timer->Start();
+
+	scale = 0.0f;
 }
 
 ButiEngine::Value_ptr<ButiEngine::GameComponent> ButiEngine::Ripple::Clone()
 {
 	return ObjectFactory::Create<Ripple>();
-}
-
-void ButiEngine::Ripple::AnimInitialize()
-{
-	//auto t = gameObject.lock()->transform;
-
-
-	//auto anim = gameObject.lock()->AddGameComponent<TransformAnimation>();
-	//anim->SetSpeed(1.0f / life);
-	//anim->SetTargetTransform(t->Clone());
-	//anim->GetTargetTransform()->SetLocalScale(3.0f);
-	//anim->GetTargetTransform()->RollLocalRotationX_Degrees(0.1f);
-
-	//anim->SetEaseType(Easing::EasingType::EaseOutExpo);
 }

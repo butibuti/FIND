@@ -17,16 +17,8 @@ namespace ButiEngine {
 		{
 			archive(isActive);
 		}
-
-		static unsigned char GetCount()
-		{
-			return count; 
-		}
-		void AnimInitialize();
 	private:
-		static unsigned char count;
-		int progressFrame;
-		int life;
+		Value_ptr<RelativeTimer> m_vlp_timer;
 		float scale;
 	};
 

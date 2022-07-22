@@ -92,30 +92,30 @@ void ButiEngine::BackGround::SetIsClear(const bool arg_isClear)
 
 void ButiEngine::BackGround::Brast()
 {
-    isBrast = true;
+    m_isBrast = true;
 }
 
 void ButiEngine::BackGround::SetStartColor(const Vector4& arg_color)
 {
-    startColor = arg_color;
+    m_startColor = arg_color;
 }
 
 void ButiEngine::BackGround::SetEndColor(const Vector4& arg_color)
 {
-    endColor = arg_color;
+    m_endColor = arg_color;
 }
 
 void ButiEngine::BackGround::OnShowUI()
 {
     GUI::BulletText("StartColor");
 
-    GUI::DragFloat4("##startcolor", startColor, 0.01f, 0, 1);
+    GUI::DragFloat4("##startcolor", m_startColor, 0.01f, 0, 1);
     GUI::BulletText("EndColor");
 
-    GUI::DragFloat4("##Endcolor", endColor, 0.01f, 0, 1);
+    GUI::DragFloat4("##Endcolor", m_endColor, 0.01f, 0, 1);
     GUI::BulletText("Pase");
 
-    GUI::DragFloat("##pase", pase, 0.01f, 0, 1);
+    GUI::DragFloat("##pase", m_pase, 0.01f, 0, 1);
 }
 
 void ButiEngine::BackGround::Start()

@@ -4,8 +4,8 @@ namespace ButiEngine {
 
 	struct FloatBlockData {
 		float time;
-		int direction=1;
-		int moveDir=1;
+		std::uint8_t direction=1;
+		std::uint8_t moveDir=1;
 		float movePase = 1.0;
 		float moveTime = 0.0;
 		float moveMax;
@@ -29,9 +29,9 @@ namespace ButiEngine {
 		void serialize(Archive& archive)
 		{
 			archive(isActive);
-			archive(pase);
-			archive(endColor);
-			archive(startColor);
+			archive(m_pase);
+			archive(m_endColor);
+			archive(m_startColor);
 		}
 
 		void SetIsClear(const bool arg_isClear);
@@ -39,17 +39,17 @@ namespace ButiEngine {
 		void SetStartColor(const Vector4& arg_color);
 		void SetEndColor(const Vector4 & arg_color);
 	private:
-		Vector3 center;
-		float pase;
-		Vector4 endColor;
-		Vector4 startColor;
-		float scale = 0.0f;
-		bool isClear = false;
-		bool isBrast = false;
+		Vector3 m_center;
+		float m_pase;
+		Vector4 m_endColor;
+		Vector4 m_startColor;
+		float m_scale = 0.0f;
+		bool m_isClear = false;
+		bool m_isBrast = false;
 
-		//std::vector<std::shared_ptr<Transform>> vec_shp_transform;
-		//std::vector<std::shared_ptr<GameObject>> vec_gameObjects;
-		std::vector<FloatBlockData> vec_blockData;
+		std::vector<Value_ptr<Transform>> m_vec_vlp_transform;
+		std::vector<Value_weak_ptr<GameObject>> m_vec_vwp_gameObjects;
+		std::vector<FloatBlockData> m_vec_blockData;
 		//std::vector<std::shared_ptr<CBuffer<LightVariable>>>vec_shp_lightBuffer;
 	};
 
