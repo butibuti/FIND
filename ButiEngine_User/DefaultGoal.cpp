@@ -45,8 +45,7 @@ void ButiEngine::DefaultGoal::Seen()
 	meshDraw->Regist();
 	m_isActive = true;
 
-	//auto seTag = gameObject.lock()->GetResourceContainer()->GetSoundTag("Sound/potion.wav");
-	//gameObject.lock()->GetGameObjectManager().lock()->GetScene().lock()->GetSoundManager()->Play(seTag, 0.1f);
+	gameObject.lock()->GetApplication().lock()->GetSoundManager()->PlaySE(SoundTag("Sound/potion.wav"), 0.1f);
 
 	auto t = gameObject.lock()->transform;
 	auto pos = t->GetWorldPosition();

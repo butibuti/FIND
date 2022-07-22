@@ -47,8 +47,7 @@ void ButiEngine::InvisibleBlock::Active()
 	auto meshDraw = gameObject.lock()->GetGameComponent<MeshDrawComponent>();
 	meshDraw->Regist();
 
-	//auto seTag = gameObject.lock()->GetResourceContainer()->GetSoundTag("Sound/inv_Discover.wav");
-	//gameObject.lock()->GetGameObjectManager().lock()->GetScene().lock()->GetSoundManager()->Play(seTag, 0.003f);
+	gameObject.lock()->GetApplication().lock()->GetSoundManager()->PlaySE(SoundTag("Sound/inv_Discover.wav"), 0.003f);
 }
 
 void ButiEngine::InvisibleBlock::UnActive()
@@ -64,8 +63,7 @@ void ButiEngine::InvisibleBlock::UnActive()
 	auto meshDraw = gameObject.lock()->GetGameComponent<MeshDrawComponent>();
 	meshDraw->UnRegist();
 
-	//auto seTag = gameObject.lock()->GetResourceContainer()->GetSoundTag("Sound/inv_Cover.wav");
-	//gameObject.lock()->GetGameObjectManager().lock()->GetScene().lock()->GetSoundManager()->Play(seTag, 0.003f);
+	gameObject.lock()->GetApplication().lock()->GetSoundManager()->PlaySE(SoundTag("Sound/inv_Cover.wav"), 0.003f);
 }
 
 void ButiEngine::InvisibleBlock::Seen()

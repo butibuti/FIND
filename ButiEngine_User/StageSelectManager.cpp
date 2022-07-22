@@ -20,8 +20,7 @@ void ButiEngine::StageSelectManager::OnUpdate()
 		}
 		else if (InputManager::IsTriggerDecisionKey())
 		{
-			//auto seTag = gameObject.lock()->GetResourceContainer()->GetSoundTag("Sound/decide.wav");
-			//gameObject.lock()->GetGameObjectManager().lock()->GetScene().lock()->GetSoundManager()->Play(seTag, 0.1f);
+			gameObject.lock()->GetApplication().lock()->GetSoundManager()->PlaySE(SoundTag("Sound/decide.wav"), 0.1f);
 
 			m_isEnd = true;
 		}
@@ -152,8 +151,7 @@ void ButiEngine::StageSelectManager::RestartAnimTimer()
 
 void ButiEngine::StageSelectManager::OnPushRight()
 {
-	//auto seTag = gameObject.lock()->GetResourceContainer()->GetSoundTag("Sound/select.wav");
-	//gameObject.lock()->GetGameObjectManager().lock()->GetScene().lock()->GetSoundManager()->Play(seTag, 0.1f);
+	gameObject.lock()->GetApplication().lock()->GetSoundManager()->PlaySE(SoundTag("Sound/select.wav"), 0.1f);
 
 	m_stageNum++;
 	if (m_stageNum > m_maxStageNum)
@@ -175,8 +173,7 @@ void ButiEngine::StageSelectManager::OnPushRight()
 
 void ButiEngine::StageSelectManager::OnPushLeft()
 {
-	//auto seTag = gameObject.lock()->GetResourceContainer()->GetSoundTag("Sound/select.wav");
-	//gameObject.lock()->GetGameObjectManager().lock()->GetScene().lock()->GetSoundManager()->Play(seTag, 0.1f);
+	gameObject.lock()->GetApplication().lock()->GetSoundManager()->PlaySE(SoundTag("Sound/select.wav"), 0.1f);
 
 	m_stageNum--;
 	if (m_stageNum < 0)

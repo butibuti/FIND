@@ -8,8 +8,7 @@ void ButiEngine::TitleSceneManager::OnUpdate()
 	{
 		m_vlp_timer->Start();
 
-		//auto seTag = gameObject.lock()->GetResourceContainer()->GetSoundTag("Sound/potion.wav");
-		//gameObject.lock()->GetGameObjectManager().lock()->GetScene().lock()->GetSoundManager()->Play(seTag, 0.1f);
+		gameObject.lock()->GetApplication().lock()->GetSoundManager()->PlaySE(SoundTag("Sound/potion.wav"), 0.1f);
 
 		auto anim = m_vwp_camera.lock()->AddGameComponent<TransformAnimation>();
 		anim->SetTargetTransform(m_vwp_camera.lock()->transform->Clone());
@@ -42,8 +41,7 @@ void ButiEngine::TitleSceneManager::Start()
 	mainCamera->vlp_transform->SetBaseTransform(m_vwp_camera.lock()->transform, true);
 	GetCamera("BloomSource")->vlp_transform->SetBaseTransform(mainCamera->vlp_transform, true);
 
-	//auto bgmTag = gameObject.lock()->GetResourceContainer()->GetSoundTag("Sound/cube_BGM.wav");
-	//gameObject.lock()->GetGameObjectManager().lock()->GetScene().lock()->GetSoundManager()->PlayBGM(bgmTag, 0.1f);
+	gameObject.lock()->GetApplication().lock()->GetSoundManager()->PlayBGM(SoundTag("Sound/cube_BGM.wav"), 0.1f);
 
 
 	//auto finalScreen = GetManager().lock()->GetGameObject("Screen");

@@ -44,8 +44,7 @@ void ButiEngine::Player::OnUpdate()
 		Expansion();
 
 		int rand = ButiRandom::GetRandom(0, 2, 1);
-
-		//gameObject.lock()->GetGameObjectManager().lock()->GetScene().lock()->GetSoundManager()->Play(m_moveSounds[rand], 0.1f);
+		gameObject.lock()->GetApplication().lock()->GetSoundManager()->PlaySE(m_moveSounds[rand], 0.1f);
 
 		//”g–ä
 		auto pos = gameObject.lock()->transform->GetWorldPosition();
@@ -80,8 +79,7 @@ void ButiEngine::Player::Start()
 {
 	for (std::uint8_t i = 0; i < 3; i++) {
 
-		//auto seTag = gameObject.lock()->GetResourceContainer()->GetSoundTag("Sound/Move_" + std::to_string(i) + ".wav");
-		//m_moveSounds[i] = seTag;
+		m_moveSounds[i] = SoundTag("Sound/Move_" + std::to_string(i) + ".wav");
 	}
 
 	m_isGoal = false;
@@ -249,8 +247,7 @@ void ButiEngine::Player::CheckGoal()
 
 	if (m_isGoal)
 	{
-		//auto seTag = gameObject.lock()->GetResourceContainer()->GetSoundTag("Sound/TouchGoal.wav");
-		//gameObject.lock()->GetGameObjectManager().lock()->GetScene().lock()->GetSoundManager()->Play(seTag, 0.1f);
+		gameObject.lock()->GetApplication().lock()->GetSoundManager()->PlaySE(SoundTag("Sound/TouchGoal.wav"), 0.1f);
 	}
 }
 
@@ -422,6 +419,7 @@ void ButiEngine::Player::Contoroll()
 
 void ButiEngine::Player::OnPushRight()
 {
+	if (m_vlp_fallTimer->IsOn()) { return; }
 	if (!m_isFall)
 	{
 		MoveDirection dir = CheckMoveDirection(Vector3(m_mapPos.x + 1, m_mapPos.y, m_mapPos.z));
@@ -441,6 +439,7 @@ void ButiEngine::Player::OnPushRight()
 
 void ButiEngine::Player::OnPushLeft()
 {
+	if (m_vlp_fallTimer->IsOn()) { return; }
 	if (!m_isFall)
 	{
 		MoveDirection dir = CheckMoveDirection(Vector3(m_mapPos.x - 1, m_mapPos.y, m_mapPos.z));
@@ -460,6 +459,7 @@ void ButiEngine::Player::OnPushLeft()
 
 void ButiEngine::Player::OnPushFront()
 {
+	if (m_vlp_fallTimer->IsOn()) { return; }
 	if (!m_isFall)
 	{
 		MoveDirection dir = CheckMoveDirection(Vector3(m_mapPos.x, m_mapPos.y, m_mapPos.z + 1));
@@ -478,6 +478,7 @@ void ButiEngine::Player::OnPushFront()
 
 void ButiEngine::Player::OnPushBack()
 {
+	if (m_vlp_fallTimer->IsOn()) { return; }
 	if (!m_isFall)
 	{
 		MoveDirection dir = CheckMoveDirection(Vector3(m_mapPos.x, m_mapPos.y, m_mapPos.z - 1));

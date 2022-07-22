@@ -45,8 +45,7 @@ void ButiEngine::Map::OnUpdate()
 	}
 	else if (abs(m_vlp_stageEndTimer->GetRemainFrame() - 60) <= 0.001)
 	{
-		//auto seTag = gameObject.lock()->GetResourceContainer()->GetSoundTag("Sound/Burst.wav");
-		//gameObject.lock()->GetGameObjectManager().lock()->GetScene().lock()->GetSoundManager()->Play(seTag, 0.1f);
+		gameObject.lock()->GetApplication().lock()->GetSoundManager()->PlaySE(SoundTag("Sound/Burst.wav"), 0.1f);
 
 		GetManager().lock()->GetGameObject("BurstManager").lock()->GetGameComponent<BurstManager>()->Burst();
 		GetManager().lock()->GetGameObject("BackGroundController").lock()->GetGameComponent<BackGround>()->Brast();

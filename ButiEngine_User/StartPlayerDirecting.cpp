@@ -31,8 +31,7 @@ void ButiEngine::StartPlayerDirecting::OnUpdate()
 		gameObject.lock()->GetGameComponent<Player>()->CheckLookBlock();
 		GetManager().lock()->GetGameObject("InvisibleBlockManager").lock()->GetGameComponent<InvisibleBlockManager>()->CheckSeen();
 
-		//auto seTag = gameObject.lock()->GetResourceContainer()->GetSoundTag("Sound/BigMove_0.wav");
-		//gameObject.lock()->GetGameObjectManager().lock()->GetScene().lock()->GetSoundManager()->Play(seTag, 0.1f);
+		gameObject.lock()->GetApplication().lock()->GetSoundManager()->PlaySE(SoundTag("Sound/BigMove_0.wav"), 0.1f);
 
 		m_isStart = true;
 	}
