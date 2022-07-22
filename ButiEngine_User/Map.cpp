@@ -14,7 +14,7 @@
 void ButiEngine::Map::OnUpdate()
 {
 	auto player = GetManager().lock()->GetGameObject("Player").lock();
-	if (player && player->GetGameComponent<Player>()->GetGoal())
+	if (player && player->GetGameComponent<Player>()->IsGoal())
 	{
 		if (!m_vlp_stageEndTimer->IsOn())
 		{

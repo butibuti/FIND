@@ -57,6 +57,8 @@ void ButiEngine::Player::OnUpdate()
 		GetManager().lock()->GetGameObject("CameraMesh").lock()->GetGameComponent<CameraMesh>()->Flash();
 		m_vwp_invisibleBlockManagerComponent.lock()->CheckSeen();
 		CheckExistUnderBlock(m_mapPos);
+
+		CheckGoal();
 	}
 	Shrink();
 	Fall();
@@ -64,46 +66,6 @@ void ButiEngine::Player::OnUpdate()
 
 void ButiEngine::Player::OnSet()
 {
-	auto collisionLambda = std::function<void(Value_weak_ptr<GameObject>&)>([this](Value_weak_ptr<GameObject>& arg_vwp_other)->void
-		{
-			if (!IsRollFinish() || m_isGoal)
-			{
-				return;
-			}
-
-			if (!arg_vwp_other.lock()->HasGameObjectTag("Goal"))
-			{
-				return;
-			}
-
-			std::vector<std::vector<std::vector<std::uint8_t>>>& vec_mapDatas = m_vwp_mapComponent.lock()->GetCurrentMapData().lock()->m_vec_mapDatas;
-			int mapNum = vec_mapDatas[m_mapPos.y][m_mapPos.z][m_mapPos.x];
-			if (mapNum >= GameSettings::MAP_CHIP_PLAYER_AND_GOAL)
-			{
-				mapNum = (mapNum - GameSettings::MAP_CHIP_PLAYER_AND_GOAL) / 10;
-			}
-
-			if (mapNum == GameSettings::MAP_CHIP_TUTORIALGOAL)
-			{
-				m_isGoal = true;
-			}
-			else if (mapNum == GameSettings::MAP_CHIP_EASYGOAL && arg_vwp_other.lock()->GetGameComponent<EasyGoal>()->IsActive())
-			{
-				m_isGoal = true;
-			}
-			else if (mapNum == GameSettings::MAP_CHIP_DEFAULTGOAL && arg_vwp_other.lock()->GetGameComponent<DefaultGoal>()->IsActive())
-			{
-				m_isGoal = true;
-			}
-
-			if (m_isGoal)
-			{
-				//auto seTag = gameObject.lock()->GetResourceContainer()->GetSoundTag("Sound/TouchGoal.wav");
-				//gameObject.lock()->GetGameObjectManager().lock()->GetScene().lock()->GetSoundManager()->Play(seTag, 0.1f);
-			}
-		});
-
-	//gameObject.lock()->AddCollisionStayReaction(collisionLambda);
 }
 
 void ButiEngine::Player::OnRemove()
@@ -249,6 +211,47 @@ void ButiEngine::Player::RollCameraDirection(const std::uint8_t arg_rotateDir)
 	}
 	else if (m_cameraDirection < CameraDirection::Front) {
 		m_cameraDirection = (CameraDirection)((std::uint8_t)m_cameraDirection + 4);
+	}
+}
+
+void ButiEngine::Player::CheckGoal()
+{
+	if (!IsRollFinish() || m_isGoal)
+	{
+		return;
+	}
+
+	std::vector<std::vector<std::vector<std::uint8_t>>>& vec_mapDatas = m_vwp_mapComponent.lock()->GetCurrentMapData().lock()->m_vec_mapDatas;
+	std::uint8_t mapNum = vec_mapDatas[m_mapPos.y][m_mapPos.z][m_mapPos.x];
+	auto hitObject = m_vwp_mapComponent.lock()->GetMapObjectData()[m_mapPos.y][m_mapPos.z][m_mapPos.x];
+
+	if (!hitObject.lock() || !hitObject.lock()->HasGameObjectTag("Goal"))
+	{
+		return;
+	}
+
+	if (mapNum >= GameSettings::MAP_CHIP_PLAYER_AND_GOAL)
+	{
+		mapNum = (mapNum - GameSettings::MAP_CHIP_PLAYER_AND_GOAL) / 10;
+	}
+
+	if (mapNum == GameSettings::MAP_CHIP_TUTORIALGOAL)
+	{
+		m_isGoal = true;
+	}
+	else if (mapNum == GameSettings::MAP_CHIP_EASYGOAL && hitObject.lock()->GetGameComponent<EasyGoal>()->IsActive())
+	{
+		m_isGoal = true;
+	}
+	else if (mapNum == GameSettings::MAP_CHIP_DEFAULTGOAL && hitObject.lock()->GetGameComponent<DefaultGoal>()->IsActive())
+	{
+		m_isGoal = true;
+	}
+
+	if (m_isGoal)
+	{
+		//auto seTag = gameObject.lock()->GetResourceContainer()->GetSoundTag("Sound/TouchGoal.wav");
+		//gameObject.lock()->GetGameObjectManager().lock()->GetScene().lock()->GetSoundManager()->Play(seTag, 0.1f);
 	}
 }
 

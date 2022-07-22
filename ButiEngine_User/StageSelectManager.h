@@ -18,11 +18,11 @@ namespace ButiEngine {
 			archive(isActive);
 		}
 
-		static std::uint8_t GetStageNum() { return m_stageNum; }
+		static std::int8_t GetStageNum() { return m_stageNum; }
 		static std::string GetNextSceneName();
 		static void SetMaxStageNum();
 
-		static std::uint8_t m_stageNum;
+		static std::int8_t m_stageNum;
 	private:
 		Value_ptr<RelativeTimer> m_vlp_animTimer;
 		Value_weak_ptr<GameObject> m_vwp_stageNumber;

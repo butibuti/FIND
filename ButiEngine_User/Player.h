@@ -51,7 +51,7 @@ namespace ButiEngine {
 			archive(isActive);
 		}
 
-		bool GetGoal() { return m_isGoal; }
+		bool IsGoal() { return m_isGoal; }
 
 		bool IsRollFinish();
 		const Vector3 &GetMapPos() const{ return m_mapPos; }
@@ -82,6 +82,7 @@ namespace ButiEngine {
 		Value_ptr<RelativeTimer> m_vlp_timer;
 		Value_ptr<RelativeTimer> m_vlp_fallTimer;
 
+		void CheckGoal();
 		void CheckLookDirection();
 		void Contoroll();
 		void OnPushRight();

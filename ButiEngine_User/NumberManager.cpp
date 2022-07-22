@@ -43,14 +43,14 @@ void ButiEngine::NumberManager::SetNumber(std::uint8_t arg_number)
 		m_vwp_number1.lock()->transform->SetWorldPosition(Vector3(150, 100, 30));
 		m_vwp_number10.lock()->GetGameComponent<MeshDrawComponent>()->Regist();
 
-		//std::string name10 = "number_" + std::to_string(ten);
-		//meshDraw10->SetMaterialTag(gameObject.lock()->GetResourceContainer()->GetMaterialTag(name10));
-		//meshDraw10->ReRegist();
+		std::string name10 = "Material/Number_" + std::to_string(ten) + ".mat";
+		meshDraw10->SetMaterialTag(MaterialTag(name10), 0);
+		meshDraw10->ReRegist();
 	}
 
-	//std::string name1 = "number_" + std::to_string(one);
-	//meshDraw1->SetMaterialTag(gameObject.lock()->GetResourceContainer()->GetMaterialTag(name1));
-	//meshDraw1->ReRegist();
+	std::string name1 = "Material/Number_" + std::to_string(one) + ".mat";
+	meshDraw1->SetMaterialTag(MaterialTag(name1), 0);
+	meshDraw1->ReRegist();
 }
 
 void ButiEngine::NumberManager::TranslateY(float arg_y)

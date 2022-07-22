@@ -3,8 +3,8 @@
 #include "NumberManager.h"
 #include "InputManager.h"
 
-std::uint8_t ButiEngine::StageSelectManager::m_stageNum = 0;
-std::uint8_t ButiEngine::StageSelectManager::m_maxStageNum = 1;
+std::int8_t ButiEngine::StageSelectManager::m_stageNum = 0;
+std::uint8_t ButiEngine::StageSelectManager::m_maxStageNum = 15;
 
 void ButiEngine::StageSelectManager::OnUpdate()
 {
@@ -42,23 +42,20 @@ void ButiEngine::StageSelectManager::OnUpdate()
 		auto m_vwp_stageNumber = GetManager().lock()->GetGameObject("StageNumber");
 		if (m_endTimer < 55)
 		{
-			//float alpha = 1.0f - Easing::Liner(per);
-			//if (alpha < 0.0f)
-			//{
-			//	alpha = 0.0f;
-			//}
+			float alpha = 1.0f - Easing::Liner(per);
+			if (alpha < 0.0f)
+			{
+				alpha = 0.0f;
+			}
 
-			//auto rArrow = GetManager().lock()->GetGameObject("RightArrow");
-			//auto lArrow = GetManager().lock()->GetGameObject("LeftArrow");
+			auto rArrow = GetManager().lock()->GetGameObject("RightArrow");
+			auto lArrow = GetManager().lock()->GetGameObject("LeftArrow");
 
-			//auto rMeshDraw = rArrow.lock()->GetGameComponent<MeshDrawComponent>();
-			//auto lMeshDraw = lArrow.lock()->GetGameComponent<MeshDrawComponent>();
+			auto rMeshDraw = rArrow.lock()->GetGameComponent<MeshDrawComponent>();
+			auto lMeshDraw = lArrow.lock()->GetGameComponent<MeshDrawComponent>();
 
-			//auto rLightBuff = rMeshDraw->GetCBuffer<LightVariable>("LightBuffer");
-			//auto lLightBuff = lMeshDraw->GetCBuffer<LightVariable>("LightBuffer");
-
-			//rLightBuff->Get().lightDir.w = alpha;
-			//lLightBuff->Get().lightDir.w = alpha;
+			rMeshDraw->GetCBuffer<ButiRendering::ObjectInformation>()->Get().color.w = alpha;
+			lMeshDraw->GetCBuffer<ButiRendering::ObjectInformation>()->Get().color.w = alpha;
 		}
 		if (m_endTimer >= 55)
 		{
