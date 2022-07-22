@@ -18,9 +18,10 @@ namespace ButiEngine {
 			archive(isActive);
 		}
 	private:
-		float defaultY;
-		float angle;
-		float theta;
+		float m_defaultY;
+		float m_theta;
+		float m_anglePase;
+		float m_thetaPase;
 	};
 
 }
