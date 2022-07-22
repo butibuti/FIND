@@ -19,7 +19,7 @@ namespace ButiEngine {
 		}
 	private:
 		Value_ptr<RelativeTimer> m_vlp_timer;
-		float scale;
+		float m_scale;
 	};
 
 }

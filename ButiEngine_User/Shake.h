@@ -18,17 +18,17 @@ namespace ButiEngine {
 			archive(isActive);
 		}
 
-		void ShakeStart(float arg_amplitude);
+		void ShakeStart(const float arg_amplitude);
 		void ShakeStop();
 
-		void SetDefaultPos(Vector3 arg_defaultPos)
+		void SetDefaultPos(const Vector3& arg_defaultPos)
 		{
-			defaultPos = arg_defaultPos;
+			m_defaultPos = arg_defaultPos;
 		}
 	private:
-		Vector3 defaultPos;
-		bool start;
-		float amplitude;
+		Vector3 m_defaultPos;
+		bool m_isStart;
+		float m_amplitude;
 	};
 
 }

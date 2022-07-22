@@ -14,8 +14,8 @@ void ButiEngine::InvisibleBlock::OnSet()
 
 void ButiEngine::InvisibleBlock::Start()
 {
-	//auto meshDraw = gameObject.lock()->GetGameComponent<MeshDrawComponent_Static>();
-	//meshDraw->UnRegist();
+	auto meshDraw = gameObject.lock()->GetGameComponent<MeshDrawComponent>();
+	meshDraw->UnRegist();
 }
 
 ButiEngine::Value_ptr<ButiEngine::GameComponent> ButiEngine::InvisibleBlock::Clone()
@@ -25,50 +25,50 @@ ButiEngine::Value_ptr<ButiEngine::GameComponent> ButiEngine::InvisibleBlock::Clo
 
 void ButiEngine::InvisibleBlock::Active()
 {
-	//if (active)
-	//{
-	//	return;
-	//}
+	if (m_isActive)
+	{
+		return;
+	}
 
-	//auto t = gameObject.lock()->transform;
+	auto t = gameObject.lock()->transform;
 
 
-	//auto anim = gameObject.lock()->AddGameComponent<TransformAnimation>();
-	//anim->SetSpeed(1.0f / 10);
-	//anim->SetTargetTransform(t->Clone());
-	//anim->GetTargetTransform()->SetLocalScale(1.1f);
-	//anim->GetTargetTransform()->RollLocalRotationX_Degrees(0.1f);
+	auto anim = gameObject.lock()->AddGameComponent<TransformAnimation>();
+	anim->SetSpeed(1.0f / 10);
+	anim->SetTargetTransform(t->Clone());
+	anim->GetTargetTransform()->SetLocalScale(1.1f);
+	anim->GetTargetTransform()->RollLocalRotationX_Degrees(0.1f);
 
-	//anim->SetEaseType(Easing::EasingType::Parabola);
+	anim->SetEaseType(Easing::EasingType::Parabola);
 
-	//auto mapComp = GetManager().lock()->GetGameObject("Map").lock()->GetGameComponent<MapComponent>();
-	//mapComp->ChangeBlock(mapPos, GameSettings::MAP_CHIP_BLOCK);
-	//active = true;
-	//auto meshDraw = gameObject.lock()->GetGameComponent<MeshDrawComponent_Static>();
-	//meshDraw->Regist();
+	auto mapComp = GetManager().lock()->GetGameObject("Map").lock()->GetGameComponent<Map>();
+	mapComp->ChangeBlock(m_mapPos, GameSettings::MAP_CHIP_BLOCK);
+	m_isActive = true;
+	auto meshDraw = gameObject.lock()->GetGameComponent<MeshDrawComponent>();
+	meshDraw->Regist();
 
 	//auto seTag = gameObject.lock()->GetResourceContainer()->GetSoundTag("Sound/inv_Discover.wav");
-
 	//gameObject.lock()->GetGameObjectManager().lock()->GetScene().lock()->GetSoundManager()->Play(seTag, 0.003f);
 }
 
 void ButiEngine::InvisibleBlock::UnActive()
 {
-	//if (!active)
-	//{
-	//	return;
-	//}
+	if (!m_isActive)
+	{
+		return;
+	}
 
-	//auto mapComp = GetManager().lock()->GetGameObject("Map").lock()->GetGameComponent<MapComponent>();
-	//mapComp->ChangeBlock(mapPos, GameSettings::MAP_CHIP_INVISIBLEBLOCK + id);
-	//active = false;
-	//auto meshDraw = gameObject.lock()->GetGameComponent<MeshDrawComponent_Static>();
-	//meshDraw->UnRegist();
+	auto mapComp = GetManager().lock()->GetGameObject("Map").lock()->GetGameComponent<Map>();
+	mapComp->ChangeBlock(m_mapPos, GameSettings::MAP_CHIP_INVISIBLEBLOCK + m_id);
+	m_isActive = false;
+	auto meshDraw = gameObject.lock()->GetGameComponent<MeshDrawComponent>();
+	meshDraw->UnRegist();
+
 	//auto seTag = gameObject.lock()->GetResourceContainer()->GetSoundTag("Sound/inv_Cover.wav");
-
 	//gameObject.lock()->GetGameObjectManager().lock()->GetScene().lock()->GetSoundManager()->Play(seTag, 0.003f);
 }
 
 void ButiEngine::InvisibleBlock::Seen()
 {
+	m_isSeen = true;
 }

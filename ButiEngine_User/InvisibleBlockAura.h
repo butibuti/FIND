@@ -19,8 +19,7 @@ namespace ButiEngine {
 
 		void AnimInitialize();
 	private:
-		unsigned int life;
-		unsigned int progressFrame;
+		Value_ptr<RelativeTimer> m_vlp_timer;
 	};
 
 }
