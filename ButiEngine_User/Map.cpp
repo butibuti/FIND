@@ -30,14 +30,32 @@ void ButiEngine::Map::OnUpdate()
 	{
 		m_vlp_stageEndTimer->Stop();
 		auto sceneManager = gameObject.lock()->GetApplication().lock()->GetSceneManager();
-		std::string sceneName = StageSelectManager::GetNextSceneName();
-		sceneManager->RemoveScene(sceneName);
-		sceneManager->LoadScene(sceneName);
-		sceneManager->ChangeScene(sceneName);
+		//std::string sceneName = StageSelectManager::GetNextSceneName();
+		//sceneManager->RemoveScene(sceneName);
+		//sceneManager->LoadScene(sceneName);
+		//sceneManager->ChangeScene(sceneName);
 
-		if (sceneName == "StageSelectScene") {
+		//if (sceneName == "StageSelectScene") 
+		//{
+		//	
+		//}
 
+		std::string currentSceneName = sceneManager->GetCurrentScene()->GetSceneInformation()->GetSceneName();
+		std::string nextSceneName;
+		if (currentSceneName == "NewStageSelectScene")
+		{
+			Vector3 playerPos = player->GetGameComponent<Player>()->GetMapPos();
+			std::uint16_t mapNum = m_vlp_currentMapData->m_vec_mapDatas[playerPos.y][playerPos.z][playerPos.x];
+			std::uint16_t nextStageNum = mapNum - GameSettings::MAP_CHIP_NEXT_STAGE_BLOCK;
+			nextSceneName = "Stage_" + std::to_string(nextStageNum);
 		}
+		else
+		{
+			nextSceneName = "NewStageSelectScene";
+		}
+		sceneManager->RemoveScene(nextSceneName);
+		sceneManager->LoadScene(nextSceneName);
+		sceneManager->ChangeScene(nextSceneName);
 	}
 	if (abs(m_vlp_stageEndTimer->GetRemainFrame() - 80) <= 0.001)
 	{
@@ -53,7 +71,7 @@ void ButiEngine::Map::OnUpdate()
 	}
 	else if (abs(m_vlp_stageEndTimer->GetRemainFrame() - 20) <= 0.001)
 	{
-		DestoroyMapChip();
+		//DestoroyMapChip();
 	}
 }
 
@@ -114,7 +132,7 @@ void ButiEngine::Map::PutBlock(std::uint8_t arg_stageNum)
 		}
 	}
 
-	std::vector<std::vector<std::vector<std::uint8_t>>> vec_mapDatas = m_vlp_currentMapData->m_vec_mapDatas;
+	std::vector<std::vector<std::vector<std::uint16_t>>> vec_mapDatas = m_vlp_currentMapData->m_vec_mapDatas;
 	Vector3 scale(GameSettings::BLOCK_SIZE, GameSettings::BLOCK_SIZE, GameSettings::BLOCK_SIZE);
 	Vector3 offset(vec_mapDatas[0][0].size() / 2, vec_mapDatas.size() / 2, vec_mapDatas[0].size() / 2);
 
@@ -131,7 +149,7 @@ void ButiEngine::Map::PutBlock(std::uint8_t arg_stageNum)
 				position *= scale;
 
 				auto gameObject = ObjectFactory::Create<GameObject>();
-				std::uint8_t mapNum = vec_mapDatas[y][z][x];
+				std::uint16_t mapNum = vec_mapDatas[y][z][x];
 				if (mapNum == 0) {
 					m_vec_vwp_mapObjectDatas[y][z][x] = nullptr;
 					continue;
@@ -181,63 +199,75 @@ void ButiEngine::Map::PutBlock(std::uint8_t arg_stageNum)
 					AddTransformAnimation(gameObject, targetPos.y);
 					gameObject->GetGameComponent<Shake>()->SetDefaultPos(targetPos);
 				}
-				else
-					if (mapNum == GameSettings::MAP_CHIP_PLAYER || (mapNum >= GameSettings::MAP_CHIP_PLAYER_ROTATE_90 && mapNum <= GameSettings::MAP_CHIP_PLAYER_ROTATE_MIN_90) || mapNum > GameSettings::MAP_CHIP_PLAYER_AND_GOAL)
-					{
-						m_playerPos = Vector3(x, y, z);
-						Vector3 spawnPos = position;
-						spawnPos.y += 30.0f;
-						gameObject = GetManager().lock()->AddObjectFromCereal("Player", ObjectFactory::Create<Transform>(position, Vector3Const::Zero, scale));
-						gameObject->transform->SetWorldPosition(spawnPos);
-						auto playerBehavior = gameObject->GetGameComponent<Player>();
-						playerBehavior->SetStartPos(position);
-						auto directing = gameObject->GetGameComponent<StartPlayerDirecting>();
-						directing->SetSpawnPos(spawnPos);
-						directing->SetStartPos(position);
+				else if (mapNum == GameSettings::MAP_CHIP_PLAYER || (mapNum >= GameSettings::MAP_CHIP_PLAYER_ROTATE_90 && mapNum <= GameSettings::MAP_CHIP_PLAYER_ROTATE_MIN_90) || (mapNum >= GameSettings::MAP_CHIP_PLAYER_AND_GOAL && mapNum < GameSettings::MAP_CHIP_NEXT_STAGE_BLOCK))
+				{
+					m_playerPos = Vector3(x, y, z);
+					Vector3 spawnPos = position;
+					spawnPos.y += 30.0f;
+					gameObject = GetManager().lock()->AddObjectFromCereal("Player", ObjectFactory::Create<Transform>(position, Vector3Const::Zero, scale));
+					gameObject->transform->SetWorldPosition(spawnPos);
+					auto playerBehavior = gameObject->GetGameComponent<Player>();
+					playerBehavior->SetStartPos(position);
+					auto directing = gameObject->GetGameComponent<StartPlayerDirecting>();
+					directing->SetSpawnPos(spawnPos);
+					directing->SetStartPos(position);
 
-						auto cameraMesh = GetManager().lock()->AddObjectFromCereal("CameraMesh", ObjectFactory::Create<Transform>(Vector3(0, 0, -0.1f), Vector3Const::Zero, scale));
-						if (mapNum >= GameSettings::MAP_CHIP_PLAYER_ROTATE_90 && mapNum <= GameSettings::MAP_CHIP_PLAYER_ROTATE_MIN_90) {
-							auto rotation = (mapNum - GameSettings::MAP_CHIP_PLAYER_ROTATE_90 + 1) * 90;
+					auto cameraMesh = GetManager().lock()->AddObjectFromCereal("CameraMesh", ObjectFactory::Create<Transform>(Vector3(0, 0, -0.1f), Vector3Const::Zero, scale));
+					if (mapNum >= GameSettings::MAP_CHIP_PLAYER_ROTATE_90 && mapNum <= GameSettings::MAP_CHIP_PLAYER_ROTATE_MIN_90) {
+						auto rotation = (mapNum - GameSettings::MAP_CHIP_PLAYER_ROTATE_90 + 1) * 90;
+						gameObject->transform->RollLocalRotationY_Degrees(rotation);
+						playerBehavior->SetStartRotation(rotation);
+					}
+					else
+						if (mapNum >= GameSettings::MAP_CHIP_PLAYER_AND_GOAL) {
+
+							//一の位がプレイヤーの向き、十の位がゴールの種類
+							std::int16_t mapNum_tenthSpace = (mapNum - GameSettings::MAP_CHIP_PLAYER_AND_GOAL) / 10;
+							std::int16_t mapNum_onceSpace = (mapNum - GameSettings::MAP_CHIP_PLAYER_AND_GOAL) % 10;
+
+
+							auto rotation = mapNum_onceSpace * 90;
 							gameObject->transform->RollLocalRotationY_Degrees(rotation);
 							playerBehavior->SetStartRotation(rotation);
-						}
-						else
-							if (mapNum >= GameSettings::MAP_CHIP_PLAYER_AND_GOAL) {
 
-								int mapNum_tenthSpace = (mapNum - GameSettings::MAP_CHIP_PLAYER_AND_GOAL) / 10;
-								int mapNum_onceSpace = (mapNum - GameSettings::MAP_CHIP_PLAYER_AND_GOAL) % 10;
-
-
-								auto rotation = mapNum_onceSpace * 90;
-								gameObject->transform->RollLocalRotationY_Degrees(rotation);
-								playerBehavior->SetStartRotation(rotation);
-
-								if (mapNum_tenthSpace == GameSettings::MAP_CHIP_TUTORIALGOAL)
-								{
-									float targetPosY = position.y;
-									position.y = m_vec_randomBlockPoss[z][x] - (vec_mapDatas.size() - y) * 3.5f;
-									gameObject = GetManager().lock()->AddObjectFromCereal("TutorialGoal");
-									gameObject->transform->SetWorldPosition(position);
-									AddTransformAnimation(gameObject, targetPosY);
-								}
-								else if (mapNum_tenthSpace == GameSettings::MAP_CHIP_EASYGOAL)
-								{
-									float targetPosY = position.y;
-									position.y = m_vec_randomBlockPoss[z][x] - (vec_mapDatas.size() - y) * 3.5f;
-									gameObject = GetManager().lock()->AddObjectFromCereal("EasyGoal");
-									gameObject->transform->SetWorldPosition(position);
-									AddTransformAnimation(gameObject, targetPosY);
-								}
-								else if (mapNum_tenthSpace == GameSettings::MAP_CHIP_DEFAULTGOAL)
-								{
-									float targetPosY = position.y;
-									position.y = m_vec_randomBlockPoss[z][x] - (vec_mapDatas.size() - y) * 3.5f;
-									gameObject = GetManager().lock()->AddObjectFromCereal("DefaultGoal");
-									gameObject->transform->SetWorldPosition(position);
-									AddTransformAnimation(gameObject, targetPosY);
-								}
+							if (mapNum_tenthSpace == GameSettings::MAP_CHIP_TUTORIALGOAL)
+							{
+								float targetPosY = position.y;
+								position.y = m_vec_randomBlockPoss[z][x] - (vec_mapDatas.size() - y) * 3.5f;
+								gameObject = GetManager().lock()->AddObjectFromCereal("TutorialGoal");
+								gameObject->transform->SetWorldPosition(position);
+								AddTransformAnimation(gameObject, targetPosY);
 							}
-					}
+							else if (mapNum_tenthSpace == GameSettings::MAP_CHIP_EASYGOAL)
+							{
+								float targetPosY = position.y;
+								position.y = m_vec_randomBlockPoss[z][x] - (vec_mapDatas.size() - y) * 3.5f;
+								gameObject = GetManager().lock()->AddObjectFromCereal("EasyGoal");
+								gameObject->transform->SetWorldPosition(position);
+								AddTransformAnimation(gameObject, targetPosY);
+							}
+							else if (mapNum_tenthSpace == GameSettings::MAP_CHIP_DEFAULTGOAL)
+							{
+								float targetPosY = position.y;
+								position.y = m_vec_randomBlockPoss[z][x] - (vec_mapDatas.size() - y) * 3.5f;
+								gameObject = GetManager().lock()->AddObjectFromCereal("DefaultGoal");
+								gameObject->transform->SetWorldPosition(position);
+								AddTransformAnimation(gameObject, targetPosY);
+							}
+						}
+				}
+				else if (mapNum >= GameSettings::MAP_CHIP_NEXT_STAGE_BLOCK)
+				{
+					std::uint8_t stageNum = mapNum - GameSettings::MAP_CHIP_NEXT_STAGE_BLOCK;
+					
+					float targetPosY = position.y;
+					position.y = m_vec_randomBlockPoss[z][x] - (vec_mapDatas.size() - y) * 3.5f;
+					gameObject = GetManager().lock()->AddObjectFromCereal("NextStageBlock");
+					gameObject->transform->SetWorldPosition(position);
+					gameObject->transform->SetLocalScale(scale * 0.75f);
+					AddTransformAnimation(gameObject, targetPosY);
+                }
+					
 
 				m_vec_vwp_mapObjectDatas[y][z][x] = gameObject;
 			}
@@ -344,7 +374,7 @@ void ButiEngine::Map::DestoroyMapChip()
 
 void ButiEngine::Map::CreateRandom()
 {
-	std::vector<std::vector<std::vector<std::uint8_t>>> vec_mapDatas = m_vlp_currentMapData->m_vec_mapDatas;
+	std::vector<std::vector<std::vector<std::uint16_t>>> vec_mapDatas = m_vlp_currentMapData->m_vec_mapDatas;
 	for (std::uint8_t z = 0; z < vec_mapDatas[0].size(); z++)
 	{
 		std::vector<float> pos;
@@ -396,7 +426,7 @@ ButiEngine::MapData::MapData(std::uint8_t arg_stageNum)
 				{0,0,0,0,0,2,0,0,0,0,0},
 				{0,0,2,2,0,0,0,0,101,0,0},
 				{0,0,0,0,0,0,0,0,0,0,0},
-				{0,0,0,0,0,1,4,0,0,0,0},
+				{0,0,0,0,0,1,0,300,0,0,0},
 				{0,0,101,0,0,0,0,0,0,0,0},
 				{0,0,0,0,0,0,0,0,0,0,0},
 				{0,0,101,0,0,2,2,2,2,2,0},

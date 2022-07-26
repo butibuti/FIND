@@ -116,7 +116,7 @@ namespace ButiEngine {
 		MoveDirection CheckMoveDirection(const Vector3& arg_movePos);
 		void CheckExistUnderBlock(const Vector3& arg_movePos);
 
-		bool IsBlock(std::uint8_t arg_mapChipNum);
+		bool IsBlock(std::uint16_t arg_mapChipNum);
 	};
 
 }

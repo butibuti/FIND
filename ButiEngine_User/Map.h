@@ -15,7 +15,7 @@ namespace ButiEngine {
 		{
 			archive(m_vec_mapDatas);
 		}
-		std::vector<std::vector<std::vector<std::uint8_t>>> m_vec_mapDatas;
+		std::vector<std::vector<std::vector<std::uint16_t>>> m_vec_mapDatas;
 	};
 
 	class Map :public GameComponent

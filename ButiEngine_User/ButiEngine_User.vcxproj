@@ -369,6 +369,7 @@ cd ..\</Command>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release_imguiEditor|x64'">/wd4996 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <ClCompile Include="Map.cpp" />
+    <ClCompile Include="NextStageBlock.cpp" />
     <ClCompile Include="NumberManager.cpp" />
     <ClCompile Include="Pause.cpp" />
     <ClCompile Include="Player.cpp" />
@@ -435,6 +436,7 @@ cd ..\</Command>
     <ClInclude Include="InvisibleBlockManager.h" />
     <ClInclude Include="LogoSceneManager.h" />
     <ClInclude Include="Map.h" />
+    <ClInclude Include="NextStageBlock.h" />
     <ClInclude Include="NumberManager.h" />
     <ClInclude Include="Pause.h" />
     <ClInclude Include="Player.h" />

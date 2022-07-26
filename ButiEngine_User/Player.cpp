@@ -14,6 +14,8 @@
 
 void ButiEngine::Player::OnUpdate()
 {
+	if (m_isGoal) { return; }
+
 	auto directing = gameObject.lock()->GetGameComponent<StartPlayerDirecting>();
 	if (gameObject.lock()->transform->GetWorldPosition().y < -40.0f)
 	{
@@ -91,7 +93,7 @@ void ButiEngine::Player::Start()
 	m_mapPos = m_vwp_mapComponent.lock()->GetPlayerPos();
 	m_offset = m_mapPos - m_startPos;
 
-	m_vlp_timer = ObjectFactory::Create<RelativeTimer>(11);
+	m_vlp_timer = ObjectFactory::Create<RelativeTimer>(12);
 	m_vlp_fallTimer = ObjectFactory::Create<RelativeTimer>(24);
 	m_vlp_fallTimer->Stop();
 	m_vwp_invisibleBlockManagerComponent = gameObject.lock()->GetGameObjectManager().lock()->GetGameObject("InvisibleBlockManager").lock()->GetGameComponent<InvisibleBlockManager>();
@@ -218,13 +220,18 @@ void ButiEngine::Player::CheckGoal()
 		return;
 	}
 
-	std::vector<std::vector<std::vector<std::uint8_t>>>& vec_mapDatas = m_vwp_mapComponent.lock()->GetCurrentMapData().lock()->m_vec_mapDatas;
-	std::uint8_t mapNum = vec_mapDatas[m_mapPos.y][m_mapPos.z][m_mapPos.x];
+	std::vector<std::vector<std::vector<std::uint16_t>>>& vec_mapDatas = m_vwp_mapComponent.lock()->GetCurrentMapData().lock()->m_vec_mapDatas;
+	std::uint16_t mapNum = vec_mapDatas[m_mapPos.y][m_mapPos.z][m_mapPos.x];
 	auto hitObject = m_vwp_mapComponent.lock()->GetMapObjectData()[m_mapPos.y][m_mapPos.z][m_mapPos.x];
 
 	if (!hitObject.lock() || !hitObject.lock()->HasGameObjectTag("Goal"))
 	{
 		return;
+	}
+
+	if (mapNum >= GameSettings::MAP_CHIP_NEXT_STAGE_BLOCK)
+	{
+		m_isGoal = true;
 	}
 
 	if (mapNum >= GameSettings::MAP_CHIP_PLAYER_AND_GOAL)
@@ -908,7 +915,7 @@ void ButiEngine::Player::Fall()
 ButiEngine::MoveDirection ButiEngine::Player::CheckMoveDirection(const Vector3& arg_movePos)
 {
 	MoveDirection output;
-	std::vector<std::vector<std::vector<std::uint8_t>>>& mapData = m_vwp_mapComponent.lock()->GetCurrentMapData().lock()->m_vec_mapDatas;
+	std::vector<std::vector<std::vector<std::uint16_t>>>& mapData = m_vwp_mapComponent.lock()->GetCurrentMapData().lock()->m_vec_mapDatas;
 
 	if (arg_movePos.x >= mapData[0][0].size() ||
 		arg_movePos.y >= mapData.size() ||
@@ -954,7 +961,7 @@ void ButiEngine::Player::CheckExistUnderBlock(const Vector3& arg_movePos)
 	{
 		return;
 	}
-	std::vector<std::vector<std::vector<std::uint8_t>>>& mapData = m_vwp_mapComponent.lock()->GetCurrentMapData().lock()->m_vec_mapDatas;
+	std::vector<std::vector<std::vector<std::uint16_t>>>& mapData = m_vwp_mapComponent.lock()->GetCurrentMapData().lock()->m_vec_mapDatas;
 	if (mapData[arg_movePos.y - 1][arg_movePos.z][arg_movePos.x] == GameSettings::MAP_CHIP_BLOCK)
 	{
 		return;
@@ -964,7 +971,7 @@ void ButiEngine::Player::CheckExistUnderBlock(const Vector3& arg_movePos)
 	m_afterFallPos.y = -500.0f;
 }
 
-bool ButiEngine::Player::IsBlock(std::uint8_t arg_mapChipNum)
+bool ButiEngine::Player::IsBlock(std::uint16_t arg_mapChipNum)
 {
 	if (arg_mapChipNum == GameSettings::MAP_CHIP_BLOCK) { return true; }
 	if (arg_mapChipNum == GameSettings::MAP_CHIP_TUTORIALGOAL) { return true; }
