@@ -64,7 +64,6 @@ void ButiEngine::StartPlayerDirecting::Animation()
 	anim->SetSpeed(1.0f / 15);
 	anim->SetTargetTransform(t->Clone());
 	anim->GetTargetTransform()->TranslateY(m_startPos.y - m_spawnPos.y);
-	anim->GetTargetTransform()->RollLocalRotationX_Degrees(0.1f);
 
 	anim->SetEaseType(Easing::EasingType::Liner);
 }
