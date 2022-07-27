@@ -6,7 +6,7 @@ namespace ButiEngine {
 	{
 	public:
 		MapData(){}
-		MapData(std::uint8_t arg_stageNum);
+		MapData(std::uint16_t arg_stageNum);
 		Vector3 GetSize() {
 			return Vector3(m_vec_mapDatas[0][0].size(),m_vec_mapDatas.size(),m_vec_mapDatas[0].size());
 		}
@@ -35,13 +35,13 @@ namespace ButiEngine {
 			archive(m_vec_vlp_mapDatas);
 		}
 
-		void PutBlock(std::uint8_t arg_stageNum);
+		void PutBlock(std::uint16_t arg_stageNum);
 		Value_weak_ptr<MapData>GetCurrentMapData() { return m_vlp_currentMapData; }
-		MapData& GetMapData(const std::uint8_t arg_index) { return *m_vec_vlp_mapDatas[arg_index]; }
+		MapData& GetMapData(const std::uint16_t arg_index) { return *m_vec_vlp_mapDatas[arg_index]; }
 
 		std::vector<std::vector<std::vector<Value_weak_ptr<GameObject>>>>& GetMapObjectData() { return m_vec_vwp_mapObjectDatas; }
 		Vector3 GetPlayerPos() { return m_playerPos; }
-		void ChangeBlock(const Vector3& arg_mapPos, std::uint8_t arg_mapChipNum);
+		void ChangeBlock(const Vector3& arg_mapPos, std::uint16_t arg_mapChipNum);
 		const Vector4& GetMapEndColor() { return m_mapEndColor; }
 		const Vector4& GetMapStartColor() { return m_mapStartColor; }
 		void SetMapEndColor(const Vector4& arg_color) { m_mapEndColor = arg_color; }
@@ -63,7 +63,7 @@ namespace ButiEngine {
 		Vector4 m_mapStartColor = Vector4(0.4f, 0.4f, 0.7f, 1.0f);
 		Vector4 m_mapEndColor_inv = Vector4(0.8f, 0.8f, 0.8f, 1.0f);
 		Vector4 m_mapStartColor_inv = Vector4(0.8f, 0.8f, 0.8f, 1.0f);
-		std::uint8_t m_currentStageNum;
+		std::uint16_t m_currentStageNum;
 
 		void DestoroyMapChip();
 		void CreateRandom();

@@ -21,7 +21,7 @@ ButiEngine::Value_ptr<ButiEngine::GameComponent> ButiEngine::InvisibleBlockManag
 
 void ButiEngine::InvisibleBlockManager::CheckSeen()
 {
-	std::vector<std::uint8_t> IDs;
+	std::vector<std::uint16_t> IDs;
 	auto blocks = GetManager().lock()->GetGameObjects(GetTagManager()->GetObjectTag("InvisibleBlock"));
 	auto end = blocks.end();
 	for (auto itr = blocks.begin(); itr != end; ++itr)
@@ -29,7 +29,7 @@ void ButiEngine::InvisibleBlockManager::CheckSeen()
 		auto invBlockComp = (*itr)->GetGameComponent<InvisibleBlock>();
 		if (invBlockComp->IsSeen())
 		{
-			std::uint8_t id = invBlockComp->GetID();
+			std::uint16_t id = invBlockComp->GetID();
 			if (std::find(IDs.begin(), IDs.end(), id) == IDs.end())
 			{
 				IDs.push_back(id);

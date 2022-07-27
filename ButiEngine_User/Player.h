@@ -61,7 +61,7 @@ namespace ButiEngine {
 		void SetStartRotation(float arg_rot) { m_startRotation = arg_rot; }
 
 		void CheckLookBlock();
-		void RollCameraDirection(const std::uint8_t arg_rotateDir);
+		void RollCameraDirection(const std::uint16_t arg_rotateDir);
 	private:
 		float m_length;
 		Value_weak_ptr<Map> m_vwp_mapComponent;

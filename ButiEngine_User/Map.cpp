@@ -115,7 +115,7 @@ ButiEngine::Value_ptr<ButiEngine::GameComponent> ButiEngine::Map::Clone()
 	return output;
 }
 
-void ButiEngine::Map::PutBlock(std::uint8_t arg_stageNum)
+void ButiEngine::Map::PutBlock(std::uint16_t arg_stageNum)
 {
 	auto invisibleBlockManager = GetManager().lock()->GetGameObject("InvisibleBlockManager").lock()->GetGameComponent<InvisibleBlockManager>();
 	DestoroyMapChip();
@@ -138,11 +138,11 @@ void ButiEngine::Map::PutBlock(std::uint8_t arg_stageNum)
 
 	CreateRandom();
 
-	for (std::uint8_t y = 0; y < vec_mapDatas.size(); y++)
+	for (std::uint16_t y = 0; y < vec_mapDatas.size(); y++)
 	{
-		for (std::uint8_t z = 0; z < vec_mapDatas[y].size(); z++)
+		for (std::uint16_t z = 0; z < vec_mapDatas[y].size(); z++)
 		{
-			for (std::uint8_t x = 0; x < vec_mapDatas[y][z].size(); x++)
+			for (std::uint16_t x = 0; x < vec_mapDatas[y][z].size(); x++)
 			{
 				Vector3 position(x, y, z);
 				position -= offset;
@@ -193,7 +193,7 @@ void ButiEngine::Map::PutBlock(std::uint8_t arg_stageNum)
 					position.y = m_vec_randomBlockPoss[z][x] - (vec_mapDatas.size() - y) * 3.5f;
 					gameObject = GetManager().lock()->AddObjectFromCereal("InvisibleBlock");
 					gameObject->transform->SetWorldPosition(position);
-					std::uint8_t id = mapNum - GameSettings::MAP_CHIP_INVISIBLEBLOCK;
+					std::uint16_t id = mapNum - GameSettings::MAP_CHIP_INVISIBLEBLOCK;
 					gameObject->GetGameComponent<InvisibleBlock>()->SetID(id);
 					gameObject->GetGameComponent<InvisibleBlock>()->SetMapPos(Vector3(x, y, z));
 					AddTransformAnimation(gameObject, targetPos.y);
@@ -258,7 +258,7 @@ void ButiEngine::Map::PutBlock(std::uint8_t arg_stageNum)
 				}
 				else if (mapNum >= GameSettings::MAP_CHIP_NEXT_STAGE_BLOCK)
 				{
-					std::uint8_t stageNum = mapNum - GameSettings::MAP_CHIP_NEXT_STAGE_BLOCK;
+					std::uint16_t stageNum = mapNum - GameSettings::MAP_CHIP_NEXT_STAGE_BLOCK;
 					
 					float targetPosY = position.y;
 					position.y = m_vec_randomBlockPoss[z][x] - (vec_mapDatas.size() - y) * 3.5f;
@@ -275,7 +275,7 @@ void ButiEngine::Map::PutBlock(std::uint8_t arg_stageNum)
 	}
 }
 
-void ButiEngine::Map::ChangeBlock(const Vector3& arg_mapPos, std::uint8_t arg_mapChipNum)
+void ButiEngine::Map::ChangeBlock(const Vector3& arg_mapPos, std::uint16_t arg_mapChipNum)
 {
 	if (arg_mapPos.x < 0 || arg_mapPos.x >= m_vlp_currentMapData->m_vec_mapDatas[0][0].size() ||
 		arg_mapPos.y < 0 || arg_mapPos.y >= m_vlp_currentMapData->m_vec_mapDatas.size() ||
@@ -375,10 +375,10 @@ void ButiEngine::Map::DestoroyMapChip()
 void ButiEngine::Map::CreateRandom()
 {
 	std::vector<std::vector<std::vector<std::uint16_t>>> vec_mapDatas = m_vlp_currentMapData->m_vec_mapDatas;
-	for (std::uint8_t z = 0; z < vec_mapDatas[0].size(); z++)
+	for (std::uint16_t z = 0; z < vec_mapDatas[0].size(); z++)
 	{
 		std::vector<float> pos;
-		for (std::uint8_t x = 0; x < vec_mapDatas[0][z].size(); x++)
+		for (std::uint16_t x = 0; x < vec_mapDatas[0][z].size(); x++)
 		{
 			pos.push_back(ButiRandom::GetRandom(-30.0f, -15.0f, 100));
 		}
@@ -401,7 +401,7 @@ void ButiEngine::Map::AddTransformAnimation(Value_weak_ptr<ButiEngine::GameObjec
 	anim->SetEaseType(Easing::EasingType::EaseInOutQuint);
 }
 
-ButiEngine::MapData::MapData(std::uint8_t arg_stageNum)
+ButiEngine::MapData::MapData(std::uint16_t arg_stageNum)
 {
 	if (arg_stageNum == 0)
 	{
@@ -416,7 +416,7 @@ ButiEngine::MapData::MapData(std::uint8_t arg_stageNum)
 				{2,2,2,2,2,2,2,2,2,2,2},
 				{2,2,2,2,2,2,2,2,2,2,2},
 				{2,2,2,2,2,2,2,2,2,2,2},
-				{2,2,2,2,0,2,2,2,2,2,2},
+				{2,2,2,2,2,2,2,2,2,2,2},
 				{2,2,2,2,2,2,2,2,2,2,2},
 				{2,2,2,2,2,2,2,2,2,2,2},
 			},
@@ -437,7 +437,7 @@ ButiEngine::MapData::MapData(std::uint8_t arg_stageNum)
 				{0,0,0,0,0,0,0,0,0,0,0},
 				{0,0,0,0,0,0,0,0,0,0,0},
 				{0,0,0,0,0,0,0,0,0,0,0},
-				{0,0,0,2,0,0,0,0,0,0,0},
+				{0,0,0,0,0,0,0,0,0,0,0},
 				{0,0,0,0,0,0,0,0,0,0,0},
 				{0,0,0,0,0,0,0,0,0,0,0},
 				{0,0,0,0,0,0,0,0,0,0,0},

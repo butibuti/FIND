@@ -4,8 +4,8 @@ namespace ButiEngine {
 
 	struct FloatBlockData {
 		float time;
-		std::uint8_t direction=1;
-		std::uint8_t moveDir=1;
+		std::uint16_t direction=1;
+		std::uint16_t moveDir=1;
 		float movePase = 1.0;
 		float moveTime = 0.0;
 		float moveMax;

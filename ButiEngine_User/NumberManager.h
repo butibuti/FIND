@@ -18,7 +18,7 @@ namespace ButiEngine {
 			archive(isActive);
 		}
 
-		void SetNumber(std::uint8_t arg_number);
+		void SetNumber(std::uint16_t arg_number);
 
 		void TranslateY(float arg_y);
 		void SetScale(const Vector3& arg_scale);
@@ -27,7 +27,7 @@ namespace ButiEngine {
 	private:
 		Value_weak_ptr<GameObject> m_vwp_number1;
 		Value_weak_ptr<GameObject> m_vwp_number10;
-		std::uint8_t m_number;
+		std::uint16_t m_number;
 	};
 
 }

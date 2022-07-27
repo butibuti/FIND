@@ -23,7 +23,7 @@ ButiEngine::Value_ptr<ButiEngine::GameComponent> ButiEngine::NumberManager::Clon
 	return ObjectFactory::Create<NumberManager>();
 }
 
-void ButiEngine::NumberManager::SetNumber(std::uint8_t arg_number)
+void ButiEngine::NumberManager::SetNumber(std::uint16_t arg_number)
 {
 	m_number = arg_number + 1;
 

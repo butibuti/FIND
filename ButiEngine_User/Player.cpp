@@ -79,7 +79,7 @@ void ButiEngine::Player::OnShowUI()
 
 void ButiEngine::Player::Start()
 {
-	for (std::uint8_t i = 0; i < 3; i++) {
+	for (std::uint16_t i = 0; i < 3; i++) {
 
 		m_moveSounds[i] = SoundTag("Sound/Move_" + std::to_string(i) + ".wav");
 	}
@@ -201,17 +201,18 @@ void ButiEngine::Player::CheckLookBlock()
 	}
 }
 
-void ButiEngine::Player::RollCameraDirection(const std::uint8_t arg_rotateDir)
+void ButiEngine::Player::RollCameraDirection(const std::uint16_t arg_rotateDir)
 {
-	m_cameraDirection = (CameraDirection)((std::uint8_t)m_cameraDirection + arg_rotateDir);
+	m_cameraDirection = (CameraDirection)((std::uint16_t)m_cameraDirection + arg_rotateDir);
 
 	if (m_cameraDirection > CameraDirection::Right) {
-		m_cameraDirection = (CameraDirection)((std::uint8_t)m_cameraDirection % 4);
+		m_cameraDirection = (CameraDirection)((std::uint16_t)m_cameraDirection % 4);
 	}
 	else if (m_cameraDirection < CameraDirection::Front) {
-		m_cameraDirection = (CameraDirection)((std::uint8_t)m_cameraDirection + 4);
+		m_cameraDirection = (CameraDirection)((std::uint16_t)m_cameraDirection + 4);
 	}
 }
+
 
 void ButiEngine::Player::CheckGoal()
 {
@@ -260,47 +261,31 @@ void ButiEngine::Player::CheckGoal()
 
 void ButiEngine::Player::CheckLookDirection()
 {
-	Vector3 front = gameObject.lock()->transform->GetFront() * 10.0f;
-	Vector3 dir = front - gameObject.lock()->transform->GetWorldPosition();
+	Vector3 dir = gameObject.lock()->transform->GetFront().Round();
 
-	float x = abs(dir.x);
-	float y = abs(dir.y);
-	float z = abs(dir.z);
-
-	if (x > y && x > z)
+	if (dir.x == 1.0f)
 	{
-		if (dir.x > 0)
-		{
-			m_lookDirection = LookDirection::Right;
-		}
-		if (dir.x < 0)
-		{
-			m_lookDirection = LookDirection::Left;
-		}
+		m_lookDirection = LookDirection::Right;
 	}
-
-	if (y > x && y > z)
+	else if (dir.x == -1.0f)
 	{
-		if (dir.y > 0)
-		{
-			m_lookDirection = LookDirection::Up;
-		}
-		if (dir.y < 0)
-		{
-			m_lookDirection = LookDirection::Down;
-		}
+		m_lookDirection = LookDirection::Left;
 	}
-
-	if (z > x && z > y)
+	else if (dir.y == 1.0f)
 	{
-		if (dir.z > 0)
-		{
-			m_lookDirection = LookDirection::Front;
-		}
-		if (dir.z < 0)
-		{
-			m_lookDirection = LookDirection::Back;
-		}
+		m_lookDirection = LookDirection::Up;
+	}
+	else if (dir.y == -1.0f)
+	{
+		m_lookDirection = LookDirection::Down;
+	}
+	else if (dir.z == 1.0f)
+	{
+		m_lookDirection = LookDirection::Front;
+	}
+	else if (dir.z == -1.0f)
+	{
+		m_lookDirection = LookDirection::Back;
 	}
 }
 
@@ -338,7 +323,6 @@ void ButiEngine::Player::Contoroll()
 	}
 	else if (InputManager::IsPushLeftKey())
 	{
-
 		switch (m_cameraDirection)
 		{
 		case CameraDirection::Front:
@@ -439,7 +423,7 @@ void ButiEngine::Player::OnPushRight()
 
 	auto cubeAnim = gameObject.lock()->GetGameComponent<CubeTransformAnimation>();
 	if (cubeAnim) {
-		m_nextMapPos = cubeAnim->GetTargetTransform()->GetWorldPosition().Ceil();
+		m_nextMapPos = cubeAnim->GetTargetTransform()->GetWorldPosition().Round();
 		m_nextMapPos += m_offset;
 	}
 }
@@ -459,7 +443,7 @@ void ButiEngine::Player::OnPushLeft()
 
 	auto cubeAnim = gameObject.lock()->GetGameComponent<CubeTransformAnimation>();
 	if (cubeAnim) {
-		m_nextMapPos = cubeAnim->GetTargetTransform()->GetWorldPosition().Ceil();
+		m_nextMapPos = cubeAnim->GetTargetTransform()->GetWorldPosition().Round();
 		m_nextMapPos += m_offset;
 	}
 }
@@ -478,7 +462,7 @@ void ButiEngine::Player::OnPushFront()
 
 	auto cubeAnim = gameObject.lock()->GetGameComponent<CubeTransformAnimation>();
 	if (cubeAnim) {
-		m_nextMapPos = cubeAnim->GetTargetTransform()->GetWorldPosition().Ceil();
+		m_nextMapPos = cubeAnim->GetTargetTransform()->GetWorldPosition().Round();
 		m_nextMapPos += m_offset;
 	}
 }
@@ -497,7 +481,7 @@ void ButiEngine::Player::OnPushBack()
 
 	auto cubeAnim = gameObject.lock()->GetGameComponent<CubeTransformAnimation>();
 	if (cubeAnim) {
-		m_nextMapPos = cubeAnim->GetTargetTransform()->GetWorldPosition().Ceil();
+		m_nextMapPos = cubeAnim->GetTargetTransform()->GetWorldPosition().Round();
 		m_nextMapPos += m_offset;
 	}
 }
@@ -522,10 +506,1054 @@ void ButiEngine::Player::Shrink()
 	gameObject.lock()->transform->SetLocalScale(m_scale);
 }
 
+namespace ButiEngine {
+void TargetTransformRotation_WorldZAxis_m90(const LookDirection arg_dir, Value_ptr<CubeTransformAnimation> arg_vlp_anim) {
+
+	auto up = arg_vlp_anim->GetTargetTransform()->GetUp().Round();
+	Matrix4x4 rotation;
+	switch (arg_dir)
+	{
+	case  LookDirection::Front:
+	{
+		if (up == Vector3Const::YAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(-90)) * Matrix4x4::RollY(MathHelper::ToRadian(0)) * Matrix4x4::RollX(MathHelper::ToRadian(0));
+		}
+		else if (up == -Vector3Const::YAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(90)) * Matrix4x4::RollY(MathHelper::ToRadian(0)) * Matrix4x4::RollX(MathHelper::ToRadian(0));
+		}
+		else if (up == Vector3Const::XAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(180)) * Matrix4x4::RollY(MathHelper::ToRadian(0)) * Matrix4x4::RollX(MathHelper::ToRadian(0));
+		}
+		else if (up == -Vector3Const::XAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(0)) * Matrix4x4::RollY(MathHelper::ToRadian(0)) * Matrix4x4::RollX(MathHelper::ToRadian(0));
+		}
+	}
+	break;
+	case  LookDirection::Back:
+	{
+		if (up == Vector3Const::YAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(90)) * Matrix4x4::RollY(MathHelper::ToRadian(180)) * Matrix4x4::RollX(MathHelper::ToRadian(0));
+		}
+		else if (up == -Vector3Const::YAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(-90)) * Matrix4x4::RollY(MathHelper::ToRadian(180)) * Matrix4x4::RollX(MathHelper::ToRadian(0));
+		}
+		else if (up == Vector3Const::XAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(0)) * Matrix4x4::RollY(MathHelper::ToRadian(0)) * Matrix4x4::RollX(MathHelper::ToRadian(180));
+		}
+		else if (up == -Vector3Const::XAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(0)) * Matrix4x4::RollY(MathHelper::ToRadian(180)) * Matrix4x4::RollX(MathHelper::ToRadian(0));
+		}
+	}
+	break;
+	case  LookDirection::Right:
+	{
+		if (up == Vector3Const::YAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(-90)) * Matrix4x4::RollY(MathHelper::ToRadian(0)) * Matrix4x4::RollX(MathHelper::ToRadian(90));
+		}
+		else if (up == -Vector3Const::YAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(90)) * Matrix4x4::RollY(MathHelper::ToRadian(0)) * Matrix4x4::RollX(MathHelper::ToRadian(90));
+		}
+		else if (up == Vector3Const::ZAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(0)) * Matrix4x4::RollY(MathHelper::ToRadian(0)) * Matrix4x4::RollX(MathHelper::ToRadian(90));
+		}
+		else if (up == -Vector3Const::ZAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(180)) * Matrix4x4::RollY(MathHelper::ToRadian(0)) * Matrix4x4::RollX(MathHelper::ToRadian(90));
+		}
+	}
+	break;
+	case  LookDirection::Left:{
+		if (up == Vector3Const::YAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(-90)) * Matrix4x4::RollY(MathHelper::ToRadian(0)) * Matrix4x4::RollX(MathHelper::ToRadian(-90));
+		}
+		else if (up == -Vector3Const::YAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(90)) * Matrix4x4::RollY(MathHelper::ToRadian(0)) * Matrix4x4::RollX(MathHelper::ToRadian(-90));
+		}
+		else if (up == Vector3Const::ZAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(180)) * Matrix4x4::RollY(MathHelper::ToRadian(0)) * Matrix4x4::RollX(MathHelper::ToRadian(-90));
+		}
+		else if (up == -Vector3Const::ZAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(0)) * Matrix4x4::RollY(MathHelper::ToRadian(0)) * Matrix4x4::RollX(MathHelper::ToRadian(-90));
+		}
+	}
+							 break;
+	case  LookDirection::Up:
+	{
+		if (up == Vector3Const::XAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(180)) * Matrix4x4::RollY(MathHelper::ToRadian(90)) * Matrix4x4::RollX(MathHelper::ToRadian(0));
+		}
+		else if (up == -Vector3Const::XAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(0)) * Matrix4x4::RollY(MathHelper::ToRadian(90)) * Matrix4x4::RollX(MathHelper::ToRadian(0));
+		}
+		else if (up == Vector3Const::ZAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(0)) * Matrix4x4::RollY(MathHelper::ToRadian(90)) * Matrix4x4::RollX(MathHelper::ToRadian(90));
+		}
+		else if (up == -Vector3Const::ZAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(0)) * Matrix4x4::RollY(MathHelper::ToRadian(90)) * Matrix4x4::RollX(MathHelper::ToRadian(-90));
+		}
+	}
+	break;
+	case  LookDirection::Down: {
+		if (up == Vector3Const::XAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(0)) * Matrix4x4::RollY(MathHelper::ToRadian(-90)) * Matrix4x4::RollX(MathHelper::ToRadian(180));
+		}
+		else if (up == -Vector3Const::XAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(0)) * Matrix4x4::RollY(MathHelper::ToRadian(-90)) * Matrix4x4::RollX(MathHelper::ToRadian(0));
+		}
+		else if (up == Vector3Const::ZAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(0)) * Matrix4x4::RollY(MathHelper::ToRadian(-90)) * Matrix4x4::RollX(MathHelper::ToRadian(90));
+		}
+		else if (up == -Vector3Const::ZAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(0)) * Matrix4x4::RollY(MathHelper::ToRadian(-90)) * Matrix4x4::RollX(MathHelper::ToRadian(-90));
+		}
+	}
+							 break;
+	}
+
+	arg_vlp_anim->GetTargetTransform()->SetLocalRotation(rotation);
+}
+void TargetTransformRotation_WorldZAxis_90(const LookDirection arg_dir, Value_ptr<CubeTransformAnimation> arg_vlp_anim) {
+
+	auto up = arg_vlp_anim->GetTargetTransform()->GetUp().Round();
+	Matrix4x4 rotation;
+	switch (arg_dir)
+	{
+	case  LookDirection::Front:
+	{
+		if (up == Vector3Const::YAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(90)) * Matrix4x4::RollY(MathHelper::ToRadian(0)) * Matrix4x4::RollX(MathHelper::ToRadian(0));
+		}
+		else if (up == -Vector3Const::YAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(-90)) * Matrix4x4::RollY(MathHelper::ToRadian(0)) * Matrix4x4::RollX(MathHelper::ToRadian(0));
+		}
+		else if (up == Vector3Const::XAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(0)) * Matrix4x4::RollY(MathHelper::ToRadian(0)) * Matrix4x4::RollX(MathHelper::ToRadian(0));
+		}
+		else if (up == -Vector3Const::XAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(180)) * Matrix4x4::RollY(MathHelper::ToRadian(0)) * Matrix4x4::RollX(MathHelper::ToRadian(0));
+		}
+	}
+	break;
+	case  LookDirection::Back:
+	{
+		if (up == Vector3Const::YAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(-90)) * Matrix4x4::RollY(MathHelper::ToRadian(180)) * Matrix4x4::RollX(MathHelper::ToRadian(0));
+		}
+		else if (up == -Vector3Const::YAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(90)) * Matrix4x4::RollY(MathHelper::ToRadian(180)) * Matrix4x4::RollX(MathHelper::ToRadian(0));
+		}
+		else if (up == Vector3Const::XAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(0)) * Matrix4x4::RollY(MathHelper::ToRadian(180)) * Matrix4x4::RollX(MathHelper::ToRadian(0));
+		}
+		else if (up == -Vector3Const::XAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(0)) * Matrix4x4::RollY(MathHelper::ToRadian(0)) * Matrix4x4::RollX(MathHelper::ToRadian(180));
+		}
+	}
+	break;
+	case  LookDirection::Right:
+	{
+		if (up == Vector3Const::YAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(90)) * Matrix4x4::RollY(MathHelper::ToRadian(0)) * Matrix4x4::RollX(MathHelper::ToRadian(-90));
+		}
+		else if (up == -Vector3Const::YAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(-90)) * Matrix4x4::RollY(MathHelper::ToRadian(0)) * Matrix4x4::RollX(MathHelper::ToRadian(-90));
+		}
+		else if (up == Vector3Const::ZAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(180)) * Matrix4x4::RollY(MathHelper::ToRadian(0)) * Matrix4x4::RollX(MathHelper::ToRadian(-90));
+		}
+		else if (up == -Vector3Const::ZAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(0)) * Matrix4x4::RollY(MathHelper::ToRadian(0)) * Matrix4x4::RollX(MathHelper::ToRadian(-90));
+		}
+	}
+	break;
+	case  LookDirection::Left: {
+		if (up == Vector3Const::YAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(90)) * Matrix4x4::RollY(MathHelper::ToRadian(0)) * Matrix4x4::RollX(MathHelper::ToRadian(90));
+		}
+		else if (up == -Vector3Const::YAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(-90)) * Matrix4x4::RollY(MathHelper::ToRadian(0)) * Matrix4x4::RollX(MathHelper::ToRadian(90));
+		}
+		else if (up == Vector3Const::ZAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(0)) * Matrix4x4::RollY(MathHelper::ToRadian(0)) * Matrix4x4::RollX(MathHelper::ToRadian(90));
+		}
+		else if (up == -Vector3Const::ZAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(180)) * Matrix4x4::RollY(MathHelper::ToRadian(0)) * Matrix4x4::RollX(MathHelper::ToRadian(90));
+		}
+	}
+							 break;
+	case  LookDirection::Up:
+	{
+		if (up == Vector3Const::XAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(0)) * Matrix4x4::RollY(MathHelper::ToRadian(-90)) * Matrix4x4::RollX(MathHelper::ToRadian(0));
+		}
+		else if (up == -Vector3Const::XAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(0)) * Matrix4x4::RollY(MathHelper::ToRadian(-90)) * Matrix4x4::RollX(MathHelper::ToRadian(180));
+		}
+		else if (up == Vector3Const::ZAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(0)) * Matrix4x4::RollY(MathHelper::ToRadian(-90)) * Matrix4x4::RollX(MathHelper::ToRadian(90));
+		}
+		else if (up == -Vector3Const::ZAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(0)) * Matrix4x4::RollY(MathHelper::ToRadian(-90)) * Matrix4x4::RollX(MathHelper::ToRadian(-90));
+		}
+	}
+	break;
+	case  LookDirection::Down: {
+		if (up == Vector3Const::XAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(0)) * Matrix4x4::RollY(MathHelper::ToRadian(90)) * Matrix4x4::RollX(MathHelper::ToRadian(0));
+		}
+		else if (up == -Vector3Const::XAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(0)) * Matrix4x4::RollY(MathHelper::ToRadian(90)) * Matrix4x4::RollX(MathHelper::ToRadian(180));
+		}
+		else if (up == Vector3Const::ZAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(0)) * Matrix4x4::RollY(MathHelper::ToRadian(90)) * Matrix4x4::RollX(MathHelper::ToRadian(90));
+		}
+		else if (up == -Vector3Const::ZAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(0)) * Matrix4x4::RollY(MathHelper::ToRadian(90)) * Matrix4x4::RollX(MathHelper::ToRadian(-90));
+		}
+	}
+							 break;
+	}
+
+	arg_vlp_anim->GetTargetTransform()->SetLocalRotation(rotation);
+}
+
+void TargetTransformRotation_WorldZAxis_180(const LookDirection arg_dir, Value_ptr<CubeTransformAnimation> arg_vlp_anim) {
+
+	auto up = arg_vlp_anim->GetTargetTransform()->GetUp().Round();
+	arg_vlp_anim->GetInitTransform()->RollWorldRotationZ_Degrees(0.1f);
+	Matrix4x4 rotation;
+	switch (arg_dir)
+	{
+	case  LookDirection::Front:
+	{
+		if (up == Vector3Const::YAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(180)) * Matrix4x4::RollY(MathHelper::ToRadian(0)) * Matrix4x4::RollX(MathHelper::ToRadian(0));
+		}
+		else if (up == -Vector3Const::YAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(0)) * Matrix4x4::RollY(MathHelper::ToRadian(0)) * Matrix4x4::RollX(MathHelper::ToRadian(0));
+		}
+		else if (up == Vector3Const::XAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(90)) * Matrix4x4::RollY(MathHelper::ToRadian(0)) * Matrix4x4::RollX(MathHelper::ToRadian(0));
+		}
+		else if (up == -Vector3Const::XAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(-90)) * Matrix4x4::RollY(MathHelper::ToRadian(0)) * Matrix4x4::RollX(MathHelper::ToRadian(0));
+		}
+	}
+	break;
+	case  LookDirection::Back:
+	{
+		if (up == Vector3Const::YAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(180)) * Matrix4x4::RollY(MathHelper::ToRadian(180)) * Matrix4x4::RollX(MathHelper::ToRadian(0));
+		}
+		else if (up == -Vector3Const::YAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(0)) * Matrix4x4::RollY(MathHelper::ToRadian(180)) * Matrix4x4::RollX(MathHelper::ToRadian(0));
+		}
+		else if (up == Vector3Const::XAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(-90)) * Matrix4x4::RollY(MathHelper::ToRadian(180)) * Matrix4x4::RollX(MathHelper::ToRadian(0));
+		}
+		else if (up == -Vector3Const::XAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(90)) * Matrix4x4::RollY(MathHelper::ToRadian(180)) * Matrix4x4::RollX(MathHelper::ToRadian(0));
+		}
+	}
+	break;
+	case  LookDirection::Right:
+	{
+		if (up == Vector3Const::YAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(0)) * Matrix4x4::RollY(MathHelper::ToRadian(-90)) * Matrix4x4::RollX(MathHelper::ToRadian(180));
+		}
+		else if (up == -Vector3Const::YAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(0)) * Matrix4x4::RollY(MathHelper::ToRadian(-90)) * Matrix4x4::RollX(MathHelper::ToRadian(0));
+		}
+		else if (up == Vector3Const::ZAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(0)) * Matrix4x4::RollY(MathHelper::ToRadian(-90)) * Matrix4x4::RollX(MathHelper::ToRadian(90));
+		}
+		else if (up == -Vector3Const::ZAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(90)) * Matrix4x4::RollY(MathHelper::ToRadian(-90)) * Matrix4x4::RollX(MathHelper::ToRadian(0));
+		}
+	}
+	break;
+	case  LookDirection::Left: {
+
+		if (up == Vector3Const::YAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(0)) * Matrix4x4::RollY(MathHelper::ToRadian(90)) * Matrix4x4::RollX(MathHelper::ToRadian(180));
+		}
+		else if (up == -Vector3Const::YAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(0)) * Matrix4x4::RollY(MathHelper::ToRadian(90)) * Matrix4x4::RollX(MathHelper::ToRadian(0));
+		}
+		else if (up == Vector3Const::ZAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(0)) * Matrix4x4::RollY(MathHelper::ToRadian(90)) * Matrix4x4::RollX(MathHelper::ToRadian(90));
+		}
+		else if (up == -Vector3Const::ZAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(0)) * Matrix4x4::RollY(MathHelper::ToRadian(90)) * Matrix4x4::RollX(MathHelper::ToRadian(-90));
+		}
+	}
+							 break;
+	case  LookDirection::Up:
+	{
+		if (up == Vector3Const::XAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(90)) * Matrix4x4::RollY(MathHelper::ToRadian(0)) * Matrix4x4::RollX(MathHelper::ToRadian(90));
+		}
+		else if (up == -Vector3Const::XAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(-90)) * Matrix4x4::RollY(MathHelper::ToRadian(0)) * Matrix4x4::RollX(MathHelper::ToRadian(90));
+		}
+		else if (up == Vector3Const::ZAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(0)) * Matrix4x4::RollY(MathHelper::ToRadian(0)) * Matrix4x4::RollX(MathHelper::ToRadian(90));
+		}
+		else if (up == -Vector3Const::ZAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(180)) * Matrix4x4::RollY(MathHelper::ToRadian(0)) * Matrix4x4::RollX(MathHelper::ToRadian(90));
+		}
+	}
+	break;
+	case  LookDirection::Down: {
+
+		if (up == Vector3Const::XAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(90)) * Matrix4x4::RollY(MathHelper::ToRadian(0)) * Matrix4x4::RollX(MathHelper::ToRadian(-90));
+		}
+		else if (up == -Vector3Const::XAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(-90)) * Matrix4x4::RollY(MathHelper::ToRadian(0)) * Matrix4x4::RollX(MathHelper::ToRadian(-90));
+		}
+		else if (up == Vector3Const::ZAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(180)) * Matrix4x4::RollY(MathHelper::ToRadian(0)) * Matrix4x4::RollX(MathHelper::ToRadian(-90));
+		}
+		else if (up == -Vector3Const::ZAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(0)) * Matrix4x4::RollY(MathHelper::ToRadian(0)) * Matrix4x4::RollX(MathHelper::ToRadian(-90));
+		}
+	}
+							 break;
+	}
+
+	arg_vlp_anim->GetTargetTransform()->SetLocalRotation(rotation);
+}
+void TargetTransformRotation_WorldZAxis_m180(const LookDirection arg_dir, Value_ptr<CubeTransformAnimation> arg_vlp_anim) {
+
+	auto up = arg_vlp_anim->GetTargetTransform()->GetUp().Round();
+	arg_vlp_anim->GetInitTransform()->RollWorldRotationZ_Degrees(-0.1f);
+	Matrix4x4 rotation;
+	switch (arg_dir)
+	{
+	case  LookDirection::Front:
+	{
+		if (up == Vector3Const::YAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(180)) * Matrix4x4::RollY(MathHelper::ToRadian(0)) * Matrix4x4::RollX(MathHelper::ToRadian(0));
+		}
+		else if (up == -Vector3Const::YAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(0)) * Matrix4x4::RollY(MathHelper::ToRadian(0)) * Matrix4x4::RollX(MathHelper::ToRadian(0));
+		}
+		else if (up == Vector3Const::XAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(90)) * Matrix4x4::RollY(MathHelper::ToRadian(0)) * Matrix4x4::RollX(MathHelper::ToRadian(0));
+		}
+		else if (up == -Vector3Const::XAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(-90)) * Matrix4x4::RollY(MathHelper::ToRadian(0)) * Matrix4x4::RollX(MathHelper::ToRadian(0));
+		}
+	}
+	break;
+	case  LookDirection::Back:
+	{
+		if (up == Vector3Const::YAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(180)) * Matrix4x4::RollY(MathHelper::ToRadian(180)) * Matrix4x4::RollX(MathHelper::ToRadian(0));
+		}
+		else if (up == -Vector3Const::YAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(0)) * Matrix4x4::RollY(MathHelper::ToRadian(180)) * Matrix4x4::RollX(MathHelper::ToRadian(0));
+		}
+		else if (up == Vector3Const::XAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(-90)) * Matrix4x4::RollY(MathHelper::ToRadian(180)) * Matrix4x4::RollX(MathHelper::ToRadian(0));
+		}
+		else if (up == -Vector3Const::XAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(90)) * Matrix4x4::RollY(MathHelper::ToRadian(180)) * Matrix4x4::RollX(MathHelper::ToRadian(0));
+		}
+	}
+	break;
+	case  LookDirection::Right:
+	{
+		if (up == Vector3Const::YAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(0)) * Matrix4x4::RollY(MathHelper::ToRadian(-90)) * Matrix4x4::RollX(MathHelper::ToRadian(180));
+		}
+		else if (up == -Vector3Const::YAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(0)) * Matrix4x4::RollY(MathHelper::ToRadian(-90)) * Matrix4x4::RollX(MathHelper::ToRadian(0));
+		}
+		else if (up == Vector3Const::ZAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(0)) * Matrix4x4::RollY(MathHelper::ToRadian(-90)) * Matrix4x4::RollX(MathHelper::ToRadian(90));
+		}
+		else if (up == -Vector3Const::ZAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(90)) * Matrix4x4::RollY(MathHelper::ToRadian(-90)) * Matrix4x4::RollX(MathHelper::ToRadian(0));
+		}
+	}
+	break;
+	case  LookDirection::Left: {
+
+		if (up == Vector3Const::YAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(0)) * Matrix4x4::RollY(MathHelper::ToRadian(90)) * Matrix4x4::RollX(MathHelper::ToRadian(180));
+		}
+		else if (up == -Vector3Const::YAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(0)) * Matrix4x4::RollY(MathHelper::ToRadian(90)) * Matrix4x4::RollX(MathHelper::ToRadian(0));
+		}
+		else if (up == Vector3Const::ZAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(0)) * Matrix4x4::RollY(MathHelper::ToRadian(90)) * Matrix4x4::RollX(MathHelper::ToRadian(90));
+		}
+		else if (up == -Vector3Const::ZAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(0)) * Matrix4x4::RollY(MathHelper::ToRadian(90)) * Matrix4x4::RollX(MathHelper::ToRadian(-90));
+		}
+	}
+							 break;
+	case  LookDirection::Up:
+	{
+		if (up == Vector3Const::XAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(90)) * Matrix4x4::RollY(MathHelper::ToRadian(0)) * Matrix4x4::RollX(MathHelper::ToRadian(90));
+		}
+		else if (up == -Vector3Const::XAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(-90)) * Matrix4x4::RollY(MathHelper::ToRadian(0)) * Matrix4x4::RollX(MathHelper::ToRadian(90));
+		}
+		else if (up == Vector3Const::ZAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(0)) * Matrix4x4::RollY(MathHelper::ToRadian(0)) * Matrix4x4::RollX(MathHelper::ToRadian(90));
+		}
+		else if (up == -Vector3Const::ZAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(180)) * Matrix4x4::RollY(MathHelper::ToRadian(0)) * Matrix4x4::RollX(MathHelper::ToRadian(90));
+		}
+	}
+	break;
+	case  LookDirection::Down: {
+
+		if (up == Vector3Const::XAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(90)) * Matrix4x4::RollY(MathHelper::ToRadian(0)) * Matrix4x4::RollX(MathHelper::ToRadian(-90));
+		}
+		else if (up == -Vector3Const::XAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(-90)) * Matrix4x4::RollY(MathHelper::ToRadian(0)) * Matrix4x4::RollX(MathHelper::ToRadian(-90));
+		}
+		else if (up == Vector3Const::ZAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(180)) * Matrix4x4::RollY(MathHelper::ToRadian(0)) * Matrix4x4::RollX(MathHelper::ToRadian(-90));
+		}
+		else if (up == -Vector3Const::ZAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(0)) * Matrix4x4::RollY(MathHelper::ToRadian(0)) * Matrix4x4::RollX(MathHelper::ToRadian(-90));
+		}
+	}
+							 break;
+	}
+
+	arg_vlp_anim->GetTargetTransform()->SetLocalRotation(rotation);
+}
+
+void TargetTransformRotation_WorldXAxis_90(const LookDirection arg_dir, Value_ptr<CubeTransformAnimation> arg_vlp_anim) {
+
+	auto up = arg_vlp_anim->GetTargetTransform()->GetUp().Round();
+	Matrix4x4 rotation;
+	switch (arg_dir)
+	{
+	case  LookDirection::Front:
+	{
+		if (up == Vector3Const::YAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(0)) * Matrix4x4::RollY(MathHelper::ToRadian(0)) * Matrix4x4::RollX(MathHelper::ToRadian(90));
+		}
+		else if (up == -Vector3Const::YAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(180)) * Matrix4x4::RollY(MathHelper::ToRadian(0)) * Matrix4x4::RollX(MathHelper::ToRadian(90));
+		}
+		else if (up == Vector3Const::XAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(-90)) * Matrix4x4::RollY(MathHelper::ToRadian(0)) * Matrix4x4::RollX(MathHelper::ToRadian(90));
+		}
+		else if (up == -Vector3Const::XAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(90))* Matrix4x4::RollY(MathHelper::ToRadian(0))* Matrix4x4::RollX(MathHelper::ToRadian(90));
+		}
+	}
+	break;
+	case  LookDirection::Back:
+	{
+		if (up == Vector3Const::YAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(180)) * Matrix4x4::RollY(MathHelper::ToRadian(0)) * Matrix4x4::RollX(MathHelper::ToRadian(-90));
+		}
+		else if (up == -Vector3Const::YAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(0)) * Matrix4x4::RollY(MathHelper::ToRadian(0)) * Matrix4x4::RollX(MathHelper::ToRadian(-90));
+		}
+		else if (up == Vector3Const::XAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(-90)) * Matrix4x4::RollY(MathHelper::ToRadian(0)) * Matrix4x4::RollX(MathHelper::ToRadian(-90));
+		}
+		else if (up == -Vector3Const::XAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(90)) * Matrix4x4::RollY(MathHelper::ToRadian(0)) * Matrix4x4::RollX(MathHelper::ToRadian(-90));
+		}
+	}
+	break;
+	case  LookDirection::Right:
+	{
+		if (up == Vector3Const::YAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(0)) * Matrix4x4::RollY(MathHelper::ToRadian(90)) * Matrix4x4::RollX(MathHelper::ToRadian(90));
+		}
+		else if (up == -Vector3Const::YAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(0)) * Matrix4x4::RollY(MathHelper::ToRadian(90)) * Matrix4x4::RollX(MathHelper::ToRadian(-90));
+		}
+		else if (up == Vector3Const::ZAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(180)) * Matrix4x4::RollY(MathHelper::ToRadian(90)) * Matrix4x4::RollX(MathHelper::ToRadian(0));
+		}
+		else if (up == -Vector3Const::ZAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(0)) * Matrix4x4::RollY(MathHelper::ToRadian(90)) * Matrix4x4::RollX(MathHelper::ToRadian(0));
+		}
+	}
+	break;
+	case  LookDirection::Left: {
+		if (up == Vector3Const::YAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(0)) * Matrix4x4::RollY(MathHelper::ToRadian(-90)) * Matrix4x4::RollX(MathHelper::ToRadian(90));
+		}
+		else if (up == -Vector3Const::YAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(0)) * Matrix4x4::RollY(MathHelper::ToRadian(-90)) * Matrix4x4::RollX(MathHelper::ToRadian(-90));
+		}
+		else if (up == Vector3Const::ZAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(0)) * Matrix4x4::RollY(MathHelper::ToRadian(-90)) * Matrix4x4::RollX(MathHelper::ToRadian(180));
+		}
+		else if (up == -Vector3Const::ZAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(0)) * Matrix4x4::RollY(MathHelper::ToRadian(-90)) * Matrix4x4::RollX(MathHelper::ToRadian(0));
+		}
+	}
+							 break;
+	case  LookDirection::Up:
+	{
+		if (up == Vector3Const::XAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(-90)) * Matrix4x4::RollY(MathHelper::ToRadian(0)) * Matrix4x4::RollX(MathHelper::ToRadian(0));
+		}
+		else if (up == -Vector3Const::XAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(90)) * Matrix4x4::RollY(MathHelper::ToRadian(0)) * Matrix4x4::RollX(MathHelper::ToRadian(0));
+		}
+		else if (up == Vector3Const::ZAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(180)) * Matrix4x4::RollY(MathHelper::ToRadian(0)) * Matrix4x4::RollX(MathHelper::ToRadian(0));
+		}
+		else if (up == -Vector3Const::ZAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(0)) * Matrix4x4::RollY(MathHelper::ToRadian(0)) * Matrix4x4::RollX(MathHelper::ToRadian(0));
+		}
+	}
+	break;
+	case  LookDirection::Down: {
+		if (up == Vector3Const::XAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(90)) * Matrix4x4::RollY(MathHelper::ToRadian(180)) * Matrix4x4::RollX(MathHelper::ToRadian(0));
+		}
+		else if (up == -Vector3Const::XAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(-90)) * Matrix4x4::RollY(MathHelper::ToRadian(180)) * Matrix4x4::RollX(MathHelper::ToRadian(0));
+		}
+		else if (up == Vector3Const::ZAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(0)) * Matrix4x4::RollY(MathHelper::ToRadian(0)) * Matrix4x4::RollX(MathHelper::ToRadian(180));
+		}
+		else if (up == -Vector3Const::ZAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(0)) * Matrix4x4::RollY(MathHelper::ToRadian(180)) * Matrix4x4::RollX(MathHelper::ToRadian(0));
+		}
+	}
+							 break;
+	}
+
+	arg_vlp_anim->GetTargetTransform()->SetLocalRotation(rotation);
+}
+void TargetTransformRotation_WorldXAxis_m90(const LookDirection arg_dir, Value_ptr<CubeTransformAnimation> arg_vlp_anim) {
+
+	auto up = arg_vlp_anim->GetTargetTransform()->GetUp().Round();
+	Matrix4x4 rotation;
+	switch (arg_dir)
+	{
+	case  LookDirection::Front:
+	{
+		if (up == Vector3Const::YAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(0)) * Matrix4x4::RollY(MathHelper::ToRadian(0)) * Matrix4x4::RollX(MathHelper::ToRadian(-90));
+		}
+		else if (up == -Vector3Const::YAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(0)) * Matrix4x4::RollY(MathHelper::ToRadian(180)) * Matrix4x4::RollX(MathHelper::ToRadian(90));
+		}
+		else if (up == Vector3Const::XAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(-90)) * Matrix4x4::RollY(MathHelper::ToRadian(0)) * Matrix4x4::RollX(MathHelper::ToRadian(-90));
+		}
+		else if (up == -Vector3Const::XAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(90)) * Matrix4x4::RollY(MathHelper::ToRadian(0)) * Matrix4x4::RollX(MathHelper::ToRadian(-90));
+		}
+	}
+	break;
+	case  LookDirection::Back:
+	{
+		if (up == Vector3Const::YAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(0)) * Matrix4x4::RollY(MathHelper::ToRadian(180)) * Matrix4x4::RollX(MathHelper::ToRadian(-90));
+		}
+		else if (up == -Vector3Const::YAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(0)) * Matrix4x4::RollY(MathHelper::ToRadian(0)) * Matrix4x4::RollX(MathHelper::ToRadian(90));
+		}
+		else if (up == Vector3Const::XAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(-90)) * Matrix4x4::RollY(MathHelper::ToRadian(0)) * Matrix4x4::RollX(MathHelper::ToRadian(90));
+		}
+		else if (up == -Vector3Const::XAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(90)) * Matrix4x4::RollY(MathHelper::ToRadian(0)) * Matrix4x4::RollX(MathHelper::ToRadian(90));
+		}
+	}
+	break;
+	case  LookDirection::Right:
+	{
+		if (up == Vector3Const::YAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(0)) * Matrix4x4::RollY(MathHelper::ToRadian(90)) * Matrix4x4::RollX(MathHelper::ToRadian(-90));
+		}
+		else if (up == -Vector3Const::YAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(0)) * Matrix4x4::RollY(MathHelper::ToRadian(90)) * Matrix4x4::RollX(MathHelper::ToRadian(90));
+		}
+		else if (up == Vector3Const::ZAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(0)) * Matrix4x4::RollY(MathHelper::ToRadian(90)) * Matrix4x4::RollX(MathHelper::ToRadian(0));
+		}
+		else if (up == -Vector3Const::ZAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(0)) * Matrix4x4::RollY(MathHelper::ToRadian(90)) * Matrix4x4::RollX(MathHelper::ToRadian(180));
+		}
+	}
+	break;
+	case  LookDirection::Left: {
+		if (up == Vector3Const::YAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(0)) * Matrix4x4::RollY(MathHelper::ToRadian(-90)) * Matrix4x4::RollX(MathHelper::ToRadian(-90));
+		}
+		else if (up == -Vector3Const::YAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(0)) * Matrix4x4::RollY(MathHelper::ToRadian(-90)) * Matrix4x4::RollX(MathHelper::ToRadian(90));
+		}
+		else if (up == Vector3Const::ZAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(0)) * Matrix4x4::RollY(MathHelper::ToRadian(-90)) * Matrix4x4::RollX(MathHelper::ToRadian(0));
+		}
+		else if (up == -Vector3Const::ZAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(0)) * Matrix4x4::RollY(MathHelper::ToRadian(-90)) * Matrix4x4::RollX(MathHelper::ToRadian(180));
+		}
+	}
+							 break;
+	case  LookDirection::Up:
+	{
+		if (up == Vector3Const::XAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(90)) * Matrix4x4::RollY(MathHelper::ToRadian(180)) * Matrix4x4::RollX(MathHelper::ToRadian(0));
+		}
+		else if (up == -Vector3Const::XAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(-90)) * Matrix4x4::RollY(MathHelper::ToRadian(180)) * Matrix4x4::RollX(MathHelper::ToRadian(0));
+		}
+		else if (up == Vector3Const::ZAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(0)) * Matrix4x4::RollY(MathHelper::ToRadian(180)) * Matrix4x4::RollX(MathHelper::ToRadian(0));
+		}
+		else if (up == -Vector3Const::ZAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(180)) * Matrix4x4::RollY(MathHelper::ToRadian(180)) * Matrix4x4::RollX(MathHelper::ToRadian(0));
+		}
+	}
+	break;
+	case  LookDirection::Down: {
+		if (up == Vector3Const::XAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(-90)) * Matrix4x4::RollY(MathHelper::ToRadian(0)) * Matrix4x4::RollX(MathHelper::ToRadian(0));
+		}
+		else if (up == -Vector3Const::XAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(90)) * Matrix4x4::RollY(MathHelper::ToRadian(0)) * Matrix4x4::RollX(MathHelper::ToRadian(0));
+		}
+		else if (up == Vector3Const::ZAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(0)) * Matrix4x4::RollY(MathHelper::ToRadian(0)) * Matrix4x4::RollX(MathHelper::ToRadian(0));
+		}
+		else if (up == -Vector3Const::ZAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(180)) * Matrix4x4::RollY(MathHelper::ToRadian(0)) * Matrix4x4::RollX(MathHelper::ToRadian(0));
+		}
+	}
+							 break;
+	}
+
+	arg_vlp_anim->GetTargetTransform()->SetLocalRotation(rotation);
+}
+
+void TargetTransformRotation_WorldXAxis_180(const LookDirection arg_dir, Value_ptr<CubeTransformAnimation> arg_vlp_anim) {
+
+	auto up = arg_vlp_anim->GetTargetTransform()->GetUp().Round();
+	arg_vlp_anim->GetInitTransform()->RollWorldRotationX_Degrees(0.1f);
+	Matrix4x4 rotation;
+	switch (arg_dir)
+	{
+	case  LookDirection::Front:
+	{
+		if (up == Vector3Const::YAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(0)) * Matrix4x4::RollY(MathHelper::ToRadian(0)) * Matrix4x4::RollX(MathHelper::ToRadian(180));
+		}
+		else if (up == -Vector3Const::YAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(0)) * Matrix4x4::RollY(MathHelper::ToRadian(180)) * Matrix4x4::RollX(MathHelper::ToRadian(0));
+		}
+		else if (up == Vector3Const::XAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(90)) * Matrix4x4::RollY(MathHelper::ToRadian(180)) * Matrix4x4::RollX(MathHelper::ToRadian(0));
+		}
+		else if (up == -Vector3Const::XAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(-90)) * Matrix4x4::RollY(MathHelper::ToRadian(180)) * Matrix4x4::RollX(MathHelper::ToRadian(0));
+		}
+	}
+	break;
+	case  LookDirection::Back:
+	{
+		if (up == Vector3Const::YAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(180)) * Matrix4x4::RollY(MathHelper::ToRadian(0)) * Matrix4x4::RollX(MathHelper::ToRadian(0));
+		}
+		else if (up == -Vector3Const::YAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(0)) * Matrix4x4::RollY(MathHelper::ToRadian(0)) * Matrix4x4::RollX(MathHelper::ToRadian(0));
+		}
+		else if (up == Vector3Const::XAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(-90)) * Matrix4x4::RollY(MathHelper::ToRadian(0)) * Matrix4x4::RollX(MathHelper::ToRadian(0));
+		}
+		else if (up == -Vector3Const::XAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(90)) * Matrix4x4::RollY(MathHelper::ToRadian(0)) * Matrix4x4::RollX(MathHelper::ToRadian(0));
+		}
+	}
+	break;
+	case  LookDirection::Right:
+	{
+		if (up == Vector3Const::YAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(180)) * Matrix4x4::RollY(MathHelper::ToRadian(90)) * Matrix4x4::RollX(MathHelper::ToRadian(0));
+		}
+		else if (up == -Vector3Const::YAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(0)) * Matrix4x4::RollY(MathHelper::ToRadian(90)) * Matrix4x4::RollX(MathHelper::ToRadian(0));
+		}
+		else if (up == Vector3Const::ZAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(0)) * Matrix4x4::RollY(MathHelper::ToRadian(90)) * Matrix4x4::RollX(MathHelper::ToRadian(-90));
+		}
+		else if (up == -Vector3Const::ZAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(0)) * Matrix4x4::RollY(MathHelper::ToRadian(90)) * Matrix4x4::RollX(MathHelper::ToRadian(90));
+		}
+	}
+	break;
+	case  LookDirection::Left: {
+
+		if (up == Vector3Const::YAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(0)) * Matrix4x4::RollY(MathHelper::ToRadian(-90)) * Matrix4x4::RollX(MathHelper::ToRadian(180));
+		}
+		else if (up == -Vector3Const::YAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(0)) * Matrix4x4::RollY(MathHelper::ToRadian(-90)) * Matrix4x4::RollX(MathHelper::ToRadian(0));
+		}
+		else if (up == Vector3Const::ZAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(90)) * Matrix4x4::RollY(MathHelper::ToRadian(-90)) * Matrix4x4::RollX(MathHelper::ToRadian(0));
+		}
+		else if (up == -Vector3Const::ZAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(-90)) * Matrix4x4::RollY(MathHelper::ToRadian(-90)) * Matrix4x4::RollX(MathHelper::ToRadian(0));
+		}
+	}
+							 break;
+	case  LookDirection::Up:
+	{
+		if (up == Vector3Const::XAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(-90)) * Matrix4x4::RollY(MathHelper::ToRadian(0)) * Matrix4x4::RollX(MathHelper::ToRadian(90));
+		}
+		else if (up == -Vector3Const::XAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(90)) * Matrix4x4::RollY(MathHelper::ToRadian(0)) * Matrix4x4::RollX(MathHelper::ToRadian(90));
+		}
+		else if (up == Vector3Const::ZAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(180)) * Matrix4x4::RollY(MathHelper::ToRadian(0)) * Matrix4x4::RollX(MathHelper::ToRadian(90));
+		}
+		else if (up == -Vector3Const::ZAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(0)) * Matrix4x4::RollY(MathHelper::ToRadian(0)) * Matrix4x4::RollX(MathHelper::ToRadian(90));
+		}
+	}
+	break;
+	case  LookDirection::Down: {
+		if (up == Vector3Const::XAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(-90)) * Matrix4x4::RollY(MathHelper::ToRadian(0)) * Matrix4x4::RollX(MathHelper::ToRadian(-90));
+		}
+		else if (up == -Vector3Const::XAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(90)) * Matrix4x4::RollY(MathHelper::ToRadian(0)) * Matrix4x4::RollX(MathHelper::ToRadian(-90));
+		}
+		else if (up == Vector3Const::ZAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(0)) * Matrix4x4::RollY(MathHelper::ToRadian(0)) * Matrix4x4::RollX(MathHelper::ToRadian(-90));
+		}
+		else if (up == -Vector3Const::ZAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(180)) * Matrix4x4::RollY(MathHelper::ToRadian(0)) * Matrix4x4::RollX(MathHelper::ToRadian(-90));
+		}
+	}
+							 break;
+	}
+
+	arg_vlp_anim->GetTargetTransform()->SetLocalRotation(rotation);
+}
+void TargetTransformRotation_WorldXAxis_m180(const LookDirection arg_dir, Value_ptr<CubeTransformAnimation> arg_vlp_anim) {
+
+	auto up = arg_vlp_anim->GetTargetTransform()->GetUp().Round();
+	arg_vlp_anim->GetInitTransform()->RollWorldRotationX_Degrees(-0.1f);
+	Matrix4x4 rotation;
+
+	switch (arg_dir)
+	{
+	case  LookDirection::Front:
+	{
+		if (up == Vector3Const::YAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(0)) * Matrix4x4::RollY(MathHelper::ToRadian(0)) * Matrix4x4::RollX(MathHelper::ToRadian(180));
+		}
+		else if (up == -Vector3Const::YAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(0)) * Matrix4x4::RollY(MathHelper::ToRadian(180)) * Matrix4x4::RollX(MathHelper::ToRadian(0));
+		}
+		else if (up == Vector3Const::XAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(90)) * Matrix4x4::RollY(MathHelper::ToRadian(180)) * Matrix4x4::RollX(MathHelper::ToRadian(0));
+		}
+		else if (up == -Vector3Const::XAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(-90)) * Matrix4x4::RollY(MathHelper::ToRadian(180)) * Matrix4x4::RollX(MathHelper::ToRadian(0));
+		}
+	}
+	break;
+	case  LookDirection::Back:
+	{
+		if (up == Vector3Const::YAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(180)) * Matrix4x4::RollY(MathHelper::ToRadian(0)) * Matrix4x4::RollX(MathHelper::ToRadian(0));
+		}
+		else if (up == -Vector3Const::YAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(0)) * Matrix4x4::RollY(MathHelper::ToRadian(0)) * Matrix4x4::RollX(MathHelper::ToRadian(0));
+		}
+		else if (up == Vector3Const::XAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(-90)) * Matrix4x4::RollY(MathHelper::ToRadian(0)) * Matrix4x4::RollX(MathHelper::ToRadian(0));
+		}
+		else if (up == -Vector3Const::XAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(90)) * Matrix4x4::RollY(MathHelper::ToRadian(0)) * Matrix4x4::RollX(MathHelper::ToRadian(0));
+		}
+	}
+	break;
+	case  LookDirection::Right:
+	{
+		if (up == Vector3Const::YAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(180)) * Matrix4x4::RollY(MathHelper::ToRadian(90)) * Matrix4x4::RollX(MathHelper::ToRadian(0));
+		}
+		else if (up == -Vector3Const::YAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(0)) * Matrix4x4::RollY(MathHelper::ToRadian(90)) * Matrix4x4::RollX(MathHelper::ToRadian(0));
+		}
+		else if (up == Vector3Const::ZAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(0)) * Matrix4x4::RollY(MathHelper::ToRadian(90)) * Matrix4x4::RollX(MathHelper::ToRadian(-90));
+		}
+		else if (up == -Vector3Const::ZAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(0)) * Matrix4x4::RollY(MathHelper::ToRadian(90)) * Matrix4x4::RollX(MathHelper::ToRadian(90));
+		}
+	}
+	break;
+	case  LookDirection::Left: {
+
+		if (up == Vector3Const::YAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(0)) * Matrix4x4::RollY(MathHelper::ToRadian(-90)) * Matrix4x4::RollX(MathHelper::ToRadian(180));
+		}
+		else if (up == -Vector3Const::YAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(0)) * Matrix4x4::RollY(MathHelper::ToRadian(-90)) * Matrix4x4::RollX(MathHelper::ToRadian(0));
+		}
+		else if (up == Vector3Const::ZAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(90)) * Matrix4x4::RollY(MathHelper::ToRadian(-90)) * Matrix4x4::RollX(MathHelper::ToRadian(0));
+		}
+		else if (up == -Vector3Const::ZAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(-90)) * Matrix4x4::RollY(MathHelper::ToRadian(-90)) * Matrix4x4::RollX(MathHelper::ToRadian(0));
+		}
+	}
+							 break;
+	case  LookDirection::Up:
+	{
+		if (up == Vector3Const::XAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(-90)) * Matrix4x4::RollY(MathHelper::ToRadian(0)) * Matrix4x4::RollX(MathHelper::ToRadian(90));
+		}
+		else if (up == -Vector3Const::XAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(90)) * Matrix4x4::RollY(MathHelper::ToRadian(0)) * Matrix4x4::RollX(MathHelper::ToRadian(90));
+		}
+		else if (up == Vector3Const::ZAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(180)) * Matrix4x4::RollY(MathHelper::ToRadian(0)) * Matrix4x4::RollX(MathHelper::ToRadian(90));
+		}
+		else if (up == -Vector3Const::ZAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(0)) * Matrix4x4::RollY(MathHelper::ToRadian(0)) * Matrix4x4::RollX(MathHelper::ToRadian(90));
+		}
+	}
+	break;
+	case  LookDirection::Down: {
+		if (up == Vector3Const::XAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(-90)) * Matrix4x4::RollY(MathHelper::ToRadian(0)) * Matrix4x4::RollX(MathHelper::ToRadian(-90));
+		}
+		else if (up == -Vector3Const::XAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(90)) * Matrix4x4::RollY(MathHelper::ToRadian(0)) * Matrix4x4::RollX(MathHelper::ToRadian(-90));
+		}
+		else if (up == Vector3Const::ZAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(0)) * Matrix4x4::RollY(MathHelper::ToRadian(0)) * Matrix4x4::RollX(MathHelper::ToRadian(-90));
+		}
+		else if (up == -Vector3Const::ZAxis)
+		{
+			rotation = Matrix4x4::RollZ(MathHelper::ToRadian(180)) * Matrix4x4::RollY(MathHelper::ToRadian(0)) * Matrix4x4::RollX(MathHelper::ToRadian(-90));
+		}
+	}
+							 break;
+	}
+
+	arg_vlp_anim->GetTargetTransform()->SetLocalRotation(rotation);
+}
+
+}
+
 void ButiEngine::Player::MoveRightUp()
 {
+
 	auto t = gameObject.lock()->transform;
 	auto anim = gameObject.lock()->GetGameComponent<CubeTransformAnimation>();
+
 	if (!anim)
 	{
 		m_vlp_timer->Reset();
@@ -534,8 +1562,7 @@ void ButiEngine::Player::MoveRightUp()
 		anim->SetSpeed(1.0f / 10);
 		anim->SetTargetTransform(t->Clone());
 		anim->GetTargetTransform()->Translate(Vector3(m_length, m_length, 0));
-
-		anim->GetTargetTransform()->RollWorldRotationZ_Degrees(-179.9999f);
+		TargetTransformRotation_WorldZAxis_m180(m_lookDirection, anim);
 		anim->SetEaseType(Easing::EasingType::Liner);
 		anim->SetXEaseType(Easing::EasingType::CubeRotateMin180);
 		anim->SetYEaseType(Easing::EasingType::CubeRotate180);
@@ -544,7 +1571,6 @@ void ButiEngine::Player::MoveRightUp()
 		m_mapPos.y++;
 	}
 }
-
 void ButiEngine::Player::MoveRight()
 {
 	auto t = gameObject.lock()->transform;
@@ -557,8 +1583,7 @@ void ButiEngine::Player::MoveRight()
 		anim->SetSpeed(1.0f / 10);
 		anim->SetTargetTransform(t->Clone());
 		anim->GetTargetTransform()->TranslateX(m_length);
-
-		anim->GetTargetTransform()->RollWorldRotationZ_Degrees(-90.0f);
+		TargetTransformRotation_WorldZAxis_m90(m_lookDirection, anim);
 		anim->SetEaseType(Easing::EasingType::Liner);
 		anim->SetYEaseType(Easing::EasingType::CubeRotate90);
 
@@ -579,7 +1604,7 @@ void ButiEngine::Player::MoveRightDown()
 		anim->SetTargetTransform(t->Clone());
 		anim->GetTargetTransform()->Translate(Vector3(m_length, -m_length, 0));
 
-		anim->GetTargetTransform()->RollWorldRotationZ_Degrees(-179.9999f);
+		TargetTransformRotation_WorldZAxis_m180(m_lookDirection, anim);
 		anim->SetEaseType(Easing::EasingType::Liner);
 		anim->SetXEaseType(Easing::EasingType::CubeRotate180);
 		anim->SetYEaseType(Easing::EasingType::CubeRotate180);
@@ -603,7 +1628,7 @@ void ButiEngine::Player::MoveLeftUp()
 		anim->SetTargetTransform(t->Clone());
 		anim->GetTargetTransform()->Translate(Vector3(-m_length, m_length, 0));
 
-		anim->GetTargetTransform()->RollWorldRotationZ_Degrees(179.9999f);
+		TargetTransformRotation_WorldZAxis_180(m_lookDirection, anim);
 		anim->SetEaseType(Easing::EasingType::Liner);
 		anim->SetXEaseType(Easing::EasingType::CubeRotate180);
 		anim->SetYEaseType(Easing::EasingType::CubeRotate180);
@@ -626,7 +1651,7 @@ void ButiEngine::Player::MoveLeft()
 		anim->SetTargetTransform(t->Clone());
 		anim->GetTargetTransform()->TranslateX(-m_length);
 
-		anim->GetTargetTransform()->RollWorldRotationZ_Degrees(90.0f);
+		TargetTransformRotation_WorldZAxis_90(m_lookDirection, anim);
 		anim->SetEaseType(Easing::EasingType::Liner);
 		anim->SetYEaseType(Easing::EasingType::CubeRotate90);
 
@@ -647,7 +1672,7 @@ void ButiEngine::Player::MoveLeftDown()
 		anim->SetTargetTransform(t->Clone());
 		anim->GetTargetTransform()->Translate(Vector3(-m_length, -m_length, 0));
 
-		anim->GetTargetTransform()->RollWorldRotationZ_Degrees(179.9999f);
+		TargetTransformRotation_WorldZAxis_180(m_lookDirection, anim);
 		anim->SetEaseType(Easing::EasingType::Liner);
 		anim->SetXEaseType(Easing::EasingType::CubeRotateMin180);
 		anim->SetYEaseType(Easing::EasingType::CubeRotate180);
@@ -671,7 +1696,7 @@ void ButiEngine::Player::MoveUpFront()
 		anim->SetTargetTransform(t->Clone());
 		anim->GetTargetTransform()->Translate(Vector3(0, m_length, m_length));
 
-		anim->GetTargetTransform()->RollWorldRotationX_Degrees(179.9999f);
+		TargetTransformRotation_WorldXAxis_180(m_lookDirection, anim);
 		anim->SetEaseType(Easing::EasingType::Liner);
 		anim->SetYEaseType(Easing::EasingType::CubeRotate180);
 		anim->SetZEaseType(Easing::EasingType::CubeRotateMin180);
@@ -694,7 +1719,7 @@ void ButiEngine::Player::MoveFront()
 		anim->SetTargetTransform(t->Clone());
 		anim->GetTargetTransform()->TranslateZ(m_length);
 
-		anim->GetTargetTransform()->RollWorldRotationX_Degrees(90.0f);
+		TargetTransformRotation_WorldXAxis_90(m_lookDirection, anim);
 		anim->SetEaseType(Easing::EasingType::Liner);
 		anim->SetYEaseType(Easing::EasingType::CubeRotate90);
 
@@ -715,7 +1740,7 @@ void ButiEngine::Player::MoveDownFront()
 		anim->SetTargetTransform(t->Clone());
 		anim->GetTargetTransform()->Translate(Vector3(0, -m_length, m_length));
 
-		anim->GetTargetTransform()->RollWorldRotationX_Degrees(179.9999f);
+		TargetTransformRotation_WorldXAxis_180(m_lookDirection, anim);
 		anim->SetEaseType(Easing::EasingType::Liner);
 		anim->SetYEaseType(Easing::EasingType::CubeRotate180);
 		anim->SetZEaseType(Easing::EasingType::CubeRotate180);
@@ -739,7 +1764,7 @@ void ButiEngine::Player::MoveUpBack()
 		anim->SetTargetTransform(t->Clone());
 		anim->GetTargetTransform()->Translate(Vector3(0, m_length, -m_length));
 
-		anim->GetTargetTransform()->RollWorldRotationX_Degrees(-179.9999f);
+		TargetTransformRotation_WorldXAxis_m180(m_lookDirection, anim);
 		anim->SetEaseType(Easing::EasingType::Liner);
 		anim->SetYEaseType(Easing::EasingType::CubeRotate180);
 		anim->SetZEaseType(Easing::EasingType::CubeRotate180);
@@ -762,7 +1787,7 @@ void ButiEngine::Player::MoveBack()
 		anim->SetTargetTransform(t->Clone());
 		anim->GetTargetTransform()->TranslateZ(-m_length);
 
-		anim->GetTargetTransform()->RollWorldRotationX_Degrees(-90.0f);
+		TargetTransformRotation_WorldXAxis_m90(m_lookDirection, anim);
 		anim->SetEaseType(Easing::EasingType::Liner);
 		anim->SetYEaseType(Easing::EasingType::CubeRotate90);
 
@@ -783,7 +1808,7 @@ void ButiEngine::Player::MoveDownBack()
 		anim->SetTargetTransform(t->Clone());
 		anim->GetTargetTransform()->Translate(Vector3(0, -m_length, -m_length));
 
-		anim->GetTargetTransform()->RollWorldRotationX_Degrees(-179.9999f);
+		TargetTransformRotation_WorldXAxis_m180(m_lookDirection, anim);
 		anim->SetEaseType(Easing::EasingType::Liner);
 		anim->SetYEaseType(Easing::EasingType::CubeRotate180);
 		anim->SetZEaseType(Easing::EasingType::CubeRotateMin180);
@@ -797,7 +1822,7 @@ void ButiEngine::Player::MoveDownBack()
 ButiEngine::Value_weak_ptr<ButiEngine::GameObject> ButiEngine::Player::GetRightBlock(const Vector3& arg_mapPos)
 {
 	auto mapData = m_vwp_mapComponent.lock()->GetCurrentMapData().lock()->m_vec_mapDatas;
-	for (std::uint8_t i = m_mapPos.x + 1; i < mapData[m_mapPos.y][m_mapPos.z].size(); i++)
+	for (std::uint16_t i = m_mapPos.x + 1; i < mapData[m_mapPos.y][m_mapPos.z].size(); i++)
 	{
 		if (IsBlock(mapData[m_mapPos.y][m_mapPos.z][i]))
 		{
@@ -825,7 +1850,7 @@ ButiEngine::Value_weak_ptr<ButiEngine::GameObject> ButiEngine::Player::GetLeftBl
 ButiEngine::Value_weak_ptr<ButiEngine::GameObject> ButiEngine::Player::GetUpBlock(const Vector3& arg_mapPos)
 {
 	auto mapData = m_vwp_mapComponent.lock()->GetCurrentMapData().lock()->m_vec_mapDatas;
-	for (std::uint8_t i = m_mapPos.y + 1; i < mapData.size(); i++)
+	for (std::uint16_t i = m_mapPos.y + 1; i < mapData.size(); i++)
 	{
 		if (IsBlock(mapData[i][m_mapPos.z][m_mapPos.x]))
 		{
@@ -853,7 +1878,7 @@ ButiEngine::Value_weak_ptr<ButiEngine::GameObject> ButiEngine::Player::GetDownBl
 ButiEngine::Value_weak_ptr<ButiEngine::GameObject> ButiEngine::Player::GetFrontBlock(const Vector3& arg_mapPos)
 {
 	auto mapData = m_vwp_mapComponent.lock()->GetCurrentMapData().lock()->m_vec_mapDatas;
-	for (std::uint8_t i = m_mapPos.z + 1; i < mapData[m_mapPos.y].size(); i++)
+	for (std::uint16_t i = m_mapPos.z + 1; i < mapData[m_mapPos.y].size(); i++)
 	{
 		if (IsBlock(mapData[m_mapPos.y][i][m_mapPos.x]))
 		{

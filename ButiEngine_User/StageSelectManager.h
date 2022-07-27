@@ -27,14 +27,14 @@ namespace ButiEngine {
 		Value_ptr<RelativeTimer> m_vlp_animTimer;
 		Value_weak_ptr<GameObject> m_vwp_stageNumber;
 
-		static std::uint8_t m_maxStageNum;
+		static std::uint16_t m_maxStageNum;
 
 		bool m_isEnd;
-		std::uint8_t m_endTimer;
+		std::uint16_t m_endTimer;
 
 		float m_stageNumberObjectScale;
 
-		std::uint8_t m_pushCount;
+		std::uint16_t m_pushCount;
 
 		void RestartAnimTimer();
 		void OnPushRight();

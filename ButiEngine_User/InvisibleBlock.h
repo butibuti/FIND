@@ -20,7 +20,7 @@ namespace ButiEngine {
 			archive(isActive);
 		}
 
-		void SetID(const std::uint8_t arg_id) { m_id = arg_id; }
+		void SetID(const std::uint16_t arg_id) { m_id = arg_id; }
 		int GetID() { return m_id; }
 		void Active();
 		void UnActive();
@@ -29,7 +29,7 @@ namespace ButiEngine {
 		void SetMapPos(const Vector3& arg_mapPos) { m_mapPos = arg_mapPos; }
 		void Seen();
 	private:
-		std::uint8_t m_id;
+		std::uint16_t m_id;
 		bool m_isActive;
 		bool m_isSeen;
 		Vector3 m_mapPos;
