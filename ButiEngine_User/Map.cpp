@@ -163,6 +163,15 @@ void ButiEngine::Map::PutBlock(std::uint16_t arg_stageNum)
 					AddTransformAnimation(gameObject, targetPos.y);
 					gameObject->GetGameComponent<Shake>()->SetDefaultPos(targetPos);
 				}
+				else if (mapNum == GameSettings::MAP_CHIP_GLASS)
+				{
+					Vector3 targetPos = position;
+					gameObject = GetManager().lock()->AddObjectFromCereal("Glass", ObjectFactory::Create<Transform>(position, Vector3Const::Zero, scale));
+					position.y = m_vec_randomBlockPoss[z][x] - (vec_mapDatas.size() - y) * 3.5f;
+					gameObject->transform->SetWorldPosition(position);
+					AddTransformAnimation(gameObject, targetPos.y);
+					gameObject->GetGameComponent<Shake>()->SetDefaultPos(targetPos);
+				}
 				else if (mapNum == GameSettings::MAP_CHIP_TUTORIALGOAL)
 				{
 					float targetPosY = position.y;
@@ -423,7 +432,7 @@ ButiEngine::MapData::MapData(std::uint16_t arg_stageNum)
 			{
 				{0,0,0,0,0,0,0,0,0,0,0},
 				{0,0,0,0,0,0,100,0,0,0,0},
-				{0,0,0,0,0,2,0,0,0,0,0},
+				{0,0,0,0,0,3,3,0,0,0,0},
 				{0,0,2,2,0,0,0,0,101,0,0},
 				{0,0,0,0,0,0,0,0,0,0,0},
 				{0,0,0,0,0,1,0,300,0,0,0},
@@ -431,7 +440,7 @@ ButiEngine::MapData::MapData(std::uint16_t arg_stageNum)
 				{0,0,0,0,0,0,0,0,0,0,0},
 				{0,0,101,0,0,2,2,2,2,2,0},
 				{0,0,0,0,0,100,100,100,0,0,0},
-				{0,0,0,0,0,0,0,0,0,0,5},
+				{0,0,0,0,0,0,0,0,0,0,GameSettings::MAP_CHIP_DEFAULTGOAL},
 			},
 			{
 				{0,0,0,0,0,0,0,0,0,0,0},
@@ -442,7 +451,7 @@ ButiEngine::MapData::MapData(std::uint16_t arg_stageNum)
 				{0,0,0,0,0,0,0,0,0,0,0},
 				{0,0,0,0,0,0,0,0,0,0,0},
 				{0,0,0,0,0,0,0,0,0,0,0},
-				{0,0,0,0,0,0,0,0,0,2,0},
+				{0,0,0,0,0,0,0,0,0,3,0},
 				{0,0,0,0,0,0,0,0,0,0,0},
 				{0,0,0,0,0,0,0,0,0,0,0},
 			},

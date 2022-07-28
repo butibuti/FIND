@@ -117,6 +117,7 @@ namespace ButiEngine {
 		void CheckExistUnderBlock(const Vector3& arg_movePos);
 
 		bool IsBlock(std::uint16_t arg_mapChipNum);
+		bool IsCantThroughBlock(std::uint16_t arg_mapChipNum);
 	};
 
 }

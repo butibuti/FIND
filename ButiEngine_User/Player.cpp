@@ -1951,11 +1951,11 @@ ButiEngine::MoveDirection ButiEngine::Player::CheckMoveDirection(const Vector3& 
 		return output;
 	}
 
-	if (mapData[arg_movePos.y][arg_movePos.z][arg_movePos.x] == GameSettings::MAP_CHIP_BLOCK)
+	if (IsCantThroughBlock(mapData[arg_movePos.y][arg_movePos.z][arg_movePos.x]))
 	{
 		if (arg_movePos.y + 1 >= mapData.size() ||
-			mapData[arg_movePos.y + 1][arg_movePos.z][arg_movePos.x] == GameSettings::MAP_CHIP_BLOCK ||
-			mapData[m_mapPos.y + 1][m_mapPos.z][m_mapPos.x] == GameSettings::MAP_CHIP_BLOCK)
+			IsCantThroughBlock(mapData[arg_movePos.y + 1][arg_movePos.z][arg_movePos.x]) ||
+			IsCantThroughBlock(mapData[m_mapPos.y + 1][m_mapPos.z][m_mapPos.x]))
 		{
 			output = MoveDirection::No;
 		}
@@ -1964,11 +1964,11 @@ ButiEngine::MoveDirection ButiEngine::Player::CheckMoveDirection(const Vector3& 
 			output = MoveDirection::Up;
 		}
 	}
-	else if (mapData[arg_movePos.y - 1][arg_movePos.z][arg_movePos.x] == GameSettings::MAP_CHIP_BLOCK)
+	else if (IsCantThroughBlock(mapData[arg_movePos.y - 1][arg_movePos.z][arg_movePos.x]))
 	{
 		output = MoveDirection::Normal;
 	}
-	else if (arg_movePos.y - 2 >= 0 && mapData[arg_movePos.y - 2][arg_movePos.z][arg_movePos.x] == GameSettings::MAP_CHIP_BLOCK)
+	else if (arg_movePos.y - 2 >= 0 && IsCantThroughBlock(mapData[arg_movePos.y - 2][arg_movePos.z][arg_movePos.x]))
 	{
 		output = MoveDirection::Down;
 	}
@@ -1987,7 +1987,7 @@ void ButiEngine::Player::CheckExistUnderBlock(const Vector3& arg_movePos)
 		return;
 	}
 	std::vector<std::vector<std::vector<std::uint16_t>>>& mapData = m_vwp_mapComponent.lock()->GetCurrentMapData().lock()->m_vec_mapDatas;
-	if (mapData[arg_movePos.y - 1][arg_movePos.z][arg_movePos.x] == GameSettings::MAP_CHIP_BLOCK)
+	if (IsCantThroughBlock(mapData[arg_movePos.y - 1][arg_movePos.z][arg_movePos.x]))
 	{
 		return;
 	}
@@ -2003,5 +2003,13 @@ bool ButiEngine::Player::IsBlock(std::uint16_t arg_mapChipNum)
 	if (arg_mapChipNum == GameSettings::MAP_CHIP_EASYGOAL) { return true; }
 	if (arg_mapChipNum == GameSettings::MAP_CHIP_DEFAULTGOAL) { return true; }
 	if (arg_mapChipNum >= GameSettings::MAP_CHIP_INVISIBLEBLOCK) { return true; }
+	if (arg_mapChipNum >= GameSettings::MAP_CHIP_NEXT_STAGE_BLOCK) { return true; }
+	return false;
+}
+
+bool ButiEngine::Player::IsCantThroughBlock(std::uint16_t arg_mapChipNum)
+{
+	if (arg_mapChipNum == GameSettings::MAP_CHIP_BLOCK) { return true; }
+	if (arg_mapChipNum == GameSettings::MAP_CHIP_GLASS) { return true; }
 	return false;
 }
