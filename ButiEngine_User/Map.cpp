@@ -10,6 +10,7 @@
 #include "CameraController.h"
 #include "BurstManager.h"
 #include "BackGround.h"
+#include "NextStageBlock.h"
 
 void ButiEngine::Map::OnUpdate()
 {
@@ -274,6 +275,8 @@ void ButiEngine::Map::PutBlock(std::uint16_t arg_stageNum)
 					gameObject = GetManager().lock()->AddObjectFromCereal("NextStageBlock");
 					gameObject->transform->SetWorldPosition(position);
 					gameObject->transform->SetLocalScale(scale * 0.75f);
+					gameObject->GetGameComponent<NextStageBlock>()->SetStageNum(stageNum);
+
 					AddTransformAnimation(gameObject, targetPosY);
                 }
 					
@@ -437,7 +440,7 @@ ButiEngine::MapData::MapData(std::uint16_t arg_stageNum)
 				{0,0,0,0,0,0,0,0,0,0,0},
 				{0,0,0,0,0,1,0,300,0,0,0},
 				{0,0,101,0,0,0,0,0,0,0,0},
-				{0,0,0,0,0,0,0,0,0,0,0},
+				{0,0,301,0,0,0,0,0,0,0,0},
 				{0,0,101,0,0,2,2,2,2,2,0},
 				{0,0,0,0,0,100,100,100,0,0,0},
 				{0,0,0,0,0,0,0,0,0,0,GameSettings::MAP_CHIP_DEFAULTGOAL},

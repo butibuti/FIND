@@ -55,7 +55,7 @@ void ButiEngine::DefaultGoal::Seen()
 	GetManager().lock()->AddObjectFromCereal("GoalAura", ObjectFactory::Create<Transform>(pos, rot, scale));
 
 	auto map = GetManager().lock()->GetGameObject("Map");
-	auto mapComponent = map.lock()->GetGameComponent< Map>();
+	auto mapComponent = map.lock()->GetGameComponent<Map>();
 	mapComponent->SetMapEndColor(Vector4(1.0f, 1.0f, 0.5f, 1.0f));
 	mapComponent->SetMapStartColor(Vector4(0.7f, 0.5f, 0.0f, 1.0f));
 	mapComponent->ShakeStart(0.01f);

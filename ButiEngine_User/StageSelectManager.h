@@ -21,6 +21,7 @@ namespace ButiEngine {
 		static std::int8_t GetStageNum() { return m_stageNum; }
 		static std::string GetNextSceneName();
 		static void SetMaxStageNum();
+		static std::uint16_t GetMaxStageNum() { return m_maxStageNum; }
 
 		static std::int8_t m_stageNum;
 	private:

@@ -11,6 +11,7 @@
 #include "Shake.h"
 #include "InputManager.h"
 #include "CameraMesh.h"
+#include "NextStageBlock.h"
 
 void ButiEngine::Player::OnUpdate()
 {
@@ -36,10 +37,7 @@ void ButiEngine::Player::OnUpdate()
 	{
 		return;
 	}
-	if (!m_isGoal)
-	{
-		Contoroll();
-	}
+	Contoroll();
 	if (m_vlp_timer->Update())
 	{
 		m_vlp_timer->Stop();
@@ -59,10 +57,16 @@ void ButiEngine::Player::OnUpdate()
 		m_vwp_invisibleBlockManagerComponent.lock()->CheckSeen();
 		CheckExistUnderBlock(m_mapPos);
 
+		CheckTouchNextStageBlock();
 		CheckGoal();
 	}
 	Shrink();
 	Fall();
+
+	if (m_isTouchNextStageBlock && InputManager::IsTriggerDecisionKey())
+	{
+		Goal();
+	}
 }
 
 void ButiEngine::Player::OnSet()
@@ -87,6 +91,7 @@ void ButiEngine::Player::Start()
 	m_isGoal = false;
 	m_isFall = false;
 	m_isFallStart = false;
+	m_isTouchNextStageBlock = false;
 	m_afterFallPos = Vector3Const::Zero;
 	m_length = 1.0f;
 	m_vwp_mapComponent = gameObject.lock()->GetGameObjectManager().lock()->GetGameObject("Map").lock()->GetGameComponent<Map>();
@@ -199,6 +204,14 @@ void ButiEngine::Player::CheckLookBlock()
 			invBlockComp->Seen();
 		}
 	}
+	else if (lookObject.lock()->HasGameObjectTag("NextStageBlock"))
+	{
+		auto nextStageBlockComp = lookObject.lock()->GetGameComponent<NextStageBlock>();
+		if (nextStageBlockComp)
+		{
+			nextStageBlockComp->Seen();
+		}
+	}
 }
 
 void ButiEngine::Player::RollCameraDirection(const std::uint16_t arg_rotateDir)
@@ -214,13 +227,30 @@ void ButiEngine::Player::RollCameraDirection(const std::uint16_t arg_rotateDir)
 }
 
 
-void ButiEngine::Player::CheckGoal()
+void ButiEngine::Player::Goal()
 {
-	if (m_isGoal)
+	if (m_isGoal) { return; }
+
+	gameObject.lock()->GetApplication().lock()->GetSoundManager()->PlaySE(SoundTag("Sound/TouchGoal.wav"), 0.1f);
+	m_isGoal = true;
+}
+
+void ButiEngine::Player::CheckTouchNextStageBlock()
+{
+	std::vector<std::vector<std::vector<std::uint16_t>>>& vec_mapDatas = m_vwp_mapComponent.lock()->GetCurrentMapData().lock()->m_vec_mapDatas;
+	std::uint16_t mapNum = vec_mapDatas[m_mapPos.y][m_mapPos.z][m_mapPos.x];
+	auto hitObject = m_vwp_mapComponent.lock()->GetMapObjectData()[m_mapPos.y][m_mapPos.z][m_mapPos.x];
+
+	if (!hitObject.lock() || !hitObject.lock()->HasGameObjectTag("NextStageBlock"))
 	{
 		return;
 	}
 
+	m_isTouchNextStageBlock = (mapNum >= GameSettings::MAP_CHIP_NEXT_STAGE_BLOCK && hitObject.lock()->GetGameComponent<NextStageBlock>()->IsActive());
+}
+
+void ButiEngine::Player::CheckGoal()
+{
 	std::vector<std::vector<std::vector<std::uint16_t>>>& vec_mapDatas = m_vwp_mapComponent.lock()->GetCurrentMapData().lock()->m_vec_mapDatas;
 	std::uint16_t mapNum = vec_mapDatas[m_mapPos.y][m_mapPos.z][m_mapPos.x];
 	auto hitObject = m_vwp_mapComponent.lock()->GetMapObjectData()[m_mapPos.y][m_mapPos.z][m_mapPos.x];
@@ -230,11 +260,6 @@ void ButiEngine::Player::CheckGoal()
 		return;
 	}
 
-	if (mapNum >= GameSettings::MAP_CHIP_NEXT_STAGE_BLOCK)
-	{
-		m_isGoal = true;
-	}
-
 	if (mapNum >= GameSettings::MAP_CHIP_PLAYER_AND_GOAL)
 	{
 		mapNum = (mapNum - GameSettings::MAP_CHIP_PLAYER_AND_GOAL) / 10;
@@ -242,20 +267,15 @@ void ButiEngine::Player::CheckGoal()
 
 	if (mapNum == GameSettings::MAP_CHIP_TUTORIALGOAL)
 	{
-		m_isGoal = true;
+		Goal();
 	}
 	else if (mapNum == GameSettings::MAP_CHIP_EASYGOAL && hitObject.lock()->GetGameComponent<EasyGoal>()->IsActive())
 	{
-		m_isGoal = true;
+		Goal();
 	}
 	else if (mapNum == GameSettings::MAP_CHIP_DEFAULTGOAL && hitObject.lock()->GetGameComponent<DefaultGoal>()->IsActive())
 	{
-		m_isGoal = true;
-	}
-
-	if (m_isGoal)
-	{
-		gameObject.lock()->GetApplication().lock()->GetSoundManager()->PlaySE(SoundTag("Sound/TouchGoal.wav"), 0.1f);
+		Goal();
 	}
 }
 

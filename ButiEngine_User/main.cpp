@@ -9,6 +9,7 @@
 #include"cereal/include/cereal/cereal.hpp"
 #include"cereal/include/cereal/archives/json.hpp"
 #include"StageSelectManager.h"
+#include"NextStageBlock.h"
 #define _CRTDBG_MAP_ALLOC
 
 using namespace::ButiEngine;
@@ -31,6 +32,7 @@ std::int32_t APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR arg, std::in
 {
 #endif
 	//StageSelectManager::SetMaxStageNum();
+	NextStageBlock::InitializeIsActives();
 	std::int32_t returnCode = 0;
 
 #ifdef _EDITORBUILD

@@ -31,8 +31,11 @@ void ButiEngine::BurstManager::Burst()
 	auto objects = GetManager().lock()->GetGameObjects(GetTagManager()->GetObjectTag("MapChip"));
 	auto goals = GetManager().lock()->GetGameObjects(GetTagManager()->GetObjectTag("Goal"));
 	auto invBlocks = GetManager().lock()->GetGameObjects(GetTagManager()->GetObjectTag("InvisibleBlock"));
+	auto nextStageBlocks = GetManager().lock()->GetGameObjects(GetTagManager()->GetObjectTag("NextStageBlock"));
+
 	objects.insert(objects.end(), goals.begin(), goals.end());
 	objects.insert(objects.end(), invBlocks.begin(), invBlocks.end());
+	objects.insert(objects.end(), nextStageBlocks.begin(), nextStageBlocks.end());
 
 	auto mapChipEnd = objects.end();
 	for (auto itr = objects.begin(); itr != mapChipEnd; ++itr)

@@ -74,6 +74,7 @@ namespace ButiEngine {
 		bool m_isGoal;
 		bool m_isFall;
 		bool m_isFallStart;
+		bool m_isTouchNextStageBlock;
 		Vector3 m_afterFallPos;
 		float m_scale;
 		LookDirection m_lookDirection;
@@ -82,6 +83,8 @@ namespace ButiEngine {
 		Value_ptr<RelativeTimer> m_vlp_timer;
 		Value_ptr<RelativeTimer> m_vlp_fallTimer;
 
+		void Goal();
+		void CheckTouchNextStageBlock();
 		void CheckGoal();
 		void CheckLookDirection();
 		void Contoroll();

@@ -17,8 +17,17 @@ namespace ButiEngine {
 		{
 			archive(isActive);
 		}
-	private:
+		bool IsActive() { return m_isActive; }
+		void SetStageNum(const std::uint8_t arg_stageNum) { m_stageNum = arg_stageNum; }
 
+		void Seen();
+
+		static void InitializeIsActives();
+	private:
+		static std::vector<bool> m_vec_isActives;
+
+		std::uint8_t m_stageNum;
+		bool m_isActive;
 	};
 
 }
