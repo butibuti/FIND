@@ -41,7 +41,6 @@ void ButiEngine::Player::OnUpdate()
 	if (m_vlp_timer->Update())
 	{
 		m_vlp_timer->Stop();
-		Expansion();
 
 		int rand = ButiRandom::GetRandom(0, 2, 1);
 		gameObject.lock()->GetApplication().lock()->GetSoundManager()->PlaySE(m_moveSounds[rand], 0.1f);
@@ -56,9 +55,16 @@ void ButiEngine::Player::OnUpdate()
 		GetManager().lock()->GetGameObject("CameraMesh").lock()->GetGameComponent<CameraMesh>()->Flash();
 		m_vwp_invisibleBlockManagerComponent.lock()->CheckSeen();
 		CheckExistUnderBlock(m_mapPos);
-
-		CheckTouchNextStageBlock();
-		CheckGoal();
+		if (!m_isFallStart)
+		{
+			CheckTouchNextStageBlock();
+			CheckGoal();
+		}
+	}
+	if (m_vlp_expantionTimer->Update())
+	{
+		m_vlp_expantionTimer->Stop();
+		Expansion();
 	}
 	Shrink();
 	Fall();
@@ -99,6 +105,7 @@ void ButiEngine::Player::Start()
 	m_offset = m_mapPos - m_startPos;
 
 	m_vlp_timer = ObjectFactory::Create<RelativeTimer>(12);
+	m_vlp_expantionTimer = ObjectFactory::Create<RelativeTimer>(10);
 	m_vlp_fallTimer = ObjectFactory::Create<RelativeTimer>(24);
 	m_vlp_fallTimer->Stop();
 	m_vwp_invisibleBlockManagerComponent = gameObject.lock()->GetGameObjectManager().lock()->GetGameObject("InvisibleBlockManager").lock()->GetGameComponent<InvisibleBlockManager>();
@@ -141,7 +148,8 @@ void ButiEngine::Player::CheckLookBlock()
 	else if (m_lookDirection == LookDirection::Down)
 	{
 		bPos.y -= 100;
-		lookObject = GetDownBlock(m_mapPos);
+		std::int8_t tmp = 0;
+		lookObject = GetDownBlock(m_mapPos, tmp);
 	}
 	else if (m_lookDirection == LookDirection::Front)
 	{
@@ -1603,6 +1611,8 @@ void ButiEngine::Player::MoveRightUp()
 	{
 		m_vlp_timer->Reset();
 		m_vlp_timer->Start();
+		m_vlp_expantionTimer->Reset();
+		m_vlp_expantionTimer->Start();
 		anim = gameObject.lock()->AddGameComponent<CubeTransformAnimation>();
 		anim->SetSpeed(1.0f / 10);
 		anim->SetTargetTransform(t->Clone());
@@ -1624,6 +1634,8 @@ void ButiEngine::Player::MoveRight()
 	{
 		m_vlp_timer->Reset();
 		m_vlp_timer->Start();
+		m_vlp_expantionTimer->Reset();
+		m_vlp_expantionTimer->Start();
 		anim = gameObject.lock()->AddGameComponent<CubeTransformAnimation>();
 		anim->SetSpeed(1.0f / 10);
 		anim->SetTargetTransform(t->Clone());
@@ -1644,6 +1656,8 @@ void ButiEngine::Player::MoveRightDown()
 	{
 		m_vlp_timer->Reset();
 		m_vlp_timer->Start();
+		m_vlp_expantionTimer->Reset();
+		m_vlp_expantionTimer->Start();
 		anim = gameObject.lock()->AddGameComponent<CubeTransformAnimation>();
 		anim->SetSpeed(1.0f / 10);
 		anim->SetTargetTransform(t->Clone());
@@ -1668,6 +1682,8 @@ void ButiEngine::Player::MoveLeftUp()
 	{
 		m_vlp_timer->Reset();
 		m_vlp_timer->Start();
+		m_vlp_expantionTimer->Reset();
+		m_vlp_expantionTimer->Start();
 		anim = gameObject.lock()->AddGameComponent<CubeTransformAnimation>();
 		anim->SetSpeed(1.0f / 10);
 		anim->SetTargetTransform(t->Clone());
@@ -1691,6 +1707,8 @@ void ButiEngine::Player::MoveLeft()
 	{
 		m_vlp_timer->Reset();
 		m_vlp_timer->Start();
+		m_vlp_expantionTimer->Reset();
+		m_vlp_expantionTimer->Start();
 		anim = gameObject.lock()->AddGameComponent<CubeTransformAnimation>();
 		anim->SetSpeed(1.0f / 10);
 		anim->SetTargetTransform(t->Clone());
@@ -1712,6 +1730,8 @@ void ButiEngine::Player::MoveLeftDown()
 	{
 		m_vlp_timer->Reset();
 		m_vlp_timer->Start();
+		m_vlp_expantionTimer->Reset();
+		m_vlp_expantionTimer->Start();
 		anim = gameObject.lock()->AddGameComponent<CubeTransformAnimation>();
 		anim->SetSpeed(1.0f / 10);
 		anim->SetTargetTransform(t->Clone());
@@ -1736,6 +1756,8 @@ void ButiEngine::Player::MoveUpFront()
 	{
 		m_vlp_timer->Reset();
 		m_vlp_timer->Start();
+		m_vlp_expantionTimer->Reset();
+		m_vlp_expantionTimer->Start();
 		anim = gameObject.lock()->AddGameComponent<CubeTransformAnimation>();
 		anim->SetSpeed(1.0f / 10);
 		anim->SetTargetTransform(t->Clone());
@@ -1759,6 +1781,8 @@ void ButiEngine::Player::MoveFront()
 	{
 		m_vlp_timer->Reset();
 		m_vlp_timer->Start();
+		m_vlp_expantionTimer->Reset();
+		m_vlp_expantionTimer->Start();
 		anim = gameObject.lock()->AddGameComponent<CubeTransformAnimation>();
 		anim->SetSpeed(1.0f / 10);
 		anim->SetTargetTransform(t->Clone());
@@ -1780,6 +1804,8 @@ void ButiEngine::Player::MoveDownFront()
 	{
 		m_vlp_timer->Reset();
 		m_vlp_timer->Start();
+		m_vlp_expantionTimer->Reset();
+		m_vlp_expantionTimer->Start();
 		anim = gameObject.lock()->AddGameComponent<CubeTransformAnimation>();
 		anim->SetSpeed(1.0f / 10);
 		anim->SetTargetTransform(t->Clone());
@@ -1804,6 +1830,8 @@ void ButiEngine::Player::MoveUpBack()
 	{
 		m_vlp_timer->Reset();
 		m_vlp_timer->Start();
+		m_vlp_expantionTimer->Reset();
+		m_vlp_expantionTimer->Start();
 		anim = gameObject.lock()->AddGameComponent<CubeTransformAnimation>();
 		anim->SetSpeed(1.0f / 10);
 		anim->SetTargetTransform(t->Clone());
@@ -1827,6 +1855,8 @@ void ButiEngine::Player::MoveBack()
 	{
 		m_vlp_timer->Reset();
 		m_vlp_timer->Start();
+		m_vlp_expantionTimer->Reset();
+		m_vlp_expantionTimer->Start();
 		anim = gameObject.lock()->AddGameComponent<CubeTransformAnimation>();
 		anim->SetSpeed(1.0f / 10);
 		anim->SetTargetTransform(t->Clone());
@@ -1848,6 +1878,8 @@ void ButiEngine::Player::MoveDownBack()
 	{
 		m_vlp_timer->Reset();
 		m_vlp_timer->Start();
+		m_vlp_expantionTimer->Reset();
+		m_vlp_expantionTimer->Start();
 		anim = gameObject.lock()->AddGameComponent<CubeTransformAnimation>();
 		anim->SetSpeed(1.0f / 10);
 		anim->SetTargetTransform(t->Clone());
@@ -1906,13 +1938,23 @@ ButiEngine::Value_weak_ptr<ButiEngine::GameObject> ButiEngine::Player::GetUpBloc
 	return Value_weak_ptr<GameObject>();
 }
 
-ButiEngine::Value_weak_ptr<ButiEngine::GameObject> ButiEngine::Player::GetDownBlock(const Vector3& arg_mapPos)
+ButiEngine::Value_weak_ptr<ButiEngine::GameObject> ButiEngine::Player::GetDownBlock(const Vector3& arg_mapPos, std::int8_t& ref_output_diff, const bool arg_isCantThrough)
 {
 	auto mapData = m_vwp_mapComponent.lock()->GetCurrentMapData().lock()->m_vec_mapDatas;
 	for (std::int8_t i = m_mapPos.y - 1; i >= 0; i--)
 	{
-		if (IsBlock(mapData[i][m_mapPos.z][m_mapPos.x]))
+		if (arg_isCantThrough)
 		{
+			if (IsCantThroughBlock(mapData[i][m_mapPos.z][m_mapPos.x]))
+			{
+				ref_output_diff = abs(m_mapPos.y - i);
+				auto mapObjectData = m_vwp_mapComponent.lock()->GetMapObjectData();
+				return mapObjectData[i][m_mapPos.z][m_mapPos.x];
+			}
+		}
+		else if (IsBlock(mapData[i][m_mapPos.z][m_mapPos.x]))
+		{
+			ref_output_diff = abs(m_mapPos.y - i);
 			auto mapObjectData = m_vwp_mapComponent.lock()->GetMapObjectData();
 			return mapObjectData[i][m_mapPos.z][m_mapPos.x];
 		}
@@ -1978,6 +2020,24 @@ void ButiEngine::Player::Fall()
 		{
 			gameObject.lock()->transform->SetWorldPosition(m_afterFallPos);
 			m_isFall = false;
+
+			Expansion();
+
+			int rand = ButiRandom::GetRandom(0, 2, 1);
+			gameObject.lock()->GetApplication().lock()->GetSoundManager()->PlaySE(m_moveSounds[rand], 0.1f);
+
+			//”g–ä
+			auto pos = gameObject.lock()->transform->GetWorldPosition();
+			pos.y -= 0.3f;
+			GetManager().lock()->AddObjectFromCereal("Ripple", ObjectFactory::Create<Transform>(pos, Vector3(90, 0, 0), 0.0f));
+
+			CheckLookBlock();
+			//ƒtƒ‰ƒbƒVƒ…
+			GetManager().lock()->GetGameObject("CameraMesh").lock()->GetGameComponent<CameraMesh>()->Flash();
+			m_vwp_invisibleBlockManagerComponent.lock()->CheckSeen();
+			CheckExistUnderBlock(m_mapPos);
+			CheckTouchNextStageBlock();
+			CheckGoal();
 		}
 	}
 }
@@ -2036,9 +2096,24 @@ void ButiEngine::Player::CheckExistUnderBlock(const Vector3& arg_movePos)
 	{
 		return;
 	}
+
+	std::int8_t diff = 0;
+	auto downBlock = GetDownBlock(arg_movePos, diff, true);
 	m_isFallStart = true;
-	m_afterFallPos = gameObject.lock()->transform->GetWorldPosition();
-	m_afterFallPos.y = -500.0f;
+	if (downBlock.lock())
+	{
+		Vector3 downBlockPos = downBlock.lock()->transform->GetLocalPosition();
+		m_afterFallPos = downBlockPos;
+		m_afterFallPos.y += GameSettings::BLOCK_SIZE;
+
+		m_mapPos.y -= diff;
+		m_mapPos.y += 1;
+	}
+	else
+	{
+		m_afterFallPos = gameObject.lock()->transform->GetLocalPosition();
+		m_afterFallPos.y = -500.0f;
+	}
 }
 
 bool ButiEngine::Player::IsBlock(std::uint16_t arg_mapChipNum)

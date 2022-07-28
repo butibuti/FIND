@@ -83,6 +83,7 @@ namespace ButiEngine {
 		CameraDirection m_cameraDirection=CameraDirection::Front;
 
 		Value_ptr<RelativeTimer> m_vlp_timer;
+		Value_ptr<RelativeTimer> m_vlp_expantionTimer;
 		Value_ptr<RelativeTimer> m_vlp_fallTimer;
 
 		void Goal();
@@ -111,7 +112,7 @@ namespace ButiEngine {
 		Value_weak_ptr<GameObject> GetRightBlock(const Vector3& arg_mapPos);
 		Value_weak_ptr<GameObject> GetLeftBlock(const Vector3& arg_mapPos);
 		Value_weak_ptr<GameObject> GetUpBlock(const Vector3& arg_mapPos);
-		Value_weak_ptr<GameObject> GetDownBlock(const Vector3& arg_mapPos);
+		Value_weak_ptr<GameObject> GetDownBlock(const Vector3& arg_mapPos, std::int8_t& ref_output_diff, const bool arg_isCantThrough = false);
 		Value_weak_ptr<GameObject> GetFrontBlock(const Vector3& arg_mapPos);
 		Value_weak_ptr<GameObject> GetBackBlock(const Vector3& arg_mapPos);
 
