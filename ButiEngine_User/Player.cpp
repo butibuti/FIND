@@ -243,10 +243,35 @@ void ButiEngine::Player::CheckTouchNextStageBlock()
 
 	if (!hitObject.lock() || !hitObject.lock()->HasGameObjectTag("NextStageBlock"))
 	{
+		m_isTouchNextStageBlock = false;
+		if (m_vwp_nextStageBlockComponent.lock())
+		{
+			m_vwp_nextStageBlockComponent.lock()->DisappearPreview();
+		}
+		m_vwp_nextStageBlockComponent = nullptr;
 		return;
 	}
 
-	m_isTouchNextStageBlock = (mapNum >= GameSettings::MAP_CHIP_NEXT_STAGE_BLOCK && hitObject.lock()->GetGameComponent<NextStageBlock>()->IsActive());
+	if (mapNum >= GameSettings::MAP_CHIP_NEXT_STAGE_BLOCK && hitObject.lock()->GetGameComponent<NextStageBlock>()->IsActive())
+	{
+		m_isTouchNextStageBlock = true;
+		if (m_vwp_nextStageBlockComponent.lock())
+		{
+			m_vwp_nextStageBlockComponent.lock()->DisappearPreview();
+		}
+		m_vwp_nextStageBlockComponent = hitObject.lock()->GetGameComponent<NextStageBlock>();
+		m_vwp_nextStageBlockComponent.lock()->AppearPreview();
+	}
+	else
+	{
+		m_isTouchNextStageBlock = false;
+		if (m_vwp_nextStageBlockComponent.lock())
+		{
+			m_vwp_nextStageBlockComponent.lock()->DisappearPreview();
+		}
+		m_vwp_nextStageBlockComponent = nullptr;
+	}
+
 }
 
 void ButiEngine::Player::CheckGoal()

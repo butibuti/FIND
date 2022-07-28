@@ -1,6 +1,7 @@
 #include "stdafx_u.h"
 #include "NextStageBlock.h"
 #include "StageSelectManager.h"
+#include "StagePreviewParent.h"
 
 std::vector<bool> ButiEngine::NextStageBlock::m_vec_isActives;
 
@@ -14,6 +15,11 @@ void ButiEngine::NextStageBlock::OnSet()
 
 void ButiEngine::NextStageBlock::Start()
 {
+	m_vwp_stagePreviewParent = GetManager().lock()->AddObjectFromCereal("StagePreviewParent");
+	m_vwp_stagePreviewParent.lock()->transform->SetBaseTransform(gameObject.lock()->transform);
+	m_vwp_stagePreviewParent.lock()->transform->SetLocalPosition(0.0f);
+	m_vwp_stagePreviewParent.lock()->GetGameComponent<StagePreviewParent>()->CreatePreview(m_stageNum);
+
 	m_isActive = m_vec_isActives[m_stageNum];
 
 	if (!m_isActive)
@@ -25,6 +31,16 @@ void ButiEngine::NextStageBlock::Start()
 ButiEngine::Value_ptr<ButiEngine::GameComponent> ButiEngine::NextStageBlock::Clone()
 {
 	return ObjectFactory::Create<NextStageBlock>();
+}
+
+void ButiEngine::NextStageBlock::AppearPreview()
+{
+	m_vwp_stagePreviewParent.lock()->GetGameComponent<StagePreviewParent>()->Appear();
+}
+
+void ButiEngine::NextStageBlock::DisappearPreview()
+{
+	m_vwp_stagePreviewParent.lock()->GetGameComponent<StagePreviewParent>()->Disappear();
 }
 
 void ButiEngine::NextStageBlock::Seen()

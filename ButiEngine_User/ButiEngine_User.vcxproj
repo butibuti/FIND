@@ -403,6 +403,7 @@ cd ..\</Command>
     <ClCompile Include="ShaderChecker.cpp" />
     <ClCompile Include="Shake.cpp" />
     <ClCompile Include="SquareParticleEmitter.cpp" />
+    <ClCompile Include="StagePreviewParent.cpp" />
     <ClCompile Include="StageSelectManager.cpp" />
     <ClCompile Include="StartPlayerDirecting.cpp" />
     <ClCompile Include="stdafx.cpp">
@@ -447,6 +448,7 @@ cd ..\</Command>
     <ClInclude Include="ShaderChecker.h" />
     <ClInclude Include="Shake.h" />
     <ClInclude Include="SquareParticleEmitter.h" />
+    <ClInclude Include="StagePreviewParent.h" />
     <ClInclude Include="StageSelectManager.h" />
     <ClInclude Include="StartPlayerDirecting.h" />
     <ClInclude Include="stdafx_u.h" />

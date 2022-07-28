@@ -19,12 +19,16 @@ namespace ButiEngine {
 		}
 		bool IsActive() { return m_isActive; }
 		void SetStageNum(const std::uint8_t arg_stageNum) { m_stageNum = arg_stageNum; }
+		void AppearPreview();
+		void DisappearPreview();
 
 		void Seen();
 
 		static void InitializeIsActives();
 	private:
 		static std::vector<bool> m_vec_isActives;
+
+		Value_weak_ptr<GameObject> m_vwp_stagePreviewParent;
 
 		std::uint8_t m_stageNum;
 		bool m_isActive;

@@ -5,6 +5,7 @@ namespace ButiEngine {
 	class Map;
 	class PlayerCamera;
 	class InvisibleBlockManager;
+	class NextStageBlock;
 
 	enum class MoveDirection
 	{
@@ -66,6 +67,7 @@ namespace ButiEngine {
 		float m_length;
 		Value_weak_ptr<Map> m_vwp_mapComponent;
 		Value_weak_ptr<InvisibleBlockManager> m_vwp_invisibleBlockManagerComponent;
+		Value_weak_ptr<NextStageBlock> m_vwp_nextStageBlockComponent;
 		Vector3 m_mapPos;
 		Vector3 m_nextMapPos;
 		Vector3 m_offset;

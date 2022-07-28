@@ -21,9 +21,9 @@ void ButiEngine::TitleSceneManager::OnUpdate()
 	{
 		m_vlp_timer->Stop();
 		auto sceneManager = gameObject.lock()->GetApplication().lock()->GetSceneManager();
-		sceneManager->RemoveScene("StageSelectScene");
-		sceneManager->LoadScene("StageSelectScene");
-		sceneManager->ChangeScene("StageSelectScene");
+		sceneManager->RemoveScene("NewStageSelectScene");
+		sceneManager->LoadScene("NewStageSelectScene");
+		sceneManager->ChangeScene("NewStageSelectScene");
 
 	}
 }
