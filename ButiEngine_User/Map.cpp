@@ -407,7 +407,7 @@ void ButiEngine::Map::AddTransformAnimation(Value_weak_ptr<ButiEngine::GameObjec
 	auto anim = arg_gameObject.lock()->AddGameComponent<TransformAnimation>();
 	anim->SetSpeed(1.0f / (d * 2));
 	anim->SetTargetTransform(transform->Clone());
-	anim->GetTargetTransform()->TranslateY(d);
+	anim->GetTargetTransform()->SetLocalPositionY(arg_y);
 	anim->GetTargetTransform()->RollLocalRotationX_Degrees(0.1f);
 
 	anim->SetEaseType(Easing::EasingType::EaseInOutQuint);
@@ -433,7 +433,7 @@ ButiEngine::MapData::MapData(std::uint16_t arg_stageNum)
 				{2,2,2,2,2,2,2,2,2,2,2},
 			},
 			{
-				{0,0,0,0,0,0,0,0,0,0,0},
+				{0,0,0,0,0,0,0,0,101,0,0},
 				{0,0,0,0,0,0,100,0,0,0,0},
 				{0,0,0,0,0,3,3,0,0,0,0},
 				{0,0,2,2,0,0,0,0,101,0,0},

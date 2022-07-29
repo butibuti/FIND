@@ -2105,6 +2105,7 @@ void ButiEngine::Player::CheckExistUnderBlock(const Vector3& arg_movePos)
 		Vector3 downBlockPos = downBlock.lock()->transform->GetLocalPosition();
 		m_afterFallPos = downBlockPos;
 		m_afterFallPos.y += GameSettings::BLOCK_SIZE;
+		m_afterFallPos.Round();
 
 		m_mapPos.y -= diff;
 		m_mapPos.y += 1;
