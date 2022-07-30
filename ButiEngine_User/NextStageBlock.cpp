@@ -20,7 +20,7 @@ void ButiEngine::NextStageBlock::Start()
 	m_vwp_stagePreviewParent.lock()->transform->SetLocalPosition(0.0f);
 	m_vwp_stagePreviewParent.lock()->GetGameComponent<StagePreviewParent>()->CreatePreview(m_stageNum);
 
-	m_isActive = m_vec_isActives[m_stageNum];
+	m_isActive = m_vec_isActives[min(m_stageNum,m_vec_isActives.size()-1)];
 
 	if (!m_isActive)
 	{

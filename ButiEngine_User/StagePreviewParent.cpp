@@ -39,9 +39,8 @@ void ButiEngine::StagePreviewParent::Disappear()
 
 void ButiEngine::StagePreviewParent::CreatePreview(const std::uint16_t arg_stageNum)
 {
-	m_vwp_preview = GetManager().lock()->AddObjectFromCereal("StagePreview");
+	m_vwp_preview = GetManager().lock()->AddObjectFromCereal("StagePreview", ObjectFactory::Create<Transform>(Vector3(),Vector3(),Vector3(1.0f))	);
 
-	//マテリアル変更
 }
 
 void ButiEngine::StagePreviewParent::AddScaleAnimation(const Vector3& arg_targetScale)

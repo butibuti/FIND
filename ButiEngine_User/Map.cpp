@@ -11,6 +11,7 @@
 #include "BurstManager.h"
 #include "BackGround.h"
 #include "NextStageBlock.h"
+#include"MapEditor.h"
 
 void ButiEngine::Map::OnUpdate()
 {
@@ -86,15 +87,34 @@ void ButiEngine::Map::Start()
 	m_vlp_stageEndTimer = ObjectFactory::Create<RelativeTimer>(120);
 	m_vec_vlp_mapDatas.clear();
 	m_vec_randomBlockPoss.clear();
-
-	auto mapFilePath = "Scene/" + GetManager().lock()->GetScene().lock()->GetSceneInformation()->GetSceneName() + "/mapInfo.map";
-	//if (Util::ExistFile(GlobalSettings::GetResourceDirectory() + mapFilePath)) {
-	//	auto mapData= ObjectFactory::Create<MapData>();
-	//	InputCereal(*mapData, mapFilePath);
-	//	m_vec_vlp_mapDatas.push_back(mapData);
-	//}
-
-	m_vec_vlp_mapDatas.push_back(ObjectFactory::Create<MapData>(0));
+	{
+		auto sceneName = GetManager().lock()->GetScene().lock()->GetSceneInformation()->GetSceneName();
+		if (sceneName == "LevelEditor") {
+			auto mapFilePath = "Scene/Stage_" + std::to_string(MapEditor::GetEditMapIndex()) + "/mapData.map";
+			if (ResourceSystem::ExistResource(mapFilePath)) {
+				auto mapData = ObjectFactory::Create<MapData>();
+				InputCereal(mapData, mapFilePath);
+				m_vec_vlp_mapDatas.push_back(mapData);
+			}
+			else {
+				m_vec_vlp_mapDatas.push_back(ObjectFactory::Create<MapData>(0));
+			}
+		}
+		else if (StringHelper::Contains( sceneName,"Select")) {
+			m_vec_vlp_mapDatas.push_back(ObjectFactory::Create<MapData>(0));
+		}
+		else {
+			auto mapFilePath = "Scene/" + sceneName + "/mapData.map";
+			if (ResourceSystem::ExistResource(mapFilePath)) {
+				auto mapData = ObjectFactory::Create<MapData>();
+				InputCereal(mapData, mapFilePath);
+				m_vec_vlp_mapDatas.push_back(mapData);
+			}
+			else {
+				m_vec_vlp_mapDatas.push_back(ObjectFactory::Create<MapData>(0));
+			}
+		}
+	}
 
 	m_playerPos = Vector3Const::Zero;
 	m_currentStageNum = 0;
@@ -133,7 +153,7 @@ void ButiEngine::Map::PutBlock(std::uint16_t arg_stageNum)
 		}
 	}
 
-	std::vector<std::vector<std::vector<std::uint16_t>>> vec_mapDatas = m_vlp_currentMapData->m_vec_mapDatas;
+	auto vec_mapDatas = m_vlp_currentMapData->m_vec_mapDatas;
 	Vector3 scale(GameSettings::BLOCK_SIZE, GameSettings::BLOCK_SIZE, GameSettings::BLOCK_SIZE);
 	Vector3 offset(vec_mapDatas[0][0].size() / 2, vec_mapDatas.size() / 2, vec_mapDatas[0].size() / 2);
 
@@ -386,7 +406,7 @@ void ButiEngine::Map::DestoroyMapChip()
 
 void ButiEngine::Map::CreateRandom()
 {
-	std::vector<std::vector<std::vector<std::uint16_t>>> vec_mapDatas = m_vlp_currentMapData->m_vec_mapDatas;
+	auto vec_mapDatas = m_vlp_currentMapData->m_vec_mapDatas;
 	for (std::uint16_t z = 0; z < vec_mapDatas[0].size(); z++)
 	{
 		std::vector<float> pos;

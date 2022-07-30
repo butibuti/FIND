@@ -67,3 +67,8 @@ void ButiEngine::StartPlayerDirecting::Animation()
 
 	anim->SetEaseType(Easing::EasingType::Liner);
 }
+
+bool ButiEngine::StartPlayerDirecting::IsAnimation() const
+{
+	return (!m_isStart);
+}

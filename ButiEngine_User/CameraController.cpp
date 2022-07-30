@@ -1,6 +1,7 @@
 #include "stdafx_u.h"
 #include "CameraController.h"
 #include "Player.h"
+#include "MapEditor.h"
 #include "InputManager.h"
 
 void ButiEngine::CameraController::OnUpdate()
@@ -15,6 +16,11 @@ void ButiEngine::CameraController::OnUpdate()
 
             m_vwp_playerComponent.lock()->RollCameraDirection(1);
 
+#ifdef DEBUG
+            if (m_vwp_mapEditor.lock()) {
+                m_vwp_mapEditor.lock()->RollCameraDirection(1);
+            }
+#endif // DEBUG
         }
     }
     if (InputManager::IsTriggerCameraRotateLeftKey()) {
@@ -26,6 +32,12 @@ void ButiEngine::CameraController::OnUpdate()
             anim->SetSpeed(1.0f / 10.0f);
 
             m_vwp_playerComponent.lock()->RollCameraDirection(-1);
+
+#ifdef DEBUG
+            if (m_vwp_mapEditor.lock()) {
+                m_vwp_mapEditor.lock()->RollCameraDirection(-1);
+            }
+#endif // DEBUG
         }
     }
 }
@@ -52,6 +64,13 @@ void ButiEngine::CameraController::Start()
     gameObject.lock()->transform->SetBaseTransform(m_vwp_cameraAxis.lock()->transform, true);
 
     m_vwp_playerComponent = gameObject.lock()->GetGameObjectManager().lock()->GetGameObject("Player").lock()->GetGameComponent<Player>();
+
+#ifdef DEBUG
+    if (auto editorObj = gameObject.lock()->GetGameObjectManager().lock()->GetGameObject("Editor").lock()) {
+        m_vwp_mapEditor = editorObj->GetGameComponent<MapEditor>();
+    }
+#endif // DEBUG
+
 }
 
 ButiEngine::Value_ptr<ButiEngine::GameComponent> ButiEngine::CameraController::Clone()
