@@ -15,7 +15,7 @@ namespace ButiEngine {
 		{
 			archive(m_vec_mapDatas);
 		}
-		std::vector<std::vector<std::vector<std::uint16_t>>> m_vec_mapDatas;
+		std::vector<std::vector<std::vector<std::int32_t>>> m_vec_mapDatas;
 	};
 
 	class Map :public GameComponent
@@ -37,7 +37,6 @@ namespace ButiEngine {
 
 		void PutBlock(std::uint16_t arg_stageNum);
 		Value_weak_ptr<MapData>GetCurrentMapData() { return m_vlp_currentMapData; }
-		MapData& GetMapData(const std::uint16_t arg_index) { return *m_vec_vlp_mapDatas[arg_index]; }
 
 		std::vector<std::vector<std::vector<Value_weak_ptr<GameObject>>>>& GetMapObjectData() { return m_vec_vwp_mapObjectDatas; }
 		Vector3 GetPlayerPos() { return m_playerPos; }

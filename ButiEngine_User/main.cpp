@@ -10,6 +10,7 @@
 #include"cereal/include/cereal/archives/json.hpp"
 #include"StageSelectManager.h"
 #include"NextStageBlock.h"
+#include"ButiEngineHeader/Header/Resources/ResourceSystem.h"
 #define _CRTDBG_MAP_ALLOC
 
 using namespace::ButiEngine;
@@ -77,27 +78,26 @@ std::int32_t APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR arg, std::in
 
 
 #else
-	auto init = InputApplicationInitData();
+	ResourceSystem::Start();
+	GameAssetData::ApplicationInitData init;
+	InputCereal(init, "Application/ButiEngine.ini");
 #ifdef DEBUG
 #else
 	init.hInstance = hInstance;
-#endif // !DEBUG
-
-	
-	auto app = CreateApplicationInstance(init);
+#endif // !DEBUG	
+	auto vlp_app = CreateApplicationInstance(init);
 
 	GameDevice::Initialize();
 	//GameDevice::GetInput()->SetCursorHide(true);
-	GameDevice::GetInput()->Initialize(app);
-	app->PreLoadResources();
-	app->InitLoadResources();
+	GameDevice::GetInput()->Initialize(vlp_app);
+	vlp_app->PreLoadResources();
+	vlp_app->InitLoadResources();
+	vlp_app->GetSceneManager()->LoadScene_Init(init.initSceneName);
+	vlp_app->GetGraphicDevice()->SetClearColor(ButiColor::DeepOrange());
+	returnCode = vlp_app->Run();
+	vlp_app->Exit();
 
-	app->GetSceneManager()->LoadScene_Init(init.initSceneName);
-
-
-	app->GetGraphicDevice()->SetClearColor(ButiColor::DeepOrange());
-	returnCode = app->Run();
-	app->Exit();
+	ResourceSystem::End();
 #endif // _EDITORBUILD
 
 	return returnCode;

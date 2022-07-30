@@ -245,7 +245,7 @@ void ButiEngine::Player::Goal()
 
 void ButiEngine::Player::CheckTouchNextStageBlock()
 {
-	std::vector<std::vector<std::vector<std::uint16_t>>>& vec_mapDatas = m_vwp_mapComponent.lock()->GetCurrentMapData().lock()->m_vec_mapDatas;
+	auto& vec_mapDatas = m_vwp_mapComponent.lock()->GetCurrentMapData().lock()->m_vec_mapDatas;
 	std::uint16_t mapNum = vec_mapDatas[m_mapPos.y][m_mapPos.z][m_mapPos.x];
 	auto hitObject = m_vwp_mapComponent.lock()->GetMapObjectData()[m_mapPos.y][m_mapPos.z][m_mapPos.x];
 
@@ -284,7 +284,7 @@ void ButiEngine::Player::CheckTouchNextStageBlock()
 
 void ButiEngine::Player::CheckGoal()
 {
-	std::vector<std::vector<std::vector<std::uint16_t>>>& vec_mapDatas = m_vwp_mapComponent.lock()->GetCurrentMapData().lock()->m_vec_mapDatas;
+	auto& vec_mapDatas = m_vwp_mapComponent.lock()->GetCurrentMapData().lock()->m_vec_mapDatas;
 	std::uint16_t mapNum = vec_mapDatas[m_mapPos.y][m_mapPos.z][m_mapPos.x];
 	auto hitObject = m_vwp_mapComponent.lock()->GetMapObjectData()[m_mapPos.y][m_mapPos.z][m_mapPos.x];
 
@@ -2045,7 +2045,7 @@ void ButiEngine::Player::Fall()
 ButiEngine::MoveDirection ButiEngine::Player::CheckMoveDirection(const Vector3& arg_movePos)
 {
 	MoveDirection output;
-	std::vector<std::vector<std::vector<std::uint16_t>>>& mapData = m_vwp_mapComponent.lock()->GetCurrentMapData().lock()->m_vec_mapDatas;
+	auto& mapData = m_vwp_mapComponent.lock()->GetCurrentMapData().lock()->m_vec_mapDatas;
 
 	if (arg_movePos.x >= mapData[0][0].size() ||
 		arg_movePos.y >= mapData.size() ||
@@ -2091,7 +2091,7 @@ void ButiEngine::Player::CheckExistUnderBlock(const Vector3& arg_movePos)
 	{
 		return;
 	}
-	std::vector<std::vector<std::vector<std::uint16_t>>>& mapData = m_vwp_mapComponent.lock()->GetCurrentMapData().lock()->m_vec_mapDatas;
+	auto& mapData = m_vwp_mapComponent.lock()->GetCurrentMapData().lock()->m_vec_mapDatas;
 	if (IsCantThroughBlock(mapData[arg_movePos.y - 1][arg_movePos.z][arg_movePos.x]))
 	{
 		return;

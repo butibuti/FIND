@@ -3,7 +3,7 @@
 namespace ButiEngine {
 
 	class Player;
-
+	class MapEditor;
 	class CameraController :public GameComponent
 	{
 	public:
@@ -30,6 +30,10 @@ namespace ButiEngine {
 		Vector3 m_offset;
 		Value_weak_ptr<GameObject> m_vwp_cameraAxis;
 		Value_weak_ptr<Player> m_vwp_playerComponent;
+
+#ifdef DEBUG
+		Value_weak_ptr<MapEditor> m_vwp_mapEditor;
+#endif
 		float m_pase;
 	};
 

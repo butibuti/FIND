@@ -24,6 +24,7 @@ namespace ButiEngine {
 		void SetStartPos(Vector3 v) { m_startPos = v; }
 
 		void Animation();
+		bool IsAnimation()const;
 	private:
 		Value_ptr<RelativeTimer> m_vlp_timer;
 		bool m_isStart;
