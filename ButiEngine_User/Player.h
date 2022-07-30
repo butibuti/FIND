@@ -63,6 +63,10 @@ namespace ButiEngine {
 
 		void CheckLookBlock();
 		void RollCameraDirection(const std::uint16_t arg_rotateDir);
+		void FlashMeshSet(){
+			m_lookDirection = CheckLookDirection(gameObject.lock()->transform);
+			FlashMeshSet(gameObject.lock()->transform, m_lookDirection, m_mapPos);
+		};
 	private:
 		float m_length;
 		Value_weak_ptr<Map> m_vwp_mapComponent;
@@ -82,14 +86,14 @@ namespace ButiEngine {
 		LookDirection m_lookDirection;
 		CameraDirection m_cameraDirection=CameraDirection::Front;
 
-		Value_ptr<RelativeTimer> m_vlp_timer;
+		Value_ptr<RelativeTimer> m_vlp_timer,m_vlp_flashMeshTimer;
 		Value_ptr<RelativeTimer> m_vlp_expantionTimer;
 		Value_ptr<RelativeTimer> m_vlp_fallTimer;
 
 		void Goal();
 		void CheckTouchNextStageBlock();
 		void CheckGoal();
-		void CheckLookDirection();
+		LookDirection CheckLookDirection(Value_ptr<Transform> arg_vlp_transform);
 		void Contoroll();
 		void OnPushRight();
 		void OnPushLeft();
@@ -109,6 +113,8 @@ namespace ButiEngine {
 		void MoveUpBack();
 		void MoveBack();
 		void MoveDownBack();
+		void FlashMeshSet(Value_ptr<Transform> arg_vlp_transform, const LookDirection arg_dir, const Vector3& arg_pos);
+		
 		Value_weak_ptr<GameObject> GetRightBlock(const Vector3& arg_mapPos);
 		Value_weak_ptr<GameObject> GetLeftBlock(const Vector3& arg_mapPos);
 		Value_weak_ptr<GameObject> GetUpBlock(const Vector3& arg_mapPos);

@@ -26,6 +26,7 @@ void ButiEngine::StartPlayerDirecting::OnUpdate()
 		GetManager().lock()->AddObjectFromCereal("Ripple", ObjectFactory::Create<Transform>(pos, Vector3(90, 0, 0), 0.0f));
 
 		//ƒtƒ‰ƒbƒVƒ…
+		gameObject.lock()->GetGameComponent<Player>()->FlashMeshSet();
 		GetManager().lock()->GetGameObject("CameraMesh").lock()->GetGameComponent<CameraMesh>()->Flash();
 
 		gameObject.lock()->GetGameComponent<Player>()->CheckLookBlock();

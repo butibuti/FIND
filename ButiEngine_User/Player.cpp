@@ -38,6 +38,11 @@ void ButiEngine::Player::OnUpdate()
 		return;
 	}
 	Contoroll();
+	if (m_vlp_flashMeshTimer->Update()) {
+		m_vlp_flashMeshTimer->Stop();
+		auto anim = gameObject.lock()->GetGameComponent<CubeTransformAnimation>();
+		FlashMeshSet(anim->GetTargetTransform(), CheckLookDirection(anim->GetTargetTransform()), m_nextMapPos);
+	}
 	if (m_vlp_timer->Update())
 	{
 		m_vlp_timer->Stop();
@@ -105,6 +110,7 @@ void ButiEngine::Player::Start()
 	m_offset = m_mapPos - m_startPos;
 
 	m_vlp_timer = ObjectFactory::Create<RelativeTimer>(12);
+	m_vlp_flashMeshTimer = ObjectFactory::Create<RelativeTimer>(11);
 	m_vlp_expantionTimer = ObjectFactory::Create<RelativeTimer>(10);
 	m_vlp_fallTimer = ObjectFactory::Create<RelativeTimer>(24);
 	m_vlp_fallTimer->Stop();
@@ -124,67 +130,33 @@ bool ButiEngine::Player::IsRollFinish()
 void ButiEngine::Player::CheckLookBlock()
 {
 	m_vwp_invisibleBlockManagerComponent.lock()->Reset();
-	CheckLookDirection();
+	m_lookDirection= CheckLookDirection(gameObject.lock()->transform);
 	Value_weak_ptr<GameObject> lookObject;
-
-	Vector3 pos = gameObject.lock()->transform->GetWorldPosition();
-	Vector3 bPos = pos;
-
 	if (m_lookDirection == LookDirection::Right)
 	{
-		bPos.x += 100;
 		lookObject = GetRightBlock(m_mapPos);
 	}
 	else if (m_lookDirection == LookDirection::Left)
 	{
-		bPos.x -= 100;
 		lookObject = GetLeftBlock(m_mapPos);
 	}
 	else if (m_lookDirection == LookDirection::Up)
 	{
-		bPos.y += 100;
 		lookObject = GetUpBlock(m_mapPos);
 	}
 	else if (m_lookDirection == LookDirection::Down)
 	{
-		bPos.y -= 100;
 		std::int8_t tmp = 0;
 		lookObject = GetDownBlock(m_mapPos, tmp);
 	}
 	else if (m_lookDirection == LookDirection::Front)
 	{
-		bPos.z += 100;
 		lookObject = GetFrontBlock(m_mapPos);
 	}
 	else if (m_lookDirection == LookDirection::Back)
 	{
-		bPos.z -= 100;
 		lookObject = GetBackBlock(m_mapPos);
 	}
-
-	if (lookObject.lock())
-	{
-		bPos = lookObject.lock()->transform->GetWorldPosition();
-	}
-	Vector3 midPoint = Vector3((pos.x + bPos.x) * 0.5f, (pos.y + bPos.y) * 0.5f, (pos.z + bPos.z) * 0.5f);
-
-	auto cameraMesh = GetManager().lock()->GetGameObject("CameraMesh");
-	cameraMesh.lock()->transform->SetWorldPosition(midPoint);
-
-	Vector3 cameraMeshScale = Vector3Const::Zero;
-	if (m_lookDirection == LookDirection::Right || m_lookDirection == LookDirection::Left)
-	{
-		cameraMeshScale = Vector3(pos.Distance(bPos), 0.1f, 0.1f);
-	}
-	else if (m_lookDirection == LookDirection::Up || m_lookDirection == LookDirection::Down)
-	{
-		cameraMeshScale = Vector3(0.1f, pos.Distance(bPos), 0.1f);
-	}
-	else if (m_lookDirection == LookDirection::Front || m_lookDirection == LookDirection::Back)
-	{
-		cameraMeshScale = Vector3(0.1f, 0.1f, pos.Distance(bPos));
-	}
-	cameraMesh.lock()->transform->SetLocalScale(cameraMeshScale);
 
 	if (!lookObject.lock())
 	{
@@ -231,6 +203,75 @@ void ButiEngine::Player::RollCameraDirection(const std::uint16_t arg_rotateDir)
 	}
 	else if (m_cameraDirection < CameraDirection::Front) {
 		m_cameraDirection = (CameraDirection)((std::uint16_t)m_cameraDirection + 4);
+	}
+}
+
+void ButiEngine::Player::FlashMeshSet(Value_ptr<Transform> arg_vlp_transform, const LookDirection arg_dir, const Vector3& arg_pos)
+{
+	Value_weak_ptr<GameObject> lookObject;
+
+	Vector3 pos = arg_vlp_transform->GetWorldPosition();
+	Vector3 bPos = pos;
+
+	if (arg_dir == LookDirection::Right)
+	{
+		bPos.x += 100;
+		lookObject = GetRightBlock(arg_pos);
+	}
+	else if (arg_dir == LookDirection::Left)
+	{
+		bPos.x -= 100;
+		lookObject = GetLeftBlock(arg_pos);
+	}
+	else if (arg_dir == LookDirection::Up)
+	{
+		bPos.y += 100;
+		lookObject = GetUpBlock(arg_pos);
+	}
+	else if (arg_dir == LookDirection::Down)
+	{
+		bPos.y -= 100;
+		std::int8_t tmp = 0;
+		lookObject = GetDownBlock(arg_pos, tmp);
+	}
+	else if (arg_dir == LookDirection::Front)
+	{
+		bPos.z += 100;
+		lookObject = GetFrontBlock(arg_pos);
+	}
+	else if (arg_dir == LookDirection::Back)
+	{
+		bPos.z -= 100;
+		lookObject = GetBackBlock(arg_pos);
+	}
+
+	if (lookObject.lock())
+	{
+		bPos = lookObject.lock()->transform->GetWorldPosition();
+	}
+	Vector3 midPoint = Vector3((pos.x + bPos.x) * 0.5f, (pos.y + bPos.y) * 0.5f, (pos.z + bPos.z) * 0.5f);
+
+	auto cameraMesh = GetManager().lock()->GetGameObject("CameraMesh");
+	cameraMesh.lock()->transform->SetWorldPosition(midPoint);
+
+	Vector3 cameraMeshScale = Vector3Const::Zero;
+	if (arg_dir == LookDirection::Right || arg_dir == LookDirection::Left)
+	{
+		cameraMeshScale = Vector3(pos.Distance(bPos), 0.1f, 0.1f);
+	}
+	else if (arg_dir == LookDirection::Up || arg_dir == LookDirection::Down)
+	{
+		cameraMeshScale = Vector3(0.1f, pos.Distance(bPos), 0.1f);
+	}
+	else if (arg_dir == LookDirection::Front || arg_dir == LookDirection::Back)
+	{
+		cameraMeshScale = Vector3(0.1f, 0.1f, pos.Distance(bPos));
+	}
+	cameraMesh.lock()->transform->SetLocalScale(cameraMeshScale);
+
+	if (!lookObject.lock())
+	{
+		return;
 	}
 }
 
@@ -312,40 +353,42 @@ void ButiEngine::Player::CheckGoal()
 	}
 }
 
-void ButiEngine::Player::CheckLookDirection()
+ButiEngine::LookDirection ButiEngine::Player::CheckLookDirection(Value_ptr<Transform> arg_vlp_transform)
 {
-	Vector3 dir = gameObject.lock()->transform->GetFront().Round();
+	Vector3 dir = arg_vlp_transform->GetFront().Round();
 
 	if (dir.x == 1.0f)
 	{
-		m_lookDirection = LookDirection::Right;
+		return LookDirection::Right;
 	}
 	else if (dir.x == -1.0f)
 	{
-		m_lookDirection = LookDirection::Left;
+		return LookDirection::Left;
 	}
 	else if (dir.y == 1.0f)
 	{
-		m_lookDirection = LookDirection::Up;
+		return LookDirection::Up;
 	}
 	else if (dir.y == -1.0f)
 	{
-		m_lookDirection = LookDirection::Down;
+		return LookDirection::Down;
 	}
 	else if (dir.z == 1.0f)
 	{
-		m_lookDirection = LookDirection::Front;
+		return LookDirection::Front;
 	}
 	else if (dir.z == -1.0f)
 	{
-		m_lookDirection = LookDirection::Back;
+		return LookDirection::Back;
 	}
 }
+
 
 void ButiEngine::Player::Contoroll()
 {
 	auto anim = gameObject.lock()->GetGameComponent<CubeTransformAnimation>();
 	if (anim) { return; }
+	bool isInputed=false;
 	if (InputManager::IsPushRightKey())
 	{
 		switch (m_cameraDirection)
@@ -373,6 +416,7 @@ void ButiEngine::Player::Contoroll()
 		default:
 			break;
 		}
+		isInputed = true;
 	}
 	else if (InputManager::IsPushLeftKey())
 	{
@@ -401,6 +445,7 @@ void ButiEngine::Player::Contoroll()
 		default:
 			break;
 		}
+		isInputed = true;
 	}
 	if (InputManager::IsPushFrontKey())
 	{
@@ -429,7 +474,7 @@ void ButiEngine::Player::Contoroll()
 		default:
 			break;
 		}
-
+		isInputed = true;
 	}
 	else if (InputManager::IsPushBackKey())
 	{
@@ -458,6 +503,13 @@ void ButiEngine::Player::Contoroll()
 		default:
 			break;
 		}
+		isInputed = true;
+	}
+	if (isInputed ) {
+		auto vlp_anim = gameObject.lock()->GetGameComponent<CubeTransformAnimation>();
+		if(vlp_anim){
+			
+		}		
 	}
 }
 
@@ -1611,6 +1663,8 @@ void ButiEngine::Player::MoveRightUp()
 	{
 		m_vlp_timer->Reset();
 		m_vlp_timer->Start();
+		m_vlp_flashMeshTimer->Reset();
+		m_vlp_flashMeshTimer->Start();
 		m_vlp_expantionTimer->Reset();
 		m_vlp_expantionTimer->Start();
 		anim = gameObject.lock()->AddGameComponent<CubeTransformAnimation>();
@@ -1634,6 +1688,8 @@ void ButiEngine::Player::MoveRight()
 	{
 		m_vlp_timer->Reset();
 		m_vlp_timer->Start();
+		m_vlp_flashMeshTimer->Reset();
+		m_vlp_flashMeshTimer->Start();
 		m_vlp_expantionTimer->Reset();
 		m_vlp_expantionTimer->Start();
 		anim = gameObject.lock()->AddGameComponent<CubeTransformAnimation>();
@@ -1656,6 +1712,8 @@ void ButiEngine::Player::MoveRightDown()
 	{
 		m_vlp_timer->Reset();
 		m_vlp_timer->Start();
+		m_vlp_flashMeshTimer->Reset();
+		m_vlp_flashMeshTimer->Start();
 		m_vlp_expantionTimer->Reset();
 		m_vlp_expantionTimer->Start();
 		anim = gameObject.lock()->AddGameComponent<CubeTransformAnimation>();
@@ -1682,6 +1740,8 @@ void ButiEngine::Player::MoveLeftUp()
 	{
 		m_vlp_timer->Reset();
 		m_vlp_timer->Start();
+		m_vlp_flashMeshTimer->Reset();
+		m_vlp_flashMeshTimer->Start();
 		m_vlp_expantionTimer->Reset();
 		m_vlp_expantionTimer->Start();
 		anim = gameObject.lock()->AddGameComponent<CubeTransformAnimation>();
@@ -1707,6 +1767,8 @@ void ButiEngine::Player::MoveLeft()
 	{
 		m_vlp_timer->Reset();
 		m_vlp_timer->Start();
+		m_vlp_flashMeshTimer->Reset();
+		m_vlp_flashMeshTimer->Start();
 		m_vlp_expantionTimer->Reset();
 		m_vlp_expantionTimer->Start();
 		anim = gameObject.lock()->AddGameComponent<CubeTransformAnimation>();
@@ -1730,6 +1792,8 @@ void ButiEngine::Player::MoveLeftDown()
 	{
 		m_vlp_timer->Reset();
 		m_vlp_timer->Start();
+		m_vlp_flashMeshTimer->Reset();
+		m_vlp_flashMeshTimer->Start();
 		m_vlp_expantionTimer->Reset();
 		m_vlp_expantionTimer->Start();
 		anim = gameObject.lock()->AddGameComponent<CubeTransformAnimation>();
@@ -1756,6 +1820,8 @@ void ButiEngine::Player::MoveUpFront()
 	{
 		m_vlp_timer->Reset();
 		m_vlp_timer->Start();
+		m_vlp_flashMeshTimer->Reset();
+		m_vlp_flashMeshTimer->Start();
 		m_vlp_expantionTimer->Reset();
 		m_vlp_expantionTimer->Start();
 		anim = gameObject.lock()->AddGameComponent<CubeTransformAnimation>();
@@ -1781,6 +1847,8 @@ void ButiEngine::Player::MoveFront()
 	{
 		m_vlp_timer->Reset();
 		m_vlp_timer->Start();
+		m_vlp_flashMeshTimer->Reset();
+		m_vlp_flashMeshTimer->Start();
 		m_vlp_expantionTimer->Reset();
 		m_vlp_expantionTimer->Start();
 		anim = gameObject.lock()->AddGameComponent<CubeTransformAnimation>();
@@ -1804,6 +1872,8 @@ void ButiEngine::Player::MoveDownFront()
 	{
 		m_vlp_timer->Reset();
 		m_vlp_timer->Start();
+		m_vlp_flashMeshTimer->Reset();
+		m_vlp_flashMeshTimer->Start();
 		m_vlp_expantionTimer->Reset();
 		m_vlp_expantionTimer->Start();
 		anim = gameObject.lock()->AddGameComponent<CubeTransformAnimation>();
@@ -1830,6 +1900,8 @@ void ButiEngine::Player::MoveUpBack()
 	{
 		m_vlp_timer->Reset();
 		m_vlp_timer->Start();
+		m_vlp_flashMeshTimer->Reset();
+		m_vlp_flashMeshTimer->Start();
 		m_vlp_expantionTimer->Reset();
 		m_vlp_expantionTimer->Start();
 		anim = gameObject.lock()->AddGameComponent<CubeTransformAnimation>();
@@ -1855,6 +1927,8 @@ void ButiEngine::Player::MoveBack()
 	{
 		m_vlp_timer->Reset();
 		m_vlp_timer->Start();
+		m_vlp_flashMeshTimer->Reset();
+		m_vlp_flashMeshTimer->Start();
 		m_vlp_expantionTimer->Reset();
 		m_vlp_expantionTimer->Start();
 		anim = gameObject.lock()->AddGameComponent<CubeTransformAnimation>();
@@ -1878,6 +1952,8 @@ void ButiEngine::Player::MoveDownBack()
 	{
 		m_vlp_timer->Reset();
 		m_vlp_timer->Start();
+		m_vlp_flashMeshTimer->Reset();
+		m_vlp_flashMeshTimer->Start();
 		m_vlp_expantionTimer->Reset();
 		m_vlp_expantionTimer->Start();
 		anim = gameObject.lock()->AddGameComponent<CubeTransformAnimation>();
@@ -2033,6 +2109,7 @@ void ButiEngine::Player::Fall()
 
 			CheckLookBlock();
 			//ƒtƒ‰ƒbƒVƒ…
+			FlashMeshSet(gameObject.lock()->transform, m_lookDirection, m_mapPos);
 			GetManager().lock()->GetGameObject("CameraMesh").lock()->GetGameComponent<CameraMesh>()->Flash();
 			m_vwp_invisibleBlockManagerComponent.lock()->CheckSeen();
 			CheckExistUnderBlock(m_mapPos);
