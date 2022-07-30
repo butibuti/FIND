@@ -663,6 +663,8 @@ void ButiEngine::MapEditor::OnShowUI()
     GUI::BulletText("Stage Size");
     auto size = m_vlp_currentEdit->GetSize();
     GUI::Text(size);
+    GUI::BulletText("Cursor Position");
+    GUI::Text("X:"+std::to_string(g_cursorPos[0])+"   y:" + std::to_string(g_cursorPos[1]) +"   z:" + std::to_string(g_cursorPos[2]));
 }
 
 ButiEngine::Value_ptr<ButiEngine::GameComponent> ButiEngine::MapEditor::Clone()
