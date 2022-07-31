@@ -19,6 +19,7 @@ public:
 	static const std::uint16_t MAP_CHIP_PLAYER_AND_GOAL = 200;
 
 	static const std::uint16_t MAP_CHIP_NEXT_STAGE_BLOCK = 300;
+	static const std::uint16_t MAP_CHIP_ALREADY_SEEN_NEXT_STAGE_BLOCK = 400;
 
 
 	static const ButiEngine::Vector4 ACTIVE_GOAL_COLOR;

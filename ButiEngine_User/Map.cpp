@@ -49,6 +49,10 @@ void ButiEngine::Map::OnUpdate()
 			Vector3 playerPos = player->GetGameComponent<Player>()->GetMapPos();
 			std::uint16_t mapNum = m_vlp_currentMapData->m_vec_mapDatas[playerPos.y][playerPos.z][playerPos.x];
 			std::uint16_t nextStageNum = mapNum - GameSettings::MAP_CHIP_NEXT_STAGE_BLOCK;
+			if (nextStageNum >= 100)
+			{
+				nextStageNum -= 100;
+			}
 			nextSceneName = "Stage_" + std::to_string(nextStageNum);
 		}
 		else
@@ -291,7 +295,7 @@ void ButiEngine::Map::PutBlock(std::uint16_t arg_stageNum)
 							}
 						}
 				}
-				else if (mapNum >= GameSettings::MAP_CHIP_NEXT_STAGE_BLOCK)
+				else if (mapNum >= GameSettings::MAP_CHIP_NEXT_STAGE_BLOCK && mapNum < GameSettings::MAP_CHIP_ALREADY_SEEN_NEXT_STAGE_BLOCK)
 				{
 					std::uint16_t stageNum = mapNum - GameSettings::MAP_CHIP_NEXT_STAGE_BLOCK;
 					
@@ -300,10 +304,27 @@ void ButiEngine::Map::PutBlock(std::uint16_t arg_stageNum)
 					gameObject = GetManager().lock()->AddObjectFromCereal("NextStageBlock");
 					gameObject->transform->SetWorldPosition(position);
 					gameObject->transform->SetLocalScale(scale * 0.75f);
+					auto nextStageBlockComponent = gameObject->GetGameComponent<NextStageBlock>();
 					gameObject->GetGameComponent<NextStageBlock>()->SetStageNum(stageNum);
+					nextStageBlockComponent->SetStatus(stageNum, NextStageBlockStatus::InActive);
 
 					AddTransformAnimation(gameObject, targetPosY);
                 }
+				else if (mapNum >= GameSettings::MAP_CHIP_ALREADY_SEEN_NEXT_STAGE_BLOCK)
+				{
+					std::uint16_t stageNum = mapNum - GameSettings::MAP_CHIP_ALREADY_SEEN_NEXT_STAGE_BLOCK;
+
+					float targetPosY = position.y;
+					position.y = m_vec_randomBlockPoss[z][x] - (vec_mapDatas.size() - y) * 3.5f;
+					gameObject = GetManager().lock()->AddObjectFromCereal("NextStageBlock");
+					gameObject->transform->SetWorldPosition(position);
+					gameObject->transform->SetLocalScale(scale * 0.75f);
+					auto nextStageBlockComponent = gameObject->GetGameComponent<NextStageBlock>();
+					gameObject->GetGameComponent<NextStageBlock>()->SetStageNum(stageNum);
+					nextStageBlockComponent->SetStatus(stageNum, NextStageBlockStatus::Active);
+
+					AddTransformAnimation(gameObject, targetPosY);
+				}
 					
 
 				m_vec_vwp_mapObjectDatas[y][z][x] = gameObject;
@@ -458,17 +479,17 @@ ButiEngine::MapData::MapData(std::uint16_t arg_stageNum)
 				{2,2,2,2,2,2,2,2,2,2,2},
 			},
 			{
-				{0,0,0,0,0,0,0,0,0,0,300},
+				{405,0,0,0,0,0,0,0,0,0,300},
 				{0,0,0,0,0,0,0,0,0,0,0},
-				{0,0,0,0,0,0,0,0,0,0,301},
+				{406,0,0,0,0,0,0,0,0,0,301},
 				{0,0,0,0,0,0,0,0,0,0,0},
-				{0,0,0,0,0,0,0,0,0,0,302},
+				{407,0,0,0,0,0,0,0,0,0,302},
 				{0,0,0,0,0,1,0,0,0,0,0},
-				{0,0,0,0,0,0,0,0,0,0,303},
+				{408,0,0,0,0,0,0,0,0,0,303},
 				{0,0,0,0,0,0,0,0,0,0,0},
-				{0,0,0,0,0,0,0,0,0,0,304},
+				{409,0,0,0,0,0,0,0,0,0,304},
 				{0,0,0,0,0,0,0,0,0,0,0},
-				{0,0,0,0,0,0,0,0,0,0,311},
+				{410,0,0,0,0,0,0,0,0,0,311},
 			},
 			{
 				{0,0,0,0,0,0,0,0,0,0,0},
