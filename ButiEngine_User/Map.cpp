@@ -53,8 +53,12 @@ void ButiEngine::Map::OnUpdate()
 		}
 		else
 		{
-			nextSceneName = "NewStageSelectScene";
 			NextStageBlock::SetStatus(m_currentStageNum, NextStageBlockStatus::Cleared);
+			nextSceneName = "NewStageSelectScene";
+			if (NextStageBlock::IsAllCleard())
+			{
+				nextSceneName = "ThanksScene";
+			}
 		}
 		sceneManager->RemoveScene(nextSceneName);
 		sceneManager->LoadScene(nextSceneName);

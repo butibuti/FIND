@@ -81,3 +81,17 @@ void ButiEngine::NextStageBlock::InitializeStatus()
 		m_vec_statuss.push_back(NextStageBlockStatus::InActive);
 	}
 }
+
+bool ButiEngine::NextStageBlock::IsAllCleard()
+{
+	auto end = m_vec_statuss.end();
+	for (auto itr = m_vec_statuss.begin(); itr != end; ++itr)
+	{
+		//ƒNƒŠƒAÏ‚İ‚Å‚È‚¢‚à‚Ì‚ª‚Ğ‚Æ‚Â‚Å‚àŒ©‚Â‚©‚Á‚½‚çfalse‚ğ•Ô‚·
+		if ((*itr) != NextStageBlockStatus::Cleared)
+		{
+			return false;
+		}
+	}
+	return true;
+}
