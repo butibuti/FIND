@@ -16,6 +16,14 @@ void ButiEngine::InvisibleBlock::Start()
 {
 	auto meshDraw = gameObject.lock()->GetGameComponent<MeshDrawComponent>();
 	meshDraw->UnRegist();
+
+#ifdef DEBUG
+	auto sceneName = gameObject.lock()->GetApplication().lock()->GetSceneManager()->GetCurrentScene()->GetSceneInformation()->GetSceneName();
+	if (sceneName == "LevelEditor")
+	{
+		meshDraw->Regist();
+	}
+#endif
 }
 
 ButiEngine::Value_ptr<ButiEngine::GameComponent> ButiEngine::InvisibleBlock::Clone()
@@ -62,6 +70,13 @@ void ButiEngine::InvisibleBlock::UnActive()
 	m_isActive = false;
 	auto meshDraw = gameObject.lock()->GetGameComponent<MeshDrawComponent>();
 	meshDraw->UnRegist();
+#ifdef DEBUG
+	auto sceneName = gameObject.lock()->GetApplication().lock()->GetSceneManager()->GetCurrentScene()->GetSceneInformation()->GetSceneName();
+	if (sceneName == "LevelEditor")
+	{
+		meshDraw->Regist();
+	}
+#endif
 
 	gameObject.lock()->GetApplication().lock()->GetSoundManager()->PlaySE(SoundTag("Sound/inv_Cover.wav"), 0.003f);
 }
