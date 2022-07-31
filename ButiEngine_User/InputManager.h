@@ -21,6 +21,7 @@ namespace ButiEngine {
 
 		//ƒQ[ƒ€‘S‘Ì
 		static bool IsTriggerDecisionKey();
+		static bool IsTriggerPutEyeBlockKey();
 		static bool IsPushRightKey();
 		static bool IsPushLeftKey();
 		static bool IsPushFrontKey();

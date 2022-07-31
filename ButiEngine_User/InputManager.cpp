@@ -26,7 +26,15 @@ ButiEngine::Value_ptr<ButiEngine::GameComponent> ButiEngine::InputManager::Clone
 bool ButiEngine::InputManager::IsTriggerDecisionKey()
 {
     bool key = GameDevice::GetInput()->TriggerKey(Keys::Space);
-    bool button = GameDevice::GetInput()->GetAnyButtonTrigger();
+    bool button = GameDevice::GetInput()->GetPadButtonTrigger(PadButtons::XBOX_A);
+
+    return (key || button);
+}
+
+bool ButiEngine::InputManager::IsTriggerPutEyeBlockKey()
+{
+    bool key = GameDevice::GetInput()->TriggerKey(Keys::R);
+    bool button = GameDevice::GetInput()->GetPadButtonTrigger(PadButtons::XBOX_X);
 
     return (key || button);
 }

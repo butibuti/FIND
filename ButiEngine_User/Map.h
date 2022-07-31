@@ -39,6 +39,7 @@ namespace ButiEngine {
 		Value_weak_ptr<MapData>GetCurrentMapData() { return m_vlp_currentMapData; }
 
 		std::vector<std::vector<std::vector<Value_weak_ptr<GameObject>>>>& GetMapObjectData() { return m_vec_vwp_mapObjectDatas; }
+		Vector3 GetWorldPos(const Vector3& arg_mapPos);
 		Vector3 GetPlayerPos() { return m_playerPos; }
 		void ChangeBlock(const Vector3& arg_mapPos, std::uint16_t arg_mapChipNum);
 		const Vector4& GetMapEndColor() { return m_mapEndColor; }

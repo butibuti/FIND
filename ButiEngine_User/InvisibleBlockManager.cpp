@@ -1,6 +1,7 @@
 #include "stdafx_u.h"
 #include "InvisibleBlockManager.h"
 #include "InvisibleBlock.h"
+#include "Player.h"
 
 void ButiEngine::InvisibleBlockManager::OnUpdate()
 {
@@ -36,6 +37,9 @@ void ButiEngine::InvisibleBlockManager::CheckSeen()
 			}
 		}
 	}
+
+	auto player = GetManager().lock()->GetGameObject("Player").lock()->GetGameComponent<Player>();
+
 	auto idEnd = IDs.end();
 	for (auto idItr = IDs.begin(); idItr != idEnd; ++idItr)
 	{
@@ -43,7 +47,7 @@ void ButiEngine::InvisibleBlockManager::CheckSeen()
 		{
 			auto invBlockComp = (*itr)->GetGameComponent<InvisibleBlock>();
 
-			if (invBlockComp->GetID() == *idItr)
+			if (invBlockComp->GetID() == *idItr && invBlockComp->GetMapPos() != player->GetMapPos())
 			{
 				invBlockComp->Active();
 			}

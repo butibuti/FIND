@@ -26,6 +26,7 @@ namespace ButiEngine {
 		void UnActive();
 		void SetSeen(const bool arg_flag) { m_isSeen = arg_flag; }
 		bool IsSeen() { return m_isSeen; }
+		Vector3 GetMapPos() { return m_mapPos; }
 		void SetMapPos(const Vector3& arg_mapPos) { m_mapPos = arg_mapPos; }
 		void Seen();
 	private:

@@ -6,6 +6,7 @@ namespace ButiEngine {
 	class PlayerCamera;
 	class InvisibleBlockManager;
 	class NextStageBlock;
+	class EyeBlock;
 
 	enum class MoveDirection
 	{
@@ -69,6 +70,7 @@ namespace ButiEngine {
 		};
 	private:
 		float m_length;
+		Value_weak_ptr<EyeBlock> m_vwp_eyeBlockComponent;
 		Value_weak_ptr<Map> m_vwp_mapComponent;
 		Value_weak_ptr<InvisibleBlockManager> m_vwp_invisibleBlockManagerComponent;
 		Value_weak_ptr<NextStageBlock> m_vwp_nextStageBlockComponent;

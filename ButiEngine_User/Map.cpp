@@ -333,6 +333,20 @@ void ButiEngine::Map::PutBlock(std::uint16_t arg_stageNum)
 	}
 }
 
+ButiEngine::Vector3 ButiEngine::Map::GetWorldPos(const Vector3& arg_mapPos)
+{
+	Vector3 output = arg_mapPos;
+
+	auto vec_mapDatas = m_vlp_currentMapData->m_vec_mapDatas;
+	Vector3 scale(GameSettings::BLOCK_SIZE, GameSettings::BLOCK_SIZE, GameSettings::BLOCK_SIZE);
+	Vector3 offset(vec_mapDatas[0][0].size() / 2, vec_mapDatas.size() / 2, vec_mapDatas[0].size() / 2);
+
+	output -= offset;
+	output *= scale;
+
+	return output;
+}
+
 void ButiEngine::Map::ChangeBlock(const Vector3& arg_mapPos, std::uint16_t arg_mapChipNum)
 {
 	if (arg_mapPos.x < 0 || arg_mapPos.x >= m_vlp_currentMapData->m_vec_mapDatas[0][0].size() ||
@@ -488,7 +502,7 @@ ButiEngine::MapData::MapData(std::uint16_t arg_stageNum)
 				{408,0,0,0,0,0,0,0,0,0,303},
 				{0,0,0,0,0,0,0,0,0,0,0},
 				{409,0,0,0,0,0,0,0,0,0,304},
-				{0,0,0,0,0,0,0,0,0,0,0},
+				{0,0,0,0,100,100,100,0,0,0,0},
 				{410,0,0,0,0,0,0,0,0,0,311},
 			},
 			{
@@ -501,7 +515,7 @@ ButiEngine::MapData::MapData(std::uint16_t arg_stageNum)
 				{0,0,0,0,0,0,0,0,0,0,0},
 				{0,0,0,0,0,0,0,0,0,0,0},
 				{0,0,0,0,0,0,0,0,0,0,0},
-				{0,0,0,0,0,0,0,0,0,0,0},
+				{0,0,0,100,0,0,0,100,0,0,0},
 				{0,0,0,0,0,0,0,0,0,0,0},
 			},
 			{

@@ -12,6 +12,7 @@
 #include "InputManager.h"
 #include "CameraMesh.h"
 #include "NextStageBlock.h"
+#include "EyeBlock.h"
 
 void ButiEngine::Player::OnUpdate()
 {
@@ -42,6 +43,11 @@ void ButiEngine::Player::OnUpdate()
 		m_vlp_flashMeshTimer->Stop();
 		auto anim = gameObject.lock()->GetGameComponent<CubeTransformAnimation>();
 		FlashMeshSet(anim->GetTargetTransform(), CheckLookDirection(anim->GetTargetTransform()), m_nextMapPos);
+		if (m_vwp_eyeBlockComponent.lock())
+		{
+			auto a = m_mapPos;
+			m_vwp_eyeBlockComponent.lock()->FlashMeshSet(m_nextMapPos);
+		}
 	}
 	if (m_vlp_timer->Update())
 	{
@@ -58,6 +64,21 @@ void ButiEngine::Player::OnUpdate()
 		CheckLookBlock();
 		//ƒtƒ‰ƒbƒVƒ…
 		GetManager().lock()->GetGameObject("CameraMesh").lock()->GetGameComponent<CameraMesh>()->Flash();
+
+		if (m_vwp_eyeBlockComponent.lock())
+		{
+			if (m_mapPos == m_vwp_eyeBlockComponent.lock()->GetMapPos())
+			{
+				m_vwp_eyeBlockComponent.lock()->Dead();
+				m_vwp_eyeBlockComponent = Value_weak_ptr<EyeBlock>();
+			}
+		}
+
+		if (m_vwp_eyeBlockComponent.lock())
+		{
+			m_vwp_eyeBlockComponent.lock()->CheckLookBlock();
+			m_vwp_eyeBlockComponent.lock()->Flash();
+		}
 		m_vwp_invisibleBlockManagerComponent.lock()->CheckSeen();
 		CheckExistUnderBlock(m_mapPos);
 		if (!m_isFallStart)
@@ -70,13 +91,33 @@ void ButiEngine::Player::OnUpdate()
 	{
 		m_vlp_expantionTimer->Stop();
 		Expansion();
+		if (m_vwp_eyeBlockComponent.lock())
+		{
+			m_vwp_eyeBlockComponent.lock()->Expansion();
+		}
 	}
 	Shrink();
+	if (m_vwp_eyeBlockComponent.lock())
+	{
+		m_vwp_eyeBlockComponent.lock()->Shrink();
+	}
 	Fall();
 
-	if (m_isTouchNextStageBlock && InputManager::IsTriggerDecisionKey())
+	if (IsRollFinish())
 	{
-		Goal();
+		if (m_isTouchNextStageBlock && InputManager::IsTriggerDecisionKey())
+		{
+			Goal();
+		}
+		auto vec_mapDatas = m_vwp_mapComponent.lock()->GetCurrentMapData().lock()->m_vec_mapDatas;
+		std::uint16_t mapNum = vec_mapDatas[m_mapPos.y][m_mapPos.z][m_mapPos.x];
+		if (mapNum == 0 && !m_vwp_eyeBlockComponent.lock() && InputManager::IsTriggerPutEyeBlockKey())
+		{
+			auto eyeBlock = GetManager().lock()->AddObjectFromCereal("EyeBlock", gameObject.lock()->transform->Clone());
+			m_vwp_eyeBlockComponent = eyeBlock.lock()->GetGameComponent<EyeBlock>();
+			m_vwp_eyeBlockComponent.lock()->SetMapPos(m_mapPos);
+			m_vwp_eyeBlockComponent.lock()->SetLookDirection(CheckLookDirection(gameObject.lock()->transform));
+		}
 	}
 }
 
