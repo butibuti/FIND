@@ -340,6 +340,11 @@ void ButiEngine::MapEditor::OnUpdate()
             Reload();
             break;
         case InputDir::Left:
+            if (m_vwp_map.lock()->GetPlayerPos().Round().x == m_vlp_currentEdit->m_vec_mapDatas[0][0].size() - 1)
+            {
+                GUI::PushNotification(u8"プレイヤーがいる列です");
+                break;
+            }
             for (std::int32_t i = 0; i < m_vlp_currentEdit->m_vec_mapDatas.size(); i++) {
                 for (std::int32_t j = 0; j < m_vlp_currentEdit->m_vec_mapDatas[0].size(); j++) {
                     m_vlp_currentEdit->m_vec_mapDatas[i][j].pop_back();
@@ -360,7 +365,14 @@ void ButiEngine::MapEditor::OnUpdate()
         }
         break;
         case InputDir::Back:
-            m_vlp_currentEdit->m_vec_mapDatas.pop_back();
+            if (m_vwp_map.lock()->GetPlayerPos().Round().z == m_vlp_currentEdit->m_vec_mapDatas[0].size() - 1)
+            {
+                GUI::PushNotification(u8"プレイヤーがいる行です");
+                break;
+            }
+            for (std::int32_t i = 0; i < m_vlp_currentEdit->m_vec_mapDatas.size(); i++) {
+                m_vlp_currentEdit->m_vec_mapDatas[i].pop_back();
+            }
             Reload();
             break;
         case InputDir::Up:
@@ -373,10 +385,12 @@ void ButiEngine::MapEditor::OnUpdate()
             Reload();
             break;
         case InputDir::Down:
-
-            for (std::int32_t i = 0; i < m_vlp_currentEdit->m_vec_mapDatas.size(); i++) {
-                m_vlp_currentEdit->m_vec_mapDatas[i].pop_back();
+            if (m_vwp_map.lock()->GetPlayerPos().Round().y == m_vlp_currentEdit->m_vec_mapDatas.size() - 1)
+            {
+                GUI::PushNotification(u8"プレイヤーがいる面です");
+                break;
             }
+            m_vlp_currentEdit->m_vec_mapDatas.pop_back();
             Reload();
             break;
         }

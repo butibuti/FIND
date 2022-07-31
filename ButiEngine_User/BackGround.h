@@ -4,8 +4,8 @@ namespace ButiEngine {
 
 	struct FloatBlockData {
 		float time;
-		std::uint16_t direction=1;
-		std::uint16_t moveDir=1;
+		std::int16_t direction=1;
+		std::int16_t moveDir=1;
 		float movePase = 1.0;
 		float moveTime = 0.0;
 		float moveMax;
@@ -50,7 +50,7 @@ namespace ButiEngine {
 		std::vector<Value_ptr<Transform>> m_vec_vlp_transform;
 		std::vector<Value_weak_ptr<GameObject>> m_vec_vwp_gameObjects;
 		std::vector<FloatBlockData> m_vec_blockData;
-		//std::vector<std::shared_ptr<CBuffer<LightVariable>>>vec_shp_lightBuffer;
+		std::vector<Value_ptr<ButiRendering::CBuffer<ButiRendering::ObjectInformation>>>m_vec_vlp_objectInformation;
 	};
 
 }
