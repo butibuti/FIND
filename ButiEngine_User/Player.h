@@ -77,10 +77,7 @@ namespace ButiEngine {
 		Vector3 m_offset;
 		Vector3 m_startPos;
 		float m_startRotation;
-		bool m_isGoal;
-		bool m_isFall;
-		bool m_isFallStart;
-		bool m_isTouchNextStageBlock;
+		bool m_isGoal,m_isFall, m_isFallStart,m_isTouchNextStageBlock;
 		Vector3 m_afterFallPos;
 		float m_scale;
 		LookDirection m_lookDirection;
