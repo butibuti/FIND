@@ -2,8 +2,9 @@
 #include "NextStageBlock.h"
 #include "StageSelectManager.h"
 #include "StagePreviewParent.h"
+#include "GameSettings.h"
 
-std::vector<bool> ButiEngine::NextStageBlock::m_vec_isActives;
+std::vector<ButiEngine::NextStageBlockStatus> ButiEngine::NextStageBlock::m_vec_statuss;
 
 void ButiEngine::NextStageBlock::OnUpdate()
 {
@@ -20,11 +21,15 @@ void ButiEngine::NextStageBlock::Start()
 	m_vwp_stagePreviewParent.lock()->transform->SetLocalPosition(0.0f);
 	m_vwp_stagePreviewParent.lock()->GetGameComponent<StagePreviewParent>()->CreatePreview(m_stageNum);
 
-	m_isActive = m_vec_isActives[min(m_stageNum,m_vec_isActives.size()-1)];
-
-	if (!m_isActive)
+	m_isActive = true;
+	if (m_vec_statuss[min(m_stageNum, m_vec_statuss.size() - 1)] == NextStageBlockStatus::InActive)
 	{
+		m_isActive = false;
 		gameObject.lock()->GetGameComponent<MeshDrawComponent>()->UnRegist();
+	}
+	else if (m_vec_statuss[min(m_stageNum, m_vec_statuss.size() - 1)] == NextStageBlockStatus::Cleared)
+	{
+		gameObject.lock()->GetGameComponent<MeshDrawComponent>()->GetCBuffer<ButiRendering::ObjectInformation>()->Get().color = GameSettings::ACTIVE_GOAL_COLOR;
 	}
 }
 
@@ -52,7 +57,7 @@ void ButiEngine::NextStageBlock::Seen()
 	auto meshDraw = gameObject.lock()->GetGameComponent<MeshDrawComponent>();
 	meshDraw->Regist();
 	m_isActive = true;
-	m_vec_isActives[m_stageNum] = m_isActive;
+	m_vec_statuss[m_stageNum] = NextStageBlockStatus::Active;
 
 	gameObject.lock()->GetApplication().lock()->GetSoundManager()->PlaySE(SoundTag("Sound/potion.wav"), 0.1f);
 
@@ -64,14 +69,15 @@ void ButiEngine::NextStageBlock::Seen()
 	GetManager().lock()->AddObjectFromCereal("GoalAura", ObjectFactory::Create<Transform>(pos, rot, scale));
 }
 
-void ButiEngine::NextStageBlock::InitializeIsActives()
+void ButiEngine::NextStageBlock::InitializeStatus()
 {
-	m_vec_isActives.clear();
+	//すべてを非アクティブ状態で埋める
+	m_vec_statuss.clear();
 
 	std::uint16_t maxStageNum = StageSelectManager::GetMaxStageNum();
 
 	for (std::uint16_t i = 0; i < maxStageNum; i++)
 	{
-		m_vec_isActives.push_back(false);
+		m_vec_statuss.push_back(NextStageBlockStatus::InActive);
 	}
 }

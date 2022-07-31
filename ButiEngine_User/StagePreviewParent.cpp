@@ -14,6 +14,7 @@ void ButiEngine::StagePreviewParent::Start()
 {
 	m_vwp_preview.lock()->transform->SetBaseTransform(gameObject.lock()->transform);
 	m_vwp_preview.lock()->transform->SetLocalPosition(Vector3(0.0f, 0.5f, 0.0f));
+	m_vwp_preview.lock()->transform->SetLocalScale(1.0f);
 
 	m_startPos = gameObject.lock()->transform->GetLocalPosition();
 	m_startScale = gameObject.lock()->transform->GetLocalScale();
@@ -39,7 +40,7 @@ void ButiEngine::StagePreviewParent::Disappear()
 
 void ButiEngine::StagePreviewParent::CreatePreview(const std::uint16_t arg_stageNum)
 {
-	m_vwp_preview = GetManager().lock()->AddObjectFromCereal("StagePreview", ObjectFactory::Create<Transform>(Vector3(),Vector3(),Vector3(1.0f))	);
+	m_vwp_preview = GetManager().lock()->AddObjectFromCereal("StagePreview");
 
 }
 

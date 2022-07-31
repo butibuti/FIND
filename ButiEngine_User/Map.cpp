@@ -54,6 +54,7 @@ void ButiEngine::Map::OnUpdate()
 		else
 		{
 			nextSceneName = "NewStageSelectScene";
+			NextStageBlock::SetStatus(m_currentStageNum, NextStageBlockStatus::Cleared);
 		}
 		sceneManager->RemoveScene(nextSceneName);
 		sceneManager->LoadScene(nextSceneName);
@@ -87,45 +88,45 @@ void ButiEngine::Map::Start()
 	m_vlp_stageEndTimer = ObjectFactory::Create<RelativeTimer>(120);
 	m_vec_vlp_mapDatas.clear();
 	m_vec_randomBlockPoss.clear();
-	{
-		auto sceneName = GetManager().lock()->GetScene().lock()->GetSceneInformation()->GetSceneName();
-		if (sceneName == "LevelEditor") {
-			auto mapFilePath = "Scene/Stage_" + std::to_string(MapEditor::GetEditMapIndex()) + "/mapData.map";
-			if (ResourceSystem::ExistResource(mapFilePath)) {
-				auto mapData = ObjectFactory::Create<MapData>();
-				InputCereal(mapData, mapFilePath);
-				m_vec_vlp_mapDatas.push_back(mapData);
-			}
-			else {
-				m_vec_vlp_mapDatas.push_back(ObjectFactory::Create<MapData>(0));
-			}
-		}
-		else if (StringHelper::Contains( sceneName,"Select")) {
-			m_vec_vlp_mapDatas.push_back(ObjectFactory::Create<MapData>(0));
+
+	auto sceneName = GetManager().lock()->GetScene().lock()->GetSceneInformation()->GetSceneName();
+	if (sceneName == "LevelEditor") {
+		auto mapFilePath = "Scene/Stage_" + std::to_string(MapEditor::GetEditMapIndex()) + "/mapData.map";
+		if (ResourceSystem::ExistResource(mapFilePath)) {
+			auto mapData = ObjectFactory::Create<MapData>();
+			InputCereal(mapData, mapFilePath);
+			m_vec_vlp_mapDatas.push_back(mapData);
 		}
 		else {
-			auto mapFilePath = "Scene/" + sceneName + "/mapData.map";
-			if (ResourceSystem::ExistResource(mapFilePath)) {
-				auto mapData = ObjectFactory::Create<MapData>();
-				InputCereal(mapData, mapFilePath);
-				m_vec_vlp_mapDatas.push_back(mapData);
-			}
-			else {
-				m_vec_vlp_mapDatas.push_back(ObjectFactory::Create<MapData>(0));
-			}
+			m_vec_vlp_mapDatas.push_back(ObjectFactory::Create<MapData>(0));
+		}
+	}
+	else if (StringHelper::Contains(sceneName, "Select")) {
+		m_vec_vlp_mapDatas.push_back(ObjectFactory::Create<MapData>(0));
+	}
+	else {
+		auto mapFilePath = "Scene/" + sceneName + "/mapData.map";
+		if (ResourceSystem::ExistResource(mapFilePath)) {
+			auto mapData = ObjectFactory::Create<MapData>();
+			InputCereal(mapData, mapFilePath);
+			m_vec_vlp_mapDatas.push_back(mapData);
+		}
+		else {
+			m_vec_vlp_mapDatas.push_back(ObjectFactory::Create<MapData>(0));
 		}
 	}
 
-	m_playerPos = Vector3Const::Zero;
 	m_currentStageNum = 0;
+	auto splitSceneName = StringHelper::Split(sceneName, "_");
+	if (splitSceneName.size() > 1)
+	{
+		m_currentStageNum = atoi(splitSceneName[1].c_str());
+	}
+	m_playerPos = Vector3Const::Zero;
 	auto invManager = GetManager().lock()->AddObjectFromCereal("InvisibleBlockManager");
-	PutBlock(m_currentStageNum);
+	PutBlock(0);
 	m_mapStartColor = Vector4(0.0f, 0.0f, 0.2f, 1.0f);
 	m_mapEndColor = Vector4(0.0f, 0.3f, 1.0f, 1.0f);
-
-	auto sceneManager = gameObject.lock()->GetApplication().lock()->GetSceneManager();
-	std::string sceneName = "Stage" + std::to_string(StageSelectManager::m_stageNum - 1) + "Scene";
-	sceneManager->RemoveScene(sceneName);
 }
 
 ButiEngine::Value_ptr<ButiEngine::GameComponent> ButiEngine::Map::Clone()
@@ -453,17 +454,17 @@ ButiEngine::MapData::MapData(std::uint16_t arg_stageNum)
 				{2,2,2,2,2,2,2,2,2,2,2},
 			},
 			{
-				{0,0,0,0,0,0,0,0,101,0,0},
-				{0,0,0,0,0,0,100,0,0,0,0},
-				{0,0,0,0,0,3,3,0,0,0,0},
-				{0,0,2,2,0,0,0,0,101,0,0},
+				{0,0,0,0,0,0,0,0,0,0,300},
 				{0,0,0,0,0,0,0,0,0,0,0},
-				{0,0,0,0,0,1,0,300,0,0,0},
-				{0,0,101,0,0,0,0,0,0,0,0},
-				{0,0,301,0,0,0,0,0,0,0,0},
-				{0,0,101,0,0,2,2,2,2,2,0},
-				{0,0,0,0,0,100,100,100,0,0,0},
-				{0,0,0,0,0,0,0,0,0,0,GameSettings::MAP_CHIP_DEFAULTGOAL},
+				{0,0,0,0,0,0,0,0,0,0,301},
+				{0,0,0,0,0,0,0,0,0,0,0},
+				{0,0,0,0,0,0,0,0,0,0,302},
+				{0,0,0,0,0,1,0,0,0,0,0},
+				{0,0,0,0,0,0,0,0,0,0,303},
+				{0,0,0,0,0,0,0,0,0,0,0},
+				{0,0,0,0,0,0,0,0,0,0,304},
+				{0,0,0,0,0,0,0,0,0,0,0},
+				{0,0,0,0,0,0,0,0,0,0,311},
 			},
 			{
 				{0,0,0,0,0,0,0,0,0,0,0},
@@ -474,7 +475,7 @@ ButiEngine::MapData::MapData(std::uint16_t arg_stageNum)
 				{0,0,0,0,0,0,0,0,0,0,0},
 				{0,0,0,0,0,0,0,0,0,0,0},
 				{0,0,0,0,0,0,0,0,0,0,0},
-				{0,0,0,0,0,0,0,0,0,3,0},
+				{0,0,0,0,0,0,0,0,0,0,0},
 				{0,0,0,0,0,0,0,0,0,0,0},
 				{0,0,0,0,0,0,0,0,0,0,0},
 			},
@@ -487,7 +488,7 @@ ButiEngine::MapData::MapData(std::uint16_t arg_stageNum)
 				{0,0,0,0,0,0,0,0,0,0,0},
 				{0,0,0,0,0,0,0,0,0,0,0},
 				{0,0,0,0,0,0,0,0,0,0,0},
-				{0,0,0,0,0,0,0,0,0,2,0},
+				{0,0,0,0,0,0,0,0,0,0,0},
 				{0,0,0,0,0,0,0,0,0,0,0},
 				{0,0,0,0,0,0,0,0,0,0,0},
 			},

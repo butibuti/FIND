@@ -33,7 +33,7 @@ std::int32_t APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR arg, std::in
 {
 #endif
 	//StageSelectManager::SetMaxStageNum();
-	NextStageBlock::InitializeIsActives();
+	NextStageBlock::InitializeStatus();
 	std::int32_t returnCode = 0;
 
 #ifdef _EDITORBUILD

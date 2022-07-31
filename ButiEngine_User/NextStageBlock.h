@@ -2,6 +2,13 @@
 #include"Header/GameComponentHeader.h"
 namespace ButiEngine {
 
+	enum class NextStageBlockStatus
+	{
+		InActive,
+		Active,
+		Cleared,
+	};
+
 	class NextStageBlock :public GameComponent
 	{
 	public:
@@ -24,9 +31,10 @@ namespace ButiEngine {
 
 		void Seen();
 
-		static void InitializeIsActives();
+		static void InitializeStatus();
+		static void SetStatus(const std::uint16_t arg_index, const NextStageBlockStatus arg_status) { m_vec_statuss[arg_index] = arg_status; }
 	private:
-		static std::vector<bool> m_vec_isActives;
+		static std::vector<NextStageBlockStatus> m_vec_statuss;
 
 		Value_weak_ptr<GameObject> m_vwp_stagePreviewParent;
 
