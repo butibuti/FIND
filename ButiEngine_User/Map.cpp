@@ -238,7 +238,7 @@ void ButiEngine::Map::PutBlock(std::uint16_t arg_stageNum)
 					AddTransformAnimation(gameObject, targetPos.y);
 					gameObject->GetGameComponent<Shake>()->SetDefaultPos(targetPos);
 				}
-				else if (mapNum == GameSettings::MAP_CHIP_PLAYER || (mapNum >= GameSettings::MAP_CHIP_PLAYER_ROTATE_90 && mapNum <= GameSettings::MAP_CHIP_PLAYER_ROTATE_MIN_90) || (mapNum >= GameSettings::MAP_CHIP_PLAYER_AND_GOAL && mapNum < GameSettings::MAP_CHIP_NEXT_STAGE_BLOCK))
+				else if (mapNum == GameSettings::MAP_CHIP_PLAYER || (mapNum >= GameSettings::MAP_CHIP_PLAYER_ROTATE_90 && mapNum <= GameSettings::MAP_CHIP_PLAYER_DOWN_ROTATE_90) || (mapNum >= GameSettings::MAP_CHIP_PLAYER_AND_GOAL && mapNum < GameSettings::MAP_CHIP_NEXT_STAGE_BLOCK))
 				{
 					m_playerPos = Vector3(x, y, z);
 					Vector3 spawnPos = position;
@@ -252,10 +252,25 @@ void ButiEngine::Map::PutBlock(std::uint16_t arg_stageNum)
 					directing->SetStartPos(position);
 
 					auto cameraMesh = GetManager().lock()->AddObjectFromCereal("CameraMesh", ObjectFactory::Create<Transform>(Vector3(0, 0, -0.1f), Vector3Const::Zero, scale));
-					if (mapNum >= GameSettings::MAP_CHIP_PLAYER_ROTATE_90 && mapNum <= GameSettings::MAP_CHIP_PLAYER_ROTATE_MIN_90) {
-						auto rotation = (mapNum - GameSettings::MAP_CHIP_PLAYER_ROTATE_90 + 1) * 90;
-						gameObject->transform->RollLocalRotationY_Degrees(rotation);
-						playerBehavior->SetStartRotation(rotation);
+					if (mapNum >= GameSettings::MAP_CHIP_PLAYER_ROTATE_90 && mapNum <= GameSettings::MAP_CHIP_PLAYER_DOWN_ROTATE_90) {
+						auto playerDir = (mapNum - GameSettings::MAP_CHIP_PLAYER_ROTATE_90 + 1);
+						if (playerDir < 4) {
+							auto rotation = playerDir * 90;
+							gameObject->transform->RollLocalRotationY_Degrees(rotation);
+							playerBehavior->SetStartRotation(rotation);
+						}
+						else if (playerDir < 6) {
+							auto rotation = (playerDir - 4) * 90;
+							gameObject->transform->RollLocalRotationY_Degrees(rotation);
+							gameObject->transform->RollLocalRotationX_Degrees(-90);
+							playerBehavior->SetStartRotation(rotation);
+						}
+						else {
+							auto rotation = (playerDir - 6) * 90;
+							gameObject->transform->RollLocalRotationY_Degrees(rotation);
+							gameObject->transform->RollLocalRotationX_Degrees(90);
+							playerBehavior->SetStartRotation(rotation);
+						}
 					}
 					else
 						if (mapNum >= GameSettings::MAP_CHIP_PLAYER_AND_GOAL) {
@@ -264,10 +279,23 @@ void ButiEngine::Map::PutBlock(std::uint16_t arg_stageNum)
 							std::int16_t mapNum_tenthSpace = (mapNum - GameSettings::MAP_CHIP_PLAYER_AND_GOAL) / 10;
 							std::int16_t mapNum_onceSpace = (mapNum - GameSettings::MAP_CHIP_PLAYER_AND_GOAL) % 10;
 
-
-							auto rotation = mapNum_onceSpace * 90;
-							gameObject->transform->RollLocalRotationY_Degrees(rotation);
-							playerBehavior->SetStartRotation(rotation);
+							if (mapNum_onceSpace < 4) {
+								auto rotation = mapNum_onceSpace * 90;
+								gameObject->transform->RollLocalRotationY_Degrees(rotation);
+								playerBehavior->SetStartRotation(rotation);
+							}
+							else if (mapNum_onceSpace < 6) {
+								auto rotation =( mapNum_onceSpace -4)*90;
+								gameObject->transform->RollLocalRotationY_Degrees(rotation);
+								gameObject->transform->RollLocalRotationX_Degrees(-90);
+								playerBehavior->SetStartRotation(rotation);
+							}
+							else {
+								auto rotation = (mapNum_onceSpace - 6) * 90;
+								gameObject->transform->RollLocalRotationY_Degrees(rotation);
+								gameObject->transform->RollLocalRotationX_Degrees(90);
+								playerBehavior->SetStartRotation(rotation);
+							}
 
 							if (mapNum_tenthSpace == GameSettings::MAP_CHIP_TUTORIALGOAL)
 							{

@@ -4,7 +4,6 @@
 namespace ButiEngine {
 class MapEditor :public GameComponent{
 public:
-public:
 	MapEditor() {}
 	static std::int32_t GetEditMapIndex();
 	void OnUpdate()override;
@@ -16,13 +15,20 @@ public:
 		return "MapEditor";
 	}
 	Value_ptr<GameComponent> Clone()override;
-
 	void RollCameraDirection(const std::uint16_t arg_rotateDir);
 	template<class Archive>
 	void serialize(Archive& archive)
 	{
 		archive(isActive);
 	}
+	enum class EditorMode :std::int8_t {
+		Controll = 0, Cursor = 1, AnotherCursor = 2, StageSize = 3, None = 4
+	};
+	enum class BlockMode :std::int8_t {
+		Block = 0, Invisible = 1, Glass = 2, Goal = 3, Player = 4, Stage = 5, None = 6, Min = -1
+	};
+	EditorMode GetEditorMode()const;
+	BlockMode GetBlockMode()const;
 private:
 	void ClampCursorPos();
 	void Reload();

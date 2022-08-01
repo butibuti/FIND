@@ -8,17 +8,12 @@
 #include"StartPlayerDirecting.h"
 std::int32_t g_mapIndex = 0, g_cursorPos[3] = {0,0,0}, g_cursorPos_another[3] = { 0,0,0 }, g_currentBlockIndex = 0, g_currentPlayerDirection = 0
 , g_invisibleID=0, g_goalMode = 0, g_stageBlockIndex = 0;
-enum class CurrentEditMode :std::int8_t {
-    Controll = 0, Cursor = 1, AnotherCursor = 2, StageSize = 3, None = 4
-};
-enum class CurrentPutMode :std::int8_t {
-    Block = 0, Invisible = 1, Glass = 2, Goal = 3, Player = 4, Stage = 5, None = 6, Min = -1
-};
+
 enum class InputDir :std::int8_t {
     None = 0, Front= 1, Back= 2, Right= 3, Left= 4, Up= 5, Down= 6
 };
-CurrentEditMode g_editMode = CurrentEditMode::Controll;
-CurrentPutMode g_putMode = CurrentPutMode::Block;
+ButiEngine::MapEditor::EditorMode g_editMode = ButiEngine::MapEditor::EditorMode::Controll;
+ButiEngine::MapEditor::BlockMode g_putMode = ButiEngine::MapEditor::BlockMode::Block;
 std::int32_t ButiEngine::MapEditor::GetEditMapIndex()
 {
     return g_mapIndex;
@@ -27,12 +22,12 @@ void PushPutModeNotification(){
     std::string message;
     switch (g_putMode)
     {
-    case CurrentPutMode::Block:message = u8"ブロック配置"; break;
-    case CurrentPutMode::Invisible:message = u8"インビジブルブロック配置"; break;
-    case CurrentPutMode::Glass:message = u8"ガラスブロック配置"; break;
-    case CurrentPutMode::Goal:message = u8"ゴール配置"; break;
-    case CurrentPutMode::Player:message = u8"プレイヤー位置変更"; break;
-    case CurrentPutMode::Stage:message = u8"ステージ選択ブロック配置"; break;
+    case ButiEngine::MapEditor::BlockMode::Block:message = u8"ブロック配置"; break;
+    case ButiEngine::MapEditor::BlockMode::Invisible:message = u8"インビジブルブロック配置"; break;
+    case ButiEngine::MapEditor::BlockMode::Glass:message = u8"ガラスブロック配置"; break;
+    case ButiEngine::MapEditor::BlockMode::Goal:message = u8"ゴール配置"; break;
+    case ButiEngine::MapEditor::BlockMode::Player:message = u8"プレイヤー位置変更"; break;
+    case ButiEngine::MapEditor::BlockMode::Stage:message = u8"ステージ選択ブロック配置"; break;
     }
     ButiEngine::GUI::PushNotification(message);
 }
@@ -41,23 +36,23 @@ void ButiEngine::MapEditor::OnUpdate()
     if (GetManager().lock()->GetGameObject("Player").lock()->GetGameComponent<StartPlayerDirecting>()->IsAnimation()) {
         return;
     }
-    GetManager().lock()->GetGameObject("Player").lock()->GetGameComponent<Player>()->SetIsActive(g_editMode == CurrentEditMode::Controll);
+    GetManager().lock()->GetGameObject("Player").lock()->GetGameComponent<Player>()->SetIsActive(g_editMode == EditorMode::Controll);
     m_vwp_cursor_one.lock()->GetTransform()->SetLocalPosition(Vector3(g_cursorPos[0], g_cursorPos[1], g_cursorPos[2])-m_offset);
     m_vwp_cursor_two.lock()->GetTransform()->SetLocalPosition(Vector3(g_cursorPos_another[0], g_cursorPos_another[1], g_cursorPos_another[2]) - m_offset);
 
     if (GameDevice::GetInput()->GetPadButtonTrigger(PadButtons::XBOX_START)) {
-        g_editMode= static_cast<CurrentEditMode>(static_cast<std::int8_t>(g_editMode) + 1);
-        if (g_editMode == CurrentEditMode::None) {
-            g_editMode = CurrentEditMode::Controll;
+        g_editMode= static_cast<EditorMode>(static_cast<std::int8_t>(g_editMode) + 1);
+        if (g_editMode == EditorMode::None) {
+            g_editMode = EditorMode::Controll;
         }
-        if (g_editMode == CurrentEditMode::AnotherCursor) {
+        if (g_editMode == EditorMode::AnotherCursor) {
             m_vwp_cursor_two.lock()->Regist();
         }
         else {
             m_vwp_cursor_two.lock()->UnRegist();
         }
 
-        if (g_editMode == CurrentEditMode::StageSize || g_editMode == CurrentEditMode::Controll) {
+        if (g_editMode == EditorMode::StageSize || g_editMode == EditorMode::Controll) {
             m_vwp_cursor_one.lock()->UnRegist();
         }
         else {
@@ -66,58 +61,43 @@ void ButiEngine::MapEditor::OnUpdate()
         std::string mode;
         switch (g_editMode)
         {
-        case  CurrentEditMode::Controll:mode = u8"プレイヤー操作"; break;
-        case  CurrentEditMode::Cursor:mode = u8"カーソル操作"; break;
-        case  CurrentEditMode::AnotherCursor:mode = u8"カーソルその2操作"; break;
-        case  CurrentEditMode::StageSize:mode = u8"ステージ操作"; break;
+        case  EditorMode::Controll:mode = u8"プレイヤー操作"; break;
+        case  EditorMode::Cursor:mode = u8"カーソル操作"; break;
+        case  EditorMode::AnotherCursor:mode = u8"カーソルその2操作"; break;
+        case  EditorMode::StageSize:mode = u8"ステージ操作"; break;
         }
         GUI::PushNotification(mode);
 
     }
 
-    if ((g_editMode == CurrentEditMode::Controll)) { return; }
+    if ((g_editMode == EditorMode::Controll)) { return; }
 
     InputDir inputDir = InputDir::None;
     auto trigger = GameDevice::GetInput()->GetRightTrigger();
     bool isDirInputed = false;
 
     bool isChanged = false;
-    if (g_putMode == CurrentPutMode::Player) {
+    if (g_putMode == BlockMode::Player) {
         if (GameDevice::GetInput()->GetPadButtonTrigger(PadButtons::XBOX_LEFT)) {
             g_currentPlayerDirection--;
             if (g_currentPlayerDirection < 0) {
-                g_currentPlayerDirection = 3;
+                g_currentPlayerDirection = 7;
             }isChanged = true;
         }
         if (GameDevice::GetInput()->GetPadButtonTrigger(PadButtons::XBOX_RIGHT)) {
             g_currentPlayerDirection++;
-            if (g_currentPlayerDirection > 3) {
+            if (g_currentPlayerDirection > 7) {
                 g_currentPlayerDirection = 0;
             }isChanged = true;
         }
         if (isChanged) {
-
-            switch (g_currentPlayerDirection)
-            {
-            case 0:
-                GUI::PushNotification("Player:Front");
-                break;
-            case 1:
-                GUI::PushNotification("Player:Right");
-                break;
-            case 2:
-                GUI::PushNotification("Player:Back");
-                break;
-            case 3:
-                GUI::PushNotification("Player:Left");
-                break;
-            default:
-                break;
-            }
+            const char* ary_playerDir[8] = {"Front","Right","Back","Left","Up","Up_rotate","Down","Down_rotate"};
+            
+            GUI::PushNotification(Util::ToUTF8( std::string("Player:")+ary_playerDir[g_currentPlayerDirection]+"   "));
             return;
         }
     }
-    else if (g_putMode == CurrentPutMode::Goal) {
+    else if (g_putMode == BlockMode::Goal) {
         if (GameDevice::GetInput()->GetPadButtonTrigger(PadButtons::XBOX_LEFT)) {
             isChanged = true;
             if (g_goalMode < 0) {
@@ -148,7 +128,7 @@ void ButiEngine::MapEditor::OnUpdate()
             return;
         }
     }
-    else if (g_putMode == CurrentPutMode::Stage) {
+    else if (g_putMode == BlockMode::Stage) {
         if ( GameDevice::GetInput()->GetPadButtonTrigger(PadButtons::XBOX_LEFT)) {
             g_stageBlockIndex--;
             isChanged = true;
@@ -163,7 +143,7 @@ void ButiEngine::MapEditor::OnUpdate()
             return;
         }
     }
-    else if (g_putMode == CurrentPutMode::Invisible) {
+    else if (g_putMode == BlockMode::Invisible) {
         if (GameDevice::GetInput()->GetPadButtonTrigger(PadButtons::XBOX_LEFT)) {
             g_invisibleID--;
             isChanged = true;
@@ -328,7 +308,7 @@ void ButiEngine::MapEditor::OnUpdate()
     }
 
 
-    if (g_editMode == CurrentEditMode::StageSize) {
+    if (g_editMode == EditorMode::StageSize) {
         switch (inputDir)
         {
         case InputDir::Right:
@@ -400,7 +380,7 @@ void ButiEngine::MapEditor::OnUpdate()
         return;
     }
 
-    int32_t(& p_selectCursor)[3]= g_editMode == CurrentEditMode::AnotherCursor? g_cursorPos_another:g_cursorPos;
+    int32_t(& p_selectCursor)[3]= g_editMode == EditorMode::AnotherCursor? g_cursorPos_another:g_cursorPos;
     switch (inputDir)
     {
     case InputDir::Right:
@@ -426,7 +406,7 @@ void ButiEngine::MapEditor::OnUpdate()
 
     if (GameDevice::GetInput()->GetPadButtonTrigger(PadButtons::XBOX_A)) {
         bool isReload = false;
-        if (g_editMode==CurrentEditMode::AnotherCursor) {
+        if (g_editMode==EditorMode::AnotherCursor) {
             Vector3 min = Vector3(g_cursorPos[0], g_cursorPos[1], g_cursorPos[2]).Min(Vector3(g_cursorPos_another[0], g_cursorPos_another[1], g_cursorPos_another[2]));
             Vector3 max = Vector3(g_cursorPos[0], g_cursorPos[1], g_cursorPos[2]).Max(Vector3(g_cursorPos_another[0], g_cursorPos_another[1], g_cursorPos_another[2]));
             for (std::int32_t y = min.y; y <= max.y; y++) {
@@ -435,14 +415,14 @@ void ButiEngine::MapEditor::OnUpdate()
                         auto pos = Vector3(y, z, x);
                         switch (g_putMode)
                         {
-                        case CurrentPutMode::Block: Replace(pos, "Block", GameSettings::MAP_CHIP_BLOCK); break;
-                        case CurrentPutMode::Invisible: {
+                        case BlockMode::Block: Replace(pos, "Block", GameSettings::MAP_CHIP_BLOCK); break;
+                        case BlockMode::Invisible: {
                             auto gameObject = Replace(pos, "InvisibleBlock", GameSettings::MAP_CHIP_INVISIBLEBLOCK + g_invisibleID);
                             gameObject->GetGameComponent<InvisibleBlock>()->SetID(g_invisibleID);
                             gameObject->GetGameComponent<InvisibleBlock>()->SetMapPos(Vector3(g_cursorPos[0], g_cursorPos[1], g_cursorPos[2]));
 
                         }break;
-                        case CurrentPutMode::Glass: Replace(pos, "Glass", GameSettings::MAP_CHIP_GLASS); break;
+                        case BlockMode::Glass: Replace(pos, "Glass", GameSettings::MAP_CHIP_GLASS); break;
                         }
                        
                     }
@@ -452,15 +432,15 @@ void ButiEngine::MapEditor::OnUpdate()
         else {
             switch (g_putMode)
             {
-            case CurrentPutMode::Block:Replace(Vector3(g_cursorPos[1], g_cursorPos[2], g_cursorPos[0]), "Block", GameSettings::MAP_CHIP_BLOCK); break;
-            case CurrentPutMode::Invisible: {
+            case BlockMode::Block:Replace(Vector3(g_cursorPos[1], g_cursorPos[2], g_cursorPos[0]), "Block", GameSettings::MAP_CHIP_BLOCK); break;
+            case BlockMode::Invisible: {
                 auto gameObject = Replace(Vector3(g_cursorPos[1], g_cursorPos[2], g_cursorPos[0]), "InvisibleBlock", GameSettings::MAP_CHIP_INVISIBLEBLOCK + g_invisibleID);
                 gameObject->GetGameComponent<InvisibleBlock>()->SetID(g_invisibleID);
                 gameObject->GetGameComponent<InvisibleBlock>()->SetMapPos(Vector3(g_cursorPos[0], g_cursorPos[1], g_cursorPos[2]));
 
             }break;
-            case CurrentPutMode::Glass: Replace(Vector3(g_cursorPos[1], g_cursorPos[2], g_cursorPos[0]), "Glass", GameSettings::MAP_CHIP_GLASS); break;
-            case CurrentPutMode::Goal: {
+            case BlockMode::Glass: Replace(Vector3(g_cursorPos[1], g_cursorPos[2], g_cursorPos[0]), "Glass", GameSettings::MAP_CHIP_GLASS); break;
+            case BlockMode::Goal: {
                 std::string goalObjName;
                 switch (g_goalMode)
                 {
@@ -483,19 +463,20 @@ void ButiEngine::MapEditor::OnUpdate()
                     Replace(Vector3(g_cursorPos[1], g_cursorPos[2], g_cursorPos[0]), goalObjName, GameSettings::MAP_CHIP_TUTORIALGOAL + g_goalMode);
                 }
             }break;
-            case CurrentPutMode::Stage: {
+            case BlockMode::Stage: {
                 auto gameObject = Replace(Vector3(g_cursorPos[1], g_cursorPos[2], g_cursorPos[0]), "NextStageBlock", GameSettings::MAP_CHIP_NEXT_STAGE_BLOCK + g_stageBlockIndex);
                 gameObject->GetGameComponent<NextStageBlock>()->SetStageNum(g_stageBlockIndex);
             }break;
-            case CurrentPutMode::Player: {
+            case BlockMode::Player: {
                 auto playerInitPos = m_vwp_map.lock()->GetPlayerPos().Round();
                 if (g_cursorPos[1] - 1<0||
                     (m_vlp_currentEdit->m_vec_mapDatas[g_cursorPos[1] - 1][g_cursorPos[2]][g_cursorPos[0]]!=GameSettings::MAP_CHIP_BLOCK&&
                         m_vlp_currentEdit->m_vec_mapDatas[g_cursorPos[1] - 1][g_cursorPos[2]][g_cursorPos[0]] != GameSettings::MAP_CHIP_GLASS)) {
                     break;
                 }
+                
                 std::int32_t num = m_vlp_currentEdit->m_vec_mapDatas[playerInitPos.y][playerInitPos.z][playerInitPos.x];
-                if (num == GameSettings::MAP_CHIP_PLAYER || (num >= GameSettings::MAP_CHIP_PLAYER_ROTATE_90 && num <= GameSettings::MAP_CHIP_PLAYER_ROTATE_MIN_90)) {
+                if (num == GameSettings::MAP_CHIP_PLAYER || (num >= GameSettings::MAP_CHIP_PLAYER_ROTATE_90 && num <= GameSettings::MAP_CHIP_PLAYER_DOWN_ROTATE_90)) {
                     m_vlp_currentEdit->m_vec_mapDatas[playerInitPos.y][playerInitPos.z][playerInitPos.x] = 0;
                 }
                 else if (num > GameSettings::MAP_CHIP_PLAYER_AND_GOAL && num < GameSettings::MAP_CHIP_NEXT_STAGE_BLOCK) {
@@ -519,11 +500,12 @@ void ButiEngine::MapEditor::OnUpdate()
                     }
                     Replace(Vector3(playerInitPos.y, playerInitPos.z, playerInitPos.x), goalObjName, goal);
                 }
+
+
                 if (g_currentPlayerDirection == 0) {
                     auto mapNum = m_vlp_currentEdit->m_vec_mapDatas[g_cursorPos[1]][g_cursorPos[2]][g_cursorPos[0]];
                     if (mapNum >= GameSettings::MAP_CHIP_TUTORIALGOAL && mapNum <= GameSettings::MAP_CHIP_DEFAULTGOAL) {
                         std::string goalObjName;
-
                         switch (mapNum)
                         {
                         case  GameSettings::MAP_CHIP_TUTORIALGOAL:
@@ -541,37 +523,25 @@ void ButiEngine::MapEditor::OnUpdate()
 
                         Replace(Vector3(g_cursorPos[1], g_cursorPos[2], g_cursorPos[0]), goalObjName, GameSettings::MAP_CHIP_PLAYER_AND_GOAL + mapNum * 10);
                     }
+                    
                     else {
                         m_vlp_currentEdit->m_vec_mapDatas[g_cursorPos[1]][g_cursorPos[2]][g_cursorPos[0]] = GameSettings::MAP_CHIP_PLAYER;
                     }
 
                 }
                 else {
-                    int playerNum = GameSettings::MAP_CHIP_PLAYER_ROTATE_90 + g_currentPlayerDirection - 1;
-
                     auto mapNum = m_vlp_currentEdit->m_vec_mapDatas[g_cursorPos[1]][g_cursorPos[2]][g_cursorPos[0]];
                     if ((mapNum >= GameSettings::MAP_CHIP_TUTORIALGOAL && mapNum <= GameSettings::MAP_CHIP_DEFAULTGOAL)) {
-                        std::string goalObjName;
+                        
+                        m_vlp_currentEdit->m_vec_mapDatas[g_cursorPos[1]][g_cursorPos[2]][g_cursorPos[0]] = GameSettings::MAP_CHIP_PLAYER_AND_GOAL + mapNum * 10+ g_currentPlayerDirection;
+                    }
+                    
+                    else {
+                        std::int32_t playerNum = GameSettings::MAP_CHIP_PLAYER_ROTATE_90 + g_currentPlayerDirection - 1;
 
-                        switch (mapNum)
-                        {
-                        case  GameSettings::MAP_CHIP_TUTORIALGOAL:
-                            goalObjName = "TutorialGoal";
-                            break;
-                        case  GameSettings::MAP_CHIP_EASYGOAL:
-                            goalObjName = "EasyGoal";
-                            break;
-                        case  GameSettings::MAP_CHIP_DEFAULTGOAL:
-                            goalObjName = "DefaultGoal";
-                            break;
-                        default:
-                            break;
-                        }
-
-                        Replace(Vector3(g_cursorPos[1], g_cursorPos[2], g_cursorPos[0]), goalObjName, GameSettings::MAP_CHIP_PLAYER_AND_GOAL + mapNum * 10 + playerNum);
+                        m_vlp_currentEdit->m_vec_mapDatas[g_cursorPos[1]][g_cursorPos[2]][g_cursorPos[0]] = playerNum;
                     }
 
-                    m_vlp_currentEdit->m_vec_mapDatas[g_cursorPos[1]][g_cursorPos[2]][g_cursorPos[0]] = playerNum;
                 }
                 isReload = true;
             }break;
@@ -586,7 +556,7 @@ void ButiEngine::MapEditor::OnUpdate()
         }
     }
     if (GameDevice::GetInput()->GetPadButtonTrigger(PadButtons::XBOX_B)) {
-        if (g_editMode==CurrentEditMode::AnotherCursor) {
+        if (g_editMode==EditorMode::AnotherCursor) {
             Vector3 min = Vector3(g_cursorPos[0], g_cursorPos[1], g_cursorPos[2]).Min(Vector3(g_cursorPos_another[0], g_cursorPos_another[1], g_cursorPos_another[2]));
             Vector3 max = Vector3(g_cursorPos[0], g_cursorPos[1], g_cursorPos[2]).Max(Vector3(g_cursorPos_another[0], g_cursorPos_another[1], g_cursorPos_another[2]));
             for (int y = min.y; y <= max.y; y++) {
@@ -610,16 +580,16 @@ void ButiEngine::MapEditor::OnUpdate()
         Save();
     }
     if (GameDevice::GetInput()->GetPadButtonTrigger(PadButtons::XBOX_Y)) {
-        g_putMode= static_cast<CurrentPutMode>(static_cast<std::int8_t>(g_putMode) + 1);
-        if (g_putMode == CurrentPutMode::None) {
-            g_putMode = CurrentPutMode::Block;
+        g_putMode= static_cast<BlockMode>(static_cast<std::int8_t>(g_putMode) + 1);
+        if (g_putMode == BlockMode::None) {
+            g_putMode = BlockMode::Block;
         }
         PushPutModeNotification();
     }
     if (GameDevice::GetInput()->GetPadButtonTrigger(PadButtons::XBOX_X)) {
-        g_putMode = static_cast<CurrentPutMode>(static_cast<std::int8_t>(g_putMode) - 1);
-        if (g_putMode == CurrentPutMode::Min) {
-            g_putMode = CurrentPutMode::Stage;
+        g_putMode = static_cast<BlockMode>(static_cast<std::int8_t>(g_putMode) - 1);
+        if (g_putMode == BlockMode::Min) {
+            g_putMode = BlockMode::Stage;
         }
         PushPutModeNotification();
     }
@@ -639,10 +609,10 @@ void ButiEngine::MapEditor::Start()
 {
     m_vwp_cursor_one = gameObject.lock()->GetGameComponent<MeshDrawComponent>(0);
     m_vwp_cursor_two = gameObject.lock()->GetGameComponent<MeshDrawComponent>(1);
-    if (g_editMode != CurrentEditMode::AnotherCursor) {
+    if (g_editMode != EditorMode::AnotherCursor) {
         m_vwp_cursor_two.lock()->UnRegist();
     }
-    if (g_editMode == CurrentEditMode::StageSize|| g_editMode == CurrentEditMode::Controll) {
+    if (g_editMode == EditorMode::StageSize|| g_editMode == EditorMode::Controll) {
         m_vwp_cursor_one.lock()->UnRegist();
     }
     m_vwp_map = GetManager().lock()->GetGameObject("Map").lock()->GetGameComponent<Map>();
@@ -699,6 +669,16 @@ void ButiEngine::MapEditor::RollCameraDirection(const std::uint16_t arg_rotateDi
     else if (m_cameraDirection < CameraDirection::Front) {
         m_cameraDirection = (CameraDirection)((std::uint16_t)m_cameraDirection + 4);
     }
+}
+
+ButiEngine::MapEditor::EditorMode ButiEngine::MapEditor::GetEditorMode() const
+{
+    return g_editMode;
+}
+
+ButiEngine::MapEditor::BlockMode ButiEngine::MapEditor::GetBlockMode() const
+{
+    return g_putMode;
 }
 
 void ButiEngine::MapEditor::ClampCursorPos()
