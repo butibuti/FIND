@@ -158,7 +158,7 @@ void ButiEngine::MapEditor::OnUpdate()
             isChanged = true;
         }
         if (isChanged) {
-            g_invisibleID = max(g_stageBlockIndex, 0);
+            g_stageBlockIndex = max(g_stageBlockIndex, 0);
             GUI::PushNotification(Util::ToUTF8("ステージ移動ブロックのID" + std::to_string(g_stageBlockIndex)));
             return;
         }
@@ -354,12 +354,11 @@ void ButiEngine::MapEditor::OnUpdate()
             break;
         case InputDir::Front:
         {
-            auto zsize = m_vlp_currentEdit->m_vec_mapDatas[0].size();
-            auto xsize = m_vlp_currentEdit->m_vec_mapDatas[0][0].size();
-            m_vlp_currentEdit->m_vec_mapDatas.push_back(std::vector<std::vector<std::int32_t>>());
-            (m_vlp_currentEdit->m_vec_mapDatas.end() - 1)->resize(zsize);
-            for (std::int32_t i = 0; i < m_vlp_currentEdit->m_vec_mapDatas[0].size(); i++) {
-                (m_vlp_currentEdit->m_vec_mapDatas[m_vlp_currentEdit->m_vec_mapDatas.size() - 1][i]).resize(xsize);
+            for (std::int32_t i = 0; i < m_vlp_currentEdit->m_vec_mapDatas.size(); i++) {
+                auto xsize = m_vlp_currentEdit->m_vec_mapDatas[0][0].size();
+                m_vlp_currentEdit->m_vec_mapDatas[i].push_back(std::vector<std::int32_t>());
+                (m_vlp_currentEdit->m_vec_mapDatas[i].end() - 1)->resize(xsize);
+                ((*m_p_vec_gameObjects)[i].end() - 1)->resize(xsize);
             }
             Reload();
         }
@@ -376,14 +375,18 @@ void ButiEngine::MapEditor::OnUpdate()
             Reload();
             break;
         case InputDir::Up:
-            for (std::int32_t i = 0; i < m_vlp_currentEdit->m_vec_mapDatas.size(); i++) {
-                auto xsize = m_vlp_currentEdit->m_vec_mapDatas[0][0].size();
-                m_vlp_currentEdit->m_vec_mapDatas[i].push_back(std::vector<std::int32_t>());
-                (m_vlp_currentEdit->m_vec_mapDatas[i].end() - 1)->resize(xsize);
-                ((*m_p_vec_gameObjects)[i].end() - 1)->resize(xsize);
+        {
+
+            auto zsize = m_vlp_currentEdit->m_vec_mapDatas[0].size();
+            auto xsize = m_vlp_currentEdit->m_vec_mapDatas[0][0].size();
+            m_vlp_currentEdit->m_vec_mapDatas.push_back(std::vector<std::vector<std::int32_t>>());
+            (m_vlp_currentEdit->m_vec_mapDatas.end() - 1)->resize(zsize);
+            for (std::int32_t i = 0; i < m_vlp_currentEdit->m_vec_mapDatas[0].size(); i++) {
+                (m_vlp_currentEdit->m_vec_mapDatas[m_vlp_currentEdit->m_vec_mapDatas.size() - 1][i]).resize(xsize);
             }
             Reload();
-            break;
+
+        }   break;
         case InputDir::Down:
             if (m_vwp_map.lock()->GetPlayerPos().Round().y == m_vlp_currentEdit->m_vec_mapDatas.size() - 1)
             {
@@ -465,7 +468,7 @@ void ButiEngine::MapEditor::OnUpdate()
                 case 1: goalObjName = "EasyGoal";  break;
                 case 2: goalObjName = "DefaultGoal"; break;
                 }
-                auto mapNum = m_vlp_currentEdit->m_vec_mapDatas[1][2][0];
+                auto mapNum = m_vlp_currentEdit->m_vec_mapDatas[g_cursorPos[1]][g_cursorPos[2]][g_cursorPos[0]];
                 if (mapNum == GameSettings::MAP_CHIP_PLAYER) {
                     Replace(Vector3(g_cursorPos[1], g_cursorPos[2], g_cursorPos[0]), goalObjName, GameSettings::MAP_CHIP_PLAYER_AND_GOAL + (GameSettings::MAP_CHIP_TUTORIALGOAL + g_goalMode) * 10 + 0);
                 }
