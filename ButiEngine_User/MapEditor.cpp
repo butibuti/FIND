@@ -28,6 +28,7 @@ void PushPutModeNotification(){
     case ButiEngine::MapEditor::BlockMode::Goal:message = u8"ゴール配置"; break;
     case ButiEngine::MapEditor::BlockMode::Player:message = u8"プレイヤー位置変更"; break;
     case ButiEngine::MapEditor::BlockMode::Stage:message = u8"ステージ選択ブロック配置"; break;
+    case ButiEngine::MapEditor::BlockMode::AlreadySeenStage:message = u8"既に見えてるステージ選択ブロック配置"; break;
     }
     ButiEngine::GUI::PushNotification(message);
 }
@@ -128,13 +129,13 @@ void ButiEngine::MapEditor::OnUpdate()
             return;
         }
     }
-    else if (g_putMode == BlockMode::Stage) {
-        if ( GameDevice::GetInput()->GetPadButtonTrigger(PadButtons::XBOX_LEFT)) {
+    else if (g_putMode == BlockMode::Stage|| g_putMode == BlockMode::AlreadySeenStage) {
+        if (GameDevice::GetInput()->GetPadButtonTrigger(PadButtons::XBOX_LEFT)) {
             g_stageBlockIndex--;
             isChanged = true;
         }
         if (GameDevice::GetInput()->GetPadButtonTrigger(PadButtons::XBOX_RIGHT)) {
-            g_stageBlockIndex++; 
+            g_stageBlockIndex++;
             isChanged = true;
         }
         if (isChanged) {
@@ -465,6 +466,11 @@ void ButiEngine::MapEditor::OnUpdate()
             }break;
             case BlockMode::Stage: {
                 auto gameObject = Replace(Vector3(g_cursorPos[1], g_cursorPos[2], g_cursorPos[0]), "NextStageBlock", GameSettings::MAP_CHIP_NEXT_STAGE_BLOCK + g_stageBlockIndex);
+                gameObject->GetGameComponent<NextStageBlock>()->SetStageNum(g_stageBlockIndex);
+            }break;
+            case BlockMode::AlreadySeenStage: {
+                auto gameObject = Replace(Vector3(g_cursorPos[1], g_cursorPos[2], g_cursorPos[0]), "NextStageBlock", GameSettings::MAP_CHIP_ALREADY_SEEN_NEXT_STAGE_BLOCK + g_stageBlockIndex);
+                gameObject->GetGameComponent<NextStageBlock>()->SetStatus(g_stageBlockIndex,NextStageBlockStatus::Active);
                 gameObject->GetGameComponent<NextStageBlock>()->SetStageNum(g_stageBlockIndex);
             }break;
             case BlockMode::Player: {
