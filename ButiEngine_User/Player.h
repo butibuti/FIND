@@ -76,13 +76,19 @@ namespace ButiEngine {
 		};
 	private:
 		float m_length;
-		bool m_canPutEyeBlock = true;
+		static bool m_canPutEyeBlock;
 		Value_weak_ptr<GameObject> m_vwp_eyeBlock;
 		Value_weak_ptr<EyeBlock> m_vwp_eyeBlockComponent;
 		Value_weak_ptr<Map> m_vwp_mapComponent;
 		Value_weak_ptr<InvisibleBlockManager> m_vwp_invisibleBlockManagerComponent;
 		Value_weak_ptr<NextStageBlock> m_vwp_nextStageBlockComponent;
 		Value_weak_ptr<GameObject> m_vwp_lookObject;
+
+		Value_weak_ptr<GameObject> m_vwp_rightCameraMesh;
+		Value_weak_ptr<GameObject> m_vwp_leftCameraMesh;
+		Value_ptr<Transform> m_vlp_rightEyeTransform;
+		Value_ptr<Transform> m_vlp_leftEyeTransform;
+
 		Vector3 m_mapPos;
 		Vector3 m_nextMapPos;
 		Vector3 m_offset;

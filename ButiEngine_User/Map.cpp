@@ -254,8 +254,6 @@ void ButiEngine::Map::PutBlock(std::uint16_t arg_stageNum)
 					std::string currentSceneName = GetManager().lock()->GetScene().lock()->GetSceneInformation()->GetSceneName();
 					if (currentSceneName == "NewStageSelectScene" && m_vlp_playerTransform)
 					{
-						GetManager().lock()->AddObjectFromCereal("CameraMesh", ObjectFactory::Create<Transform>(Vector3(0, 0, 10000.0f), Vector3Const::Zero, scale));
-
 						m_startPlayerPos = m_stageSelectStartPlayerPos;
 						Vector3 startPos = m_vlp_playerTransform->GetLocalPosition();
 						Vector3 spawnPos = startPos;
@@ -298,7 +296,6 @@ void ButiEngine::Map::PutBlock(std::uint16_t arg_stageNum)
 					directing->SetSpawnPos(spawnPos);
 					directing->SetStartPos(position);
 
-					GetManager().lock()->AddObjectFromCereal("CameraMesh", ObjectFactory::Create<Transform>(Vector3(0, 0, 10000.0f), Vector3Const::Zero, scale));
 					if (mapNum >= GameSettings::MAP_CHIP_PLAYER_ROTATE_90 && mapNum <= GameSettings::MAP_CHIP_PLAYER_DOWN_ROTATE_90) {
 						auto playerDir = (mapNum - GameSettings::MAP_CHIP_PLAYER_ROTATE_90 + 1);
 						if (playerDir < 4) {
@@ -539,7 +536,7 @@ void ButiEngine::Map::AddTransformAnimation(Value_weak_ptr<ButiEngine::GameObjec
 	float d = arg_y - transform->GetWorldPosition().y;
 
 	auto anim = arg_gameObject.lock()->AddGameComponent<TransformAnimation>();
-	anim->SetSpeed(1.0f / (d * 2));
+	anim->SetSpeed(1.0f / (d * 1.25f));
 	anim->SetTargetTransform(transform->Clone());
 	anim->GetTargetTransform()->SetLocalPositionY(arg_y);
 	//anim->GetTargetTransform()->RollLocalRotationX_Degrees(0.1f);

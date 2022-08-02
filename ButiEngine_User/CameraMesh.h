@@ -18,6 +18,12 @@ namespace ButiEngine {
 			archive(isActive);
 		}
 
+		void SetColor(const Vector4& arg_color)
+		{
+			gameObject.lock()->GetGameComponent<MeshDrawComponent>()->GetCBuffer<ButiRendering::ObjectInformation>()->Get().color = arg_color;
+			gameObject.lock()->GetGameComponent<MeshDrawComponent>()->GetCBuffer<ButiRendering::ObjectInformation>()->Get().color.w = m_alpha;
+		}
+
 		void Flash();
 	private:
 		float m_alpha;

@@ -9,6 +9,7 @@
 #include "InvisibleBlock.h"
 #include "NextStageBlock.h"
 #include "SeenObject.h"
+#include "GoalAura.h"
 
 void ButiEngine::EyeBlock::OnUpdate()
 {
@@ -23,13 +24,22 @@ void ButiEngine::EyeBlock::Start()
 	SetLookDirection();
 
 	m_vwp_cameraMesh = GetManager().lock()->AddObjectFromCereal("CameraMesh", ObjectFactory::Create<Transform>(Vector3(0, 0, -0.1f)));
+	m_vwp_cameraMesh.lock()->SetObjectName("EyeBlockCameraMesh");
 	m_vwp_cameraMeshComponent = m_vwp_cameraMesh.lock()->GetGameComponent<CameraMesh>();
+	m_vwp_cameraMeshComponent.lock()->SetColor(ButiColor::Yellow());
 
 	m_vwp_mapComponent = GetManager().lock()->GetGameObject("Map").lock()->GetGameComponent<Map>();
 
-	m_scale = 1.0f;
-
 	m_vwp_playerComponent = GetManager().lock()->GetGameObject("Player").lock()->GetGameComponent<Player>();
+
+	m_scale = 0.5f;
+	gameObject.lock()->transform->SetLocalScale(m_scale);
+
+	auto aura = GetManager().lock()->AddObjectFromCereal("GoalAura", gameObject.lock()->transform->Clone());
+	auto auraComponent = aura.lock()->GetGameComponent<GoalAura>();
+	auraComponent->SetColor(ButiColor::Yellow());
+	auraComponent->SetTargetScale(10.0f);
+	auraComponent->SetAnimFrame(60);
 }
 
 ButiEngine::Value_ptr<ButiEngine::GameComponent> ButiEngine::EyeBlock::Clone()
@@ -193,20 +203,20 @@ void ButiEngine::EyeBlock::Flash()
 
 void ButiEngine::EyeBlock::Expansion()
 {
-	m_scale = 1.5f;
+	m_scale = 1.0f;
 	gameObject.lock()->transform->SetLocalScale(m_scale);
 }
 
 void ButiEngine::EyeBlock::Shrink()
 {
-	if (m_scale <= 1.0f)
+	if (m_scale <= 0.5f)
 	{
 		return;
 	}
 	m_scale -= 0.1f;
-	if (m_scale < 1.0f)
+	if (m_scale < 0.5f)
 	{
-		m_scale = 1.0f;
+		m_scale = 0.5f;
 	}
 	gameObject.lock()->transform->SetLocalScale(m_scale);
 }

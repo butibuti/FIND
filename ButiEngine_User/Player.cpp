@@ -15,6 +15,8 @@
 #include "EyeBlock.h"
 #include "SeenObject.h"
 
+bool ButiEngine::Player::m_canPutEyeBlock = false;
+
 void ButiEngine::Player::OnUpdate()
 {
 	if (m_isGoal) { return; }
@@ -64,7 +66,11 @@ void ButiEngine::Player::OnUpdate()
 
 		CheckLookBlock();
 		//ƒtƒ‰ƒbƒVƒ…
-		GetManager().lock()->GetGameObject("CameraMesh").lock()->GetGameComponent<CameraMesh>()->Flash();
+		if (!m_vwp_eyeBlockComponent.lock())
+		{
+			m_vwp_rightCameraMesh.lock()->GetGameComponent<CameraMesh>()->Flash();
+		}
+		m_vwp_leftCameraMesh.lock()->GetGameComponent<CameraMesh>()->Flash();
 
 		if (m_vwp_eyeBlockComponent.lock())
 		{
@@ -156,6 +162,25 @@ void ButiEngine::Player::Start()
 	m_vlp_fallTimer = ObjectFactory::Create<RelativeTimer>(24);
 	m_vlp_fallTimer->Stop();
 	m_vwp_invisibleBlockManagerComponent = gameObject.lock()->GetGameObjectManager().lock()->GetGameObject("InvisibleBlockManager").lock()->GetGameComponent<InvisibleBlockManager>();
+
+	m_vwp_rightCameraMesh = GetManager().lock()->AddObjectFromCereal("CameraMesh", ObjectFactory::Create<Transform>(Vector3(0, 0, 10000.0f)));
+	m_vwp_leftCameraMesh = GetManager().lock()->AddObjectFromCereal("CameraMesh", ObjectFactory::Create<Transform>(Vector3(0, 0, 10000.0f)));
+
+	m_vwp_rightCameraMesh.lock()->SetObjectName("RightCameraMesh");
+	m_vwp_leftCameraMesh.lock()->SetObjectName("LeftCameraMesh");
+
+	m_vwp_rightCameraMesh.lock()->GetGameComponent<CameraMesh>()->SetColor(ButiColor::White());
+	if (m_canPutEyeBlock)
+	{
+		m_vwp_rightCameraMesh.lock()->GetGameComponent<CameraMesh>()->SetColor(ButiColor::Yellow());
+	}
+	m_vwp_leftCameraMesh.lock()->GetGameComponent<CameraMesh>()->SetColor(ButiColor::White());
+
+	m_vlp_rightEyeTransform = ObjectFactory::Create<Transform>(Vector3(0.2f, 0.0f, 0.0f));
+	m_vlp_rightEyeTransform->SetBaseTransform(gameObject.lock()->transform, true);
+
+	m_vlp_leftEyeTransform = ObjectFactory::Create<Transform>(Vector3(-0.2f, 0.0f, 0.0f));
+	m_vlp_leftEyeTransform->SetBaseTransform(gameObject.lock()->transform, true);
 }
 
 ButiEngine::Value_ptr<ButiEngine::GameComponent> ButiEngine::Player::Clone()
@@ -274,68 +299,96 @@ void ButiEngine::Player::FlashMeshSet(Value_ptr<Transform> arg_vlp_transform, co
 	Value_weak_ptr<GameObject> lookObject;
 
 	Vector3 pos = arg_vlp_transform->GetWorldPosition();
-	Vector3 bPos = pos;
+	Vector3 rightPos = pos + (m_vlp_rightEyeTransform->GetLocalPosition() * arg_vlp_transform->GetLocalRotation());
+	Vector3 leftPos = pos + (m_vlp_leftEyeTransform->GetLocalPosition() * arg_vlp_transform->GetLocalRotation());
+
+	Vector3 bPos_right = rightPos;
+	Vector3 bPos_left = leftPos;
 
 	if (arg_dir == LookDirection::Right)
 	{
-		bPos.x += 100;
+		bPos_right.x += 100;
+		bPos_left.x += 100;
 		lookObject = GetRightBlock(arg_pos);
 	}
 	else if (arg_dir == LookDirection::Left)
 	{
-		bPos.x -= 100;
+		bPos_right.x -= 100;
+		bPos_left.x -= 100;
 		lookObject = GetLeftBlock(arg_pos);
 	}
 	else if (arg_dir == LookDirection::Up)
 	{
-		bPos.y += 100;
+		bPos_right.y += 100;
+		bPos_left.y += 100;
 		lookObject = GetUpBlock(arg_pos);
 	}
 	else if (arg_dir == LookDirection::Down)
 	{
-		bPos.y -= 100;
+		bPos_right.y -= 100;
+		bPos_left.y -= 100;
 		std::int8_t tmp = 0;
 		lookObject = GetDownBlock(arg_pos, tmp);
 	}
 	else if (arg_dir == LookDirection::Front)
 	{
-		bPos.z += 100;
+		bPos_right.z += 100;
+		bPos_left.z += 100;
 		lookObject = GetFrontBlock(arg_pos);
 	}
 	else if (arg_dir == LookDirection::Back)
 	{
-		bPos.z -= 100;
+		bPos_right.z -= 100;
+		bPos_left.z -= 100;
 		lookObject = GetBackBlock(arg_pos);
 	}
 
 	if (lookObject.lock())
 	{
-		bPos = lookObject.lock()->transform->GetWorldPosition();
+		bPos_right = lookObject.lock()->transform->GetWorldPosition();
+		bPos_left = lookObject.lock()->transform->GetWorldPosition();
 	}
-	Vector3 midPoint = Vector3((pos.x + bPos.x) * 0.5f, (pos.y + bPos.y) * 0.5f, (pos.z + bPos.z) * 0.5f);
 
-	auto cameraMesh = GetManager().lock()->GetGameObject("CameraMesh");
-	cameraMesh.lock()->transform->SetWorldPosition(midPoint);
+	Vector3 midPoint_right = Vector3((rightPos.x + bPos_right.x) * 0.5f, (rightPos.y + bPos_right.y) * 0.5f, (rightPos.z + bPos_right.z) * 0.5f);
+	Vector3 midPoint_left = Vector3((leftPos.x + bPos_left.x) * 0.5f, (leftPos.y + bPos_left.y) * 0.5f, (leftPos.z + bPos_left.z) * 0.5f);
 
 	Vector3 cameraMeshScale = Vector3Const::Zero;
 	if (arg_dir == LookDirection::Right || arg_dir == LookDirection::Left)
 	{
-		cameraMeshScale = Vector3(pos.Distance(bPos), 0.1f, 0.1f);
+		midPoint_right.y = rightPos.y;
+		midPoint_right.z = rightPos.z;
+
+		midPoint_left.y = leftPos.y;
+		midPoint_left.z = leftPos.z;
+
+		cameraMeshScale = Vector3(leftPos.Distance(midPoint_left) * 2.0f, 0.1f, 0.1f);
 	}
 	else if (arg_dir == LookDirection::Up || arg_dir == LookDirection::Down)
 	{
-		cameraMeshScale = Vector3(0.1f, pos.Distance(bPos), 0.1f);
+		midPoint_right.x = rightPos.x;
+		midPoint_right.z = rightPos.z;
+
+		midPoint_left.x = leftPos.x;
+		midPoint_left.z = leftPos.z;
+
+		cameraMeshScale = Vector3(0.1f, leftPos.Distance(midPoint_left) * 2.0f, 0.1f);
 	}
 	else if (arg_dir == LookDirection::Front || arg_dir == LookDirection::Back)
 	{
-		cameraMeshScale = Vector3(0.1f, 0.1f, pos.Distance(bPos));
-	}
-	cameraMesh.lock()->transform->SetLocalScale(cameraMeshScale);
+		midPoint_right.x = rightPos.x;
+		midPoint_right.y = rightPos.y;
 
-	if (!lookObject.lock())
-	{
-		return;
+		midPoint_left.x = leftPos.x;
+		midPoint_left.y = leftPos.y;
+
+		cameraMeshScale = Vector3(0.1f, 0.1f, leftPos.Distance(midPoint_left) * 2.0f);
 	}
+
+	m_vwp_rightCameraMesh.lock()->transform->SetWorldPosition(midPoint_right);
+	m_vwp_leftCameraMesh.lock()->transform->SetWorldPosition(midPoint_left);
+
+	m_vwp_rightCameraMesh.lock()->transform->SetLocalScale(cameraMeshScale);
+	m_vwp_leftCameraMesh.lock()->transform->SetLocalScale(cameraMeshScale);
 }
 
 

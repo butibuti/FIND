@@ -31,7 +31,7 @@ void ButiEngine::StartPlayerDirecting::OnUpdate()
 
 		//ƒtƒ‰ƒbƒVƒ…
 		gameObject.lock()->GetGameComponent<Player>()->FlashMeshSet();
-		GetManager().lock()->GetGameObject("CameraMesh").lock()->GetGameComponent<CameraMesh>()->Flash();
+		GetManager().lock()->GetGameObject("LeftCameraMesh").lock()->GetGameComponent<CameraMesh>()->Flash();
 
 		gameObject.lock()->GetGameComponent<Player>()->CheckLookBlock();
 
@@ -42,6 +42,10 @@ void ButiEngine::StartPlayerDirecting::OnUpdate()
 			eyeBlockComponent->CheckLookBlock();
 			eyeBlockComponent->FlashMeshSet(gameObject.lock()->GetGameComponent<Player>()->GetMapPos());
 			eyeBlockComponent->Flash();
+		}
+		else
+		{
+			GetManager().lock()->GetGameObject("RightCameraMesh").lock()->GetGameComponent<CameraMesh>()->Flash();
 		}
 
 		GetManager().lock()->GetGameObject("InvisibleBlockManager").lock()->GetGameComponent<InvisibleBlockManager>()->CheckSeen();
