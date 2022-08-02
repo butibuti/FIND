@@ -13,6 +13,7 @@
 #include "CameraMesh.h"
 #include "NextStageBlock.h"
 #include "EyeBlock.h"
+#include "SeenObject.h"
 
 void ButiEngine::Player::OnUpdate()
 {
@@ -177,42 +178,58 @@ void ButiEngine::Player::CheckLookBlock()
 {
 	m_vwp_invisibleBlockManagerComponent.lock()->Reset();
 	m_lookDirection= CheckLookDirection(gameObject.lock()->transform);
-	Value_weak_ptr<GameObject> lookObject;
+
+	if (m_vwp_lookObject.lock())
+	{
+		auto seenObjectComponent = m_vwp_lookObject.lock()->GetGameComponent<SeenObject>();
+		if (seenObjectComponent)
+		{
+			seenObjectComponent->RemoveObserverCount();
+		}
+	}
+
 	if (m_lookDirection == LookDirection::Right)
 	{
-		lookObject = GetRightBlock(m_mapPos);
+		m_vwp_lookObject = GetRightBlock(m_mapPos);
 	}
 	else if (m_lookDirection == LookDirection::Left)
 	{
-		lookObject = GetLeftBlock(m_mapPos);
+		m_vwp_lookObject = GetLeftBlock(m_mapPos);
 	}
 	else if (m_lookDirection == LookDirection::Up)
 	{
-		lookObject = GetUpBlock(m_mapPos);
+		m_vwp_lookObject = GetUpBlock(m_mapPos);
 	}
 	else if (m_lookDirection == LookDirection::Down)
 	{
 		std::int8_t tmp = 0;
-		lookObject = GetDownBlock(m_mapPos, tmp);
+		m_vwp_lookObject = GetDownBlock(m_mapPos, tmp);
 	}
 	else if (m_lookDirection == LookDirection::Front)
 	{
-		lookObject = GetFrontBlock(m_mapPos);
+		m_vwp_lookObject = GetFrontBlock(m_mapPos);
 	}
 	else if (m_lookDirection == LookDirection::Back)
 	{
-		lookObject = GetBackBlock(m_mapPos);
+		m_vwp_lookObject = GetBackBlock(m_mapPos);
 	}
 
-	if (!lookObject.lock())
+	if (!m_vwp_lookObject.lock())
 	{
 		return;
 	}
 
-	if (lookObject.lock()->HasGameObjectTag("Goal"))
+	auto seenObjectComponent = m_vwp_lookObject.lock()->GetGameComponent<SeenObject>();
+	if (!seenObjectComponent)
 	{
-		auto eGoalComp = lookObject.lock()->GetGameComponent<EasyGoal>();
-		auto dGoalComp = lookObject.lock()->GetGameComponent<DefaultGoal>();
+		seenObjectComponent = m_vwp_lookObject.lock()->AddGameComponent<SeenObject>();
+	}
+	seenObjectComponent->AddObserverCount();
+
+	if (m_vwp_lookObject.lock()->HasGameObjectTag("Goal"))
+	{
+		auto eGoalComp = m_vwp_lookObject.lock()->GetGameComponent<EasyGoal>();
+		auto dGoalComp = m_vwp_lookObject.lock()->GetGameComponent<DefaultGoal>();
 		if (eGoalComp)
 		{
 			eGoalComp->Seen();
@@ -222,17 +239,17 @@ void ButiEngine::Player::CheckLookBlock()
 			dGoalComp->Seen();
 		}
 	}
-	else if (lookObject.lock()->HasGameObjectTag("InvisibleBlock"))
+	else if (m_vwp_lookObject.lock()->HasGameObjectTag("InvisibleBlock"))
 	{
-		auto invBlockComp = lookObject.lock()->GetGameComponent<InvisibleBlock>();
+		auto invBlockComp = m_vwp_lookObject.lock()->GetGameComponent<InvisibleBlock>();
 		if (invBlockComp)
 		{
 			invBlockComp->Seen();
 		}
 	}
-	else if (lookObject.lock()->HasGameObjectTag("NextStageBlock"))
+	else if (m_vwp_lookObject.lock()->HasGameObjectTag("NextStageBlock"))
 	{
-		auto nextStageBlockComp = lookObject.lock()->GetGameComponent<NextStageBlock>();
+		auto nextStageBlockComp = m_vwp_lookObject.lock()->GetGameComponent<NextStageBlock>();
 		if (nextStageBlockComp)
 		{
 			nextStageBlockComp->Seen();

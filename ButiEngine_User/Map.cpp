@@ -37,6 +37,7 @@ void ButiEngine::Map::OnUpdate()
 			ShakeStop();
 			ShakeStart(0.06f);
 			GetManager().lock()->GetGameObject("MainCamera").lock()->GetGameComponent<CameraController>()->ZoomIn(true);
+			GetManager().lock()->GetGameObject("MainCamera").lock()->GetGameComponent<CameraController>()->RemoveChaseComponent();
 			return;
 		}
 	}
@@ -256,15 +257,16 @@ void ButiEngine::Map::PutBlock(std::uint16_t arg_stageNum)
 						GetManager().lock()->AddObjectFromCereal("CameraMesh", ObjectFactory::Create<Transform>(Vector3(0, 0, 10000.0f), Vector3Const::Zero, scale));
 
 						m_startPlayerPos = m_stageSelectStartPlayerPos;
-						Vector3 spawnPos = m_vlp_playerTransform->GetLocalPosition();
+						Vector3 startPos = m_vlp_playerTransform->GetLocalPosition();
+						Vector3 spawnPos = startPos;
 						spawnPos.y += 30.0f;
 						gameObject = GetManager().lock()->AddObjectFromCereal("Player", m_vlp_playerTransform->Clone());
 						gameObject->transform->SetWorldPosition(spawnPos);
 						auto playerBehavior = gameObject->GetGameComponent<Player>();
-						playerBehavior->SetStartPos(position);
+						playerBehavior->SetStartPos(startPos);
 						auto directing = gameObject->GetGameComponent<StartPlayerDirecting>();
 						directing->SetSpawnPos(spawnPos);
-						directing->SetStartPos(position);
+						directing->SetStartPos(startPos);
 
 						if (m_vlp_eyeBlockTransform)
 						{

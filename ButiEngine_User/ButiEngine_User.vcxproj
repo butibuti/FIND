@@ -397,6 +397,7 @@ cd ..\</Command>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_imguiEditor|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="Ripple.cpp" />
+    <ClCompile Include="SeenObject.cpp" />
     <ClCompile Include="Server\RuntimeServer.cpp">
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug_imguiEditor|x64'">/wd4996 %(AdditionalOptions)</AdditionalOptions>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release_imguiEditor|x64'">/wd4996 %(AdditionalOptions)</AdditionalOptions>
@@ -450,6 +451,7 @@ cd ..\</Command>
     <ClInclude Include="ProtBuf\EngineEditorCommunicate.grpc.pb.h" />
     <ClInclude Include="ProtBuf\EngineEditorCommunicate.pb.h" />
     <ClInclude Include="Ripple.h" />
+    <ClInclude Include="SeenObject.h" />
     <ClInclude Include="Server\RuntimeServer.h" />
     <ClInclude Include="ShaderChecker.h" />
     <ClInclude Include="Shake.h" />

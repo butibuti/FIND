@@ -26,6 +26,8 @@ namespace ButiEngine {
 		void SetMapPos(const Vector3& arg_mapPos) { m_mapPos = arg_mapPos; }
 		Vector3 GetMapPos() { return m_mapPos; }
 
+		Value_weak_ptr<GameObject> GetLookObject() { return m_vwp_lookObject; }
+
 		void Dead();
 
 		void CheckLookBlock();
@@ -46,6 +48,9 @@ namespace ButiEngine {
 
 		Value_weak_ptr<GameObject> m_vwp_cameraMesh;
 		Value_weak_ptr<CameraMesh> m_vwp_cameraMeshComponent;
+		Value_weak_ptr<Player> m_vwp_playerComponent;
+
+		Value_weak_ptr<GameObject> m_vwp_lookObject;
 
 		Value_weak_ptr<Map> m_vwp_mapComponent;
 

@@ -20,7 +20,7 @@ void ButiEngine::GoalAura::OnSet()
 
 void ButiEngine::GoalAura::Start()
 {
-	m_vlp_timer = ObjectFactory::Create<RelativeTimer>(60);
+	m_vlp_timer = ObjectFactory::Create<RelativeTimer>(m_animFrame);
 	m_vlp_timer->Start();
 	AnimInitialize();
 }
@@ -36,10 +36,9 @@ void ButiEngine::GoalAura::AnimInitialize()
 
 
 	auto anim = gameObject.lock()->AddGameComponent<TransformAnimation>();
-	anim->SetSpeed(1.0f / 60);
+	anim->SetSpeed(1.0f / m_animFrame);
 	anim->SetTargetTransform(t->Clone());
-	anim->GetTargetTransform()->SetLocalScale(30.0f);
-	anim->GetTargetTransform()->RollLocalRotationX_Degrees(0.1f);
+	anim->GetTargetTransform()->SetLocalScale(m_targetScale);
 
 	anim->SetEaseType(Easing::EasingType::EaseOutQuart);
 }

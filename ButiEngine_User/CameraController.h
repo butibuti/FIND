@@ -26,15 +26,21 @@ namespace ButiEngine {
 		void ZoomInOut();
 		void ZoomIn(const bool arg_isForced = false);
 		void ZoomOut();
+
+		void AddChaseComponent();
+		void RemoveChaseComponent();
 	private:
 		Vector3 m_offset;
 		Value_weak_ptr<GameObject> m_vwp_cameraAxis;
+		Value_weak_ptr<GameObject> m_vwp_player;
 		Value_weak_ptr<Player> m_vwp_playerComponent;
 
 #ifdef DEBUG
 		Value_weak_ptr<MapEditor> m_vwp_mapEditor;
 #endif
 		float m_pase;
+
+		void SetCameraAxisPosition();
 	};
 
 }

@@ -56,11 +56,14 @@ namespace ButiEngine {
 		void SetEyeBlock(Value_weak_ptr<GameObject> arg_eyeBlock);
 		Value_weak_ptr<GameObject> GetEyeBlock() { return m_vwp_eyeBlock; }
 
+		Value_weak_ptr<GameObject> GetLookObject() { return m_vwp_lookObject; }
+
 		bool IsGoal() { return m_isGoal; }
 
 		bool IsRollFinish();
-		const Vector3 &GetMapPos() const{ return m_mapPos; }
-		const Vector3 &GetNextMapPos() { return m_nextMapPos; }
+		const Vector3& GetMapPos() const{ return m_mapPos; }
+		const Vector3& GetNextMapPos() { return m_nextMapPos; }
+		const Vector3& GetStartPos() { return m_startPos; }
 
 		void SetStartPos(const Vector3& arg_pos) { m_startPos = arg_pos; }
 		void SetStartRotation(float arg_rot) { m_startRotation = arg_rot; }
@@ -79,6 +82,7 @@ namespace ButiEngine {
 		Value_weak_ptr<Map> m_vwp_mapComponent;
 		Value_weak_ptr<InvisibleBlockManager> m_vwp_invisibleBlockManagerComponent;
 		Value_weak_ptr<NextStageBlock> m_vwp_nextStageBlockComponent;
+		Value_weak_ptr<GameObject> m_vwp_lookObject;
 		Vector3 m_mapPos;
 		Vector3 m_nextMapPos;
 		Vector3 m_offset;

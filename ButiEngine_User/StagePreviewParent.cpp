@@ -4,6 +4,7 @@
 
 void ButiEngine::StagePreviewParent::OnUpdate()
 {
+	gameObject.lock()->transform->SetLocalRotation(m_vwp_cameraAxis.lock()->transform->GetLocalRotation());
 }
 
 void ButiEngine::StagePreviewParent::OnSet()
@@ -20,6 +21,8 @@ void ButiEngine::StagePreviewParent::Start()
 	m_startScale = gameObject.lock()->transform->GetLocalScale();
 	m_targetScale = Vector3(8.0f, 4.5f, 1.0f);
 	m_theta = 0.0f;
+
+	m_vwp_cameraAxis = GetManager().lock()->GetGameObject("CameraAxis");
 }
 
 ButiEngine::Value_ptr<ButiEngine::GameComponent> ButiEngine::StagePreviewParent::Clone()

@@ -63,7 +63,10 @@ void ButiEngine::CameraController::Start()
     GetCamera("BloomSource")->vlp_transform->SetBaseTransform(mainCamera->vlp_transform, true);
     gameObject.lock()->transform->SetBaseTransform(m_vwp_cameraAxis.lock()->transform, true);
 
-    m_vwp_playerComponent = gameObject.lock()->GetGameObjectManager().lock()->GetGameObject("Player").lock()->GetGameComponent<Player>();
+    m_vwp_player = GetManager().lock()->GetGameObject("Player");
+    m_vwp_playerComponent = m_vwp_player.lock()->GetGameComponent<Player>();
+
+    SetCameraAxisPosition();
 
 #ifdef DEBUG
     if (auto editorObj = gameObject.lock()->GetGameObjectManager().lock()->GetGameObject("Editor").lock()) {
@@ -119,4 +122,32 @@ void ButiEngine::CameraController::ZoomOut()
         anim->SetSpeed(1.0f / 20.0f);
         anim->SetEaseType(Easing::EasingType::EaseInExpo);
     }
+}
+
+void ButiEngine::CameraController::AddChaseComponent()
+{
+    std::string currentSceneName = GetManager().lock()->GetScene().lock()->GetSceneInformation()->GetSceneName();
+    if (currentSceneName != "NewStageSelectScene") { return; }
+
+    m_vwp_cameraAxis.lock()->AddGameComponent<ChaseComponent>(m_vwp_player.lock()->transform, 3.0f);
+}
+
+void ButiEngine::CameraController::RemoveChaseComponent()
+{
+    std::string currentSceneName = GetManager().lock()->GetScene().lock()->GetSceneInformation()->GetSceneName();
+    if (currentSceneName != "NewStageSelectScene") { return; }
+
+    auto chaseComponent = m_vwp_cameraAxis.lock()->GetGameComponent<ChaseComponent>();
+    if (chaseComponent)
+    {
+        chaseComponent->SetIsRemove(true);
+    }
+}
+
+void ButiEngine::CameraController::SetCameraAxisPosition()
+{
+    std::string currentSceneName = GetManager().lock()->GetScene().lock()->GetSceneInformation()->GetSceneName();
+    if (currentSceneName != "NewStageSelectScene") { return; }
+
+    m_vwp_cameraAxis.lock()->transform->SetLocalPosition(m_vwp_playerComponent.lock()->GetStartPos());
 }

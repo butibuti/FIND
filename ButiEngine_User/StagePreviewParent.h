@@ -28,6 +28,7 @@ namespace ButiEngine {
 		void FloatMotion();
 
 		Value_weak_ptr<GameObject> m_vwp_preview;
+		Value_weak_ptr<GameObject> m_vwp_cameraAxis;
 
 		Vector3 m_startPos;
 		Vector3 m_startScale;

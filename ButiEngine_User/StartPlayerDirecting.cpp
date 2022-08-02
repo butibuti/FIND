@@ -4,6 +4,7 @@
 #include "CameraMesh.h"
 #include "InvisibleBlockManager.h"
 #include "EyeBlock.h"
+#include "CameraController.h"
 
 void ButiEngine::StartPlayerDirecting::OnUpdate()
 {
@@ -21,6 +22,8 @@ void ButiEngine::StartPlayerDirecting::OnUpdate()
 	auto anim = gameObject.lock()->GetGameComponent<TransformAnimation>();
 	if (m_isFallStart && !anim)
 	{
+		GetManager().lock()->GetGameObject("MainCamera").lock()->GetGameComponent<CameraController>()->AddChaseComponent();
+
 		//”g–ä
 		auto pos = gameObject.lock()->transform->GetWorldPosition();
 		pos.y -= 0.3f;
