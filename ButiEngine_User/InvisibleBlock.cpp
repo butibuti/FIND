@@ -3,6 +3,7 @@
 #include "Map.h"
 #include "Player.h"
 #include "GameSettings.h"
+#include "SeenObject.h"
 
 void ButiEngine::InvisibleBlock::OnUpdate()
 {
@@ -68,6 +69,12 @@ void ButiEngine::InvisibleBlock::UnActive()
 		meshDraw->Regist();
 	}
 #endif
+
+	auto seenObjectComponent = gameObject.lock()->GetGameComponent<SeenObject>();
+	if (seenObjectComponent)
+	{
+		seenObjectComponent->SetIsRemove(true);
+	}
 
 	gameObject.lock()->GetApplication().lock()->GetSoundManager()->PlaySE(SoundTag("Sound/inv_Cover.wav"), 0.003f);
 }

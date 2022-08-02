@@ -15,7 +15,7 @@
 #include "EyeBlock.h"
 #include "SeenObject.h"
 
-bool ButiEngine::Player::m_canPutEyeBlock = false;
+bool ButiEngine::Player::m_canPutEyeBlock = true;
 
 void ButiEngine::Player::OnUpdate()
 {
