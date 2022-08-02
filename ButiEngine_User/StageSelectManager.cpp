@@ -4,10 +4,14 @@
 #include "InputManager.h"
 
 std::int8_t ButiEngine::StageSelectManager::m_stageNum = 0;
-std::uint16_t ButiEngine::StageSelectManager::m_maxStageNum = 15;
+std::uint16_t ButiEngine::StageSelectManager::m_maxStageNum = 19;
 
 void ButiEngine::StageSelectManager::OnUpdate()
 {
+	if (GameDevice::GetInput()->TriggerKey(Keys::Esc))
+	{
+		GameDevice::SetIsEnd(true);
+	}
 	if (!m_vlp_animTimer->IsOn() && !m_isEnd)
 	{
 		if (InputManager::IsPushRightKey())
@@ -125,7 +129,7 @@ std::string ButiEngine::StageSelectManager::GetNextSceneName()
 	if (m_stageNum > m_maxStageNum)
 	{
 		m_stageNum--;
-		return "ThanksScene";
+		return "TitleScene";
 	}
 
 	std::string nextSceneName = "Stage_" + std::to_string(m_stageNum);

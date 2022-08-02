@@ -55,6 +55,7 @@ std::int32_t APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR arg, std::in
 	ButiTaskSystem::Start();
 	GameAssetData::ApplicationInitData init;
 	InputCereal(init, "Application/ButiEngine.ini");
+	OutputCereal(init, "Application/ButiEngine.ini");
 	auto vlp_app = CreateApplicationInstance(init);
 
 	GameDevice::Initialize();
@@ -88,7 +89,7 @@ std::int32_t APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR arg, std::in
 	auto vlp_app = CreateApplicationInstance(init);
 
 	GameDevice::Initialize();
-	//GameDevice::GetInput()->SetCursorHide(true);
+	GameDevice::GetInput()->SetCursorHide(true);
 	GameDevice::GetInput()->Initialize(vlp_app);
 	vlp_app->PreLoadResources();
 	vlp_app->InitLoadResources();

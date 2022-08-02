@@ -11,14 +11,21 @@
 #include "BurstManager.h"
 #include "BackGround.h"
 #include "NextStageBlock.h"
-#include"MapEditor.h"
+#include "MapEditor.h"
+#include "EyeBlock.h"
 
-ButiEngine::Value_ptr<ButiEngine::MapData> ButiEngine::Map::m_vlp_stageSelectMapData;
 ButiEngine::Value_ptr<ButiEngine::Transform> ButiEngine::Map::m_vlp_playerTransform;
 ButiEngine::Value_ptr<ButiEngine::Transform> ButiEngine::Map::m_vlp_eyeBlockTransform;
+ButiEngine::Vector3 ButiEngine::Map::m_stageSelectStartPlayerPos;
+ButiEngine::Vector3 ButiEngine::Map::m_stageSelectEyeBlockPos;
 
 void ButiEngine::Map::OnUpdate()
 {
+	if (GameDevice::GetInput()->TriggerKey(Keys::Esc))
+	{
+		GameDevice::SetIsEnd(true);
+	}
+
 	auto player = GetManager().lock()->GetGameObject("Player").lock();
 	if (player && player->GetGameComponent<Player>()->IsGoal())
 	{
@@ -28,7 +35,7 @@ void ButiEngine::Map::OnUpdate()
 			m_vlp_stageEndTimer->Start();
 			ShakeStop();
 			ShakeStart(0.06f);
-			GetManager().lock()->GetGameObject("MainCamera").lock()->GetGameComponent<CameraController>()->ZoomIn();
+			GetManager().lock()->GetGameObject("MainCamera").lock()->GetGameComponent<CameraController>()->ZoomIn(true);
 			return;
 		}
 	}
@@ -36,6 +43,13 @@ void ButiEngine::Map::OnUpdate()
 	if (m_vlp_stageEndTimer->Update())
 	{
 		m_vlp_stageEndTimer->Stop();
+
+		//auto sceneManager = gameObject.lock()->GetApplication().lock()->GetSceneManager();
+		//std::string sceneName = StageSelectManager::GetNextSceneName();
+		//sceneManager->RemoveScene(sceneName);
+		//sceneManager->LoadScene(sceneName);
+		//sceneManager->ChangeScene(sceneName);
+
 		auto sceneManager = gameObject.lock()->GetApplication().lock()->GetSceneManager();
 
 		std::string currentSceneName = sceneManager->GetCurrentScene()->GetSceneInformation()->GetSceneName();
@@ -55,9 +69,9 @@ void ButiEngine::Map::OnUpdate()
 		{
 			NextStageBlock::SetStatus(m_currentStageNum, NextStageBlockStatus::Cleared);
 			nextSceneName = "NewStageSelectScene";
-			if (NextStageBlock::IsAllCleard())
+			if (NextStageBlock::IsAllCleared())
 			{
-				nextSceneName = "ThanksScene";
+				nextSceneName = "TitleScene";
 			}
 		}
 		sceneManager->RemoveScene(nextSceneName);
@@ -105,21 +119,12 @@ void ButiEngine::Map::Start()
 			m_vec_vlp_mapDatas.push_back(ObjectFactory::Create<MapData>(0));
 		}
 	}
-	else if (StringHelper::Contains(sceneName, "Select") && m_vlp_stageSelectMapData)
-	{
-		m_vec_vlp_mapDatas.push_back(m_vlp_stageSelectMapData);
-	}
 	else {
 		auto mapFilePath = "Scene/" + sceneName + "/mapData.map";
 		if (ResourceSystem::ExistResource(mapFilePath)) {
 			auto mapData = ObjectFactory::Create<MapData>();
 			InputCereal(mapData, mapFilePath);
 			m_vec_vlp_mapDatas.push_back(mapData);
-
-			if (StringHelper::Contains(sceneName, "Select"))
-			{
-				m_vlp_stageSelectMapData = mapData;
-			}
 		}
 		else {
 			m_vec_vlp_mapDatas.push_back(ObjectFactory::Create<MapData>(0));
@@ -243,6 +248,41 @@ void ButiEngine::Map::PutBlock(std::uint16_t arg_stageNum)
 				}
 				else if (mapNum == GameSettings::MAP_CHIP_PLAYER || (mapNum >= GameSettings::MAP_CHIP_PLAYER_ROTATE_90 && mapNum <= GameSettings::MAP_CHIP_PLAYER_DOWN_ROTATE_90) || (mapNum >= GameSettings::MAP_CHIP_PLAYER_AND_GOAL && mapNum < GameSettings::MAP_CHIP_NEXT_STAGE_BLOCK))
 				{
+					std::string currentSceneName = GetManager().lock()->GetScene().lock()->GetSceneInformation()->GetSceneName();
+					if (currentSceneName == "NewStageSelectScene" && m_vlp_playerTransform)
+					{
+						GetManager().lock()->AddObjectFromCereal("CameraMesh", ObjectFactory::Create<Transform>(Vector3(0, 0, 10000.0f), Vector3Const::Zero, scale));
+
+						m_startPlayerPos = m_stageSelectStartPlayerPos;
+						Vector3 spawnPos = m_vlp_playerTransform->GetLocalPosition();
+						spawnPos.y += 30.0f;
+						gameObject = GetManager().lock()->AddObjectFromCereal("Player", m_vlp_playerTransform->Clone());
+						gameObject->transform->SetWorldPosition(spawnPos);
+						auto playerBehavior = gameObject->GetGameComponent<Player>();
+						playerBehavior->SetStartPos(position);
+						auto directing = gameObject->GetGameComponent<StartPlayerDirecting>();
+						directing->SetSpawnPos(spawnPos);
+						directing->SetStartPos(position);
+
+						if (m_vlp_eyeBlockTransform)
+						{
+							auto eyeBlock = GetManager().lock()->AddObjectFromCereal("EyeBlock", m_vlp_eyeBlockTransform->Clone());
+							auto eyeBlockComponent = eyeBlock.lock()->GetGameComponent<EyeBlock>();
+							eyeBlockComponent->SetMapPos(m_stageSelectEyeBlockPos);
+
+							Vector3 eyeBlockPos = m_vlp_eyeBlockTransform->GetLocalPosition();
+							Vector3 targetPos = eyeBlockPos;
+
+							eyeBlockPos.y = m_vec_randomBlockPoss[z][x] - (vec_mapDatas.size() - y) * 3.5f;
+							eyeBlock.lock()->transform->SetWorldPosition(eyeBlockPos);
+							AddTransformAnimation(eyeBlock, targetPos.y);
+
+							playerBehavior->SetEyeBlock(eyeBlock);
+						}
+
+						continue;
+					}
+
 					m_startPlayerPos = Vector3(x, y, z);
 					Vector3 spawnPos = position;
 					spawnPos.y += 30.0f;
@@ -254,7 +294,7 @@ void ButiEngine::Map::PutBlock(std::uint16_t arg_stageNum)
 					directing->SetSpawnPos(spawnPos);
 					directing->SetStartPos(position);
 
-					auto cameraMesh = GetManager().lock()->AddObjectFromCereal("CameraMesh", ObjectFactory::Create<Transform>(Vector3(0, 0, -0.1f), Vector3Const::Zero, scale));
+					GetManager().lock()->AddObjectFromCereal("CameraMesh", ObjectFactory::Create<Transform>(Vector3(0, 0, 10000.0f), Vector3Const::Zero, scale));
 					if (mapNum >= GameSettings::MAP_CHIP_PLAYER_ROTATE_90 && mapNum <= GameSettings::MAP_CHIP_PLAYER_DOWN_ROTATE_90) {
 						auto playerDir = (mapNum - GameSettings::MAP_CHIP_PLAYER_ROTATE_90 + 1);
 						if (playerDir < 4) {
@@ -337,7 +377,6 @@ void ButiEngine::Map::PutBlock(std::uint16_t arg_stageNum)
 					gameObject->transform->SetLocalScale(scale * 0.75f);
 					auto nextStageBlockComponent = gameObject->GetGameComponent<NextStageBlock>();
 					gameObject->GetGameComponent<NextStageBlock>()->SetStageNum(stageNum);
-					nextStageBlockComponent->SetStatus(stageNum, NextStageBlockStatus::InActive);
 
 					AddTransformAnimation(gameObject, targetPosY);
                 }
@@ -499,7 +538,7 @@ void ButiEngine::Map::AddTransformAnimation(Value_weak_ptr<ButiEngine::GameObjec
 	anim->SetSpeed(1.0f / (d * 2));
 	anim->SetTargetTransform(transform->Clone());
 	anim->GetTargetTransform()->SetLocalPositionY(arg_y);
-	anim->GetTargetTransform()->RollLocalRotationX_Degrees(0.1f);
+	//anim->GetTargetTransform()->RollLocalRotationX_Degrees(0.1f);
 
 	anim->SetEaseType(Easing::EasingType::EaseInOutQuint);
 }
@@ -515,11 +554,22 @@ void ButiEngine::Map::SavePlayerData()
 		return;
 	}
 
-	m_vlp_stageSelectMapData->m_vec_mapDatas[m_startPlayerPos.y][m_startPlayerPos.z][m_startPlayerPos.x] = 0;
+	auto player = GetManager().lock()->GetGameObject("Player");
+	auto playerComponent = player.lock()->GetGameComponent<Player>();
+	
+	m_vlp_playerTransform = player.lock()->transform->Clone();
+	m_stageSelectStartPlayerPos = playerComponent->GetMapPos();
 
-	auto player = GetManager().lock()->GetGameObject("Player").lock()->GetGameComponent<Player>();
-	Vector3 playerPos = player->GetMapPos();
+	auto eyeBlock = playerComponent->GetEyeBlock();
+	if (!eyeBlock.lock())
+	{
+		m_vlp_eyeBlockTransform = nullptr;
+		return; 
+	}
+	auto eyeBlockComponent = eyeBlock.lock()->GetGameComponent<EyeBlock>();
 
+	m_vlp_eyeBlockTransform = eyeBlock.lock()->transform->Clone();
+	m_stageSelectEyeBlockPos = eyeBlockComponent->GetMapPos();
 }
 
 ButiEngine::MapData::MapData(std::uint16_t arg_stageNum)

@@ -35,7 +35,11 @@ namespace ButiEngine {
 			archive(m_vec_vlp_mapDatas);
 		}
 
-		static void ResetStageSelectMapData() { m_vlp_stageSelectMapData = nullptr; }
+		static void ResetStageSelectPlayerData()
+		{
+			m_vlp_playerTransform = nullptr;
+			m_vlp_eyeBlockTransform = nullptr;
+		}
 
 		void PutBlock(std::uint16_t arg_stageNum);
 		Value_weak_ptr<MapData>GetCurrentMapData() { return m_vlp_currentMapData; }
@@ -60,9 +64,10 @@ namespace ButiEngine {
 		std::vector<std::vector<std::vector<Value_weak_ptr<GameObject>>>> m_vec_vwp_mapObjectDatas;
 		Value_ptr<RelativeTimer> m_vlp_stageEndTimer;
 
-		static Value_ptr<MapData> m_vlp_stageSelectMapData;
 		static Value_ptr<Transform> m_vlp_playerTransform;
 		static Value_ptr<Transform> m_vlp_eyeBlockTransform;
+		static Vector3 m_stageSelectStartPlayerPos;
+		static Vector3 m_stageSelectEyeBlockPos;
 		
 		Vector3 m_startPlayerPos;
 		Vector4 m_mapEndColor = Vector4(0.2f, 0.2f, 0.9f, 1.0f);

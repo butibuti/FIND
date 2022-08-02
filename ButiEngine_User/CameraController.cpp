@@ -96,10 +96,11 @@ void ButiEngine::CameraController::ZoomInOut()
     }
 }
 
-void ButiEngine::CameraController::ZoomIn()
+void ButiEngine::CameraController::ZoomIn(const bool arg_isForced)
 {
     auto anim = gameObject.lock()->GetGameComponent<TransformAnimation>();
-    if (!anim && gameObject.lock()->transform->GetLocalPosition().z < -10) {
+    if (gameObject.lock()->transform->GetLocalPosition().z < -10) {
+        if (!arg_isForced && !anim) { return; }
         anim = gameObject.lock()->AddGameComponent<TransformAnimation>();
         anim->SetTargetTransform(gameObject.lock()->transform->Clone());
         anim->GetTargetTransform()->SetWorldPosition(gameObject.lock()->transform->GetWorldPosition() + gameObject.lock()->transform->GetFront() * 5);

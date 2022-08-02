@@ -24,7 +24,7 @@ namespace ButiEngine {
 		}
 
 		void ZoomInOut();
-		void ZoomIn();
+		void ZoomIn(const bool arg_isForced = false);
 		void ZoomOut();
 	private:
 		Vector3 m_offset;

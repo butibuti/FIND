@@ -33,7 +33,7 @@ namespace ButiEngine {
 
 		static void InitializeStatus();
 		static void SetStatus(const std::uint16_t arg_index, const NextStageBlockStatus arg_status) { m_vec_statuss[arg_index] = arg_status; }
-		static bool IsAllCleard();
+		static bool IsAllCleared();
 	private:
 		static std::vector<NextStageBlockStatus> m_vec_statuss;
 

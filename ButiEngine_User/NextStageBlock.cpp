@@ -82,7 +82,7 @@ void ButiEngine::NextStageBlock::InitializeStatus()
 	}
 }
 
-bool ButiEngine::NextStageBlock::IsAllCleard()
+bool ButiEngine::NextStageBlock::IsAllCleared()
 {
 	auto end = m_vec_statuss.end();
 	for (auto itr = m_vec_statuss.begin(); itr != end; ++itr)

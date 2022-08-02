@@ -34,7 +34,7 @@ bool ButiEngine::InputManager::IsTriggerDecisionKey()
 bool ButiEngine::InputManager::IsTriggerPutEyeBlockKey()
 {
     bool key = GameDevice::GetInput()->TriggerKey(Keys::R);
-    bool button = GameDevice::GetInput()->GetPadButtonTrigger(PadButtons::XBOX_X);
+    bool button = GameDevice::GetInput()->GetPadButtonTrigger(PadButtons::XBOX_B);
 
     return (key || button);
 }

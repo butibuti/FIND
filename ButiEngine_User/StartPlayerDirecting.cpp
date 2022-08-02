@@ -3,6 +3,7 @@
 #include "Player.h"
 #include "CameraMesh.h"
 #include "InvisibleBlockManager.h"
+#include "EyeBlock.h"
 
 void ButiEngine::StartPlayerDirecting::OnUpdate()
 {
@@ -30,6 +31,16 @@ void ButiEngine::StartPlayerDirecting::OnUpdate()
 		GetManager().lock()->GetGameObject("CameraMesh").lock()->GetGameComponent<CameraMesh>()->Flash();
 
 		gameObject.lock()->GetGameComponent<Player>()->CheckLookBlock();
+
+		auto eyeBlock = gameObject.lock()->GetGameComponent<Player>()->GetEyeBlock();
+		if (eyeBlock.lock())
+		{
+			auto eyeBlockComponent = eyeBlock.lock()->GetGameComponent<EyeBlock>();
+			eyeBlockComponent->CheckLookBlock();
+			eyeBlockComponent->FlashMeshSet(gameObject.lock()->GetGameComponent<Player>()->GetMapPos());
+			eyeBlockComponent->Flash();
+		}
+
 		GetManager().lock()->GetGameObject("InvisibleBlockManager").lock()->GetGameComponent<InvisibleBlockManager>()->CheckSeen();
 
 		gameObject.lock()->GetApplication().lock()->GetSoundManager()->PlaySE(SoundTag("Sound/BigMove_0.wav"), 0.1f);

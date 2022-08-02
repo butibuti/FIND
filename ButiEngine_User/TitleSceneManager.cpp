@@ -5,13 +5,18 @@
 
 void ButiEngine::TitleSceneManager::OnUpdate()
 {
-	if (InputManager::IsTriggerDecisionKey())
+	if (GameDevice::GetInput()->TriggerKey(Keys::Esc))
+	{
+		GameDevice::SetIsEnd(true);
+	}
+	auto anim = m_vwp_camera.lock()->GetGameComponent<TransformAnimation>();
+	if (!anim && InputManager::IsTriggerDecisionKey())
 	{
 		m_vlp_timer->Start();
 
 		gameObject.lock()->GetApplication().lock()->GetSoundManager()->PlaySE(SoundTag("Sound/potion.wav"), 0.1f);
 
-		auto anim = m_vwp_camera.lock()->AddGameComponent<TransformAnimation>();
+		anim = m_vwp_camera.lock()->AddGameComponent<TransformAnimation>();
 		anim->SetTargetTransform(m_vwp_camera.lock()->transform->Clone());
 		anim->GetTargetTransform()->TranslateZ(20);
 		anim->SetEaseType(Easing::EasingType::EaseInBack);
@@ -22,12 +27,14 @@ void ButiEngine::TitleSceneManager::OnUpdate()
 	{
 		m_vlp_timer->Stop();
 
-		Map::ResetStageSelectMapData();
+		Map::ResetStageSelectPlayerData();
 
 		auto sceneManager = gameObject.lock()->GetApplication().lock()->GetSceneManager();
-		sceneManager->RemoveScene("NewStageSelectScene");
-		sceneManager->LoadScene("NewStageSelectScene");
-		sceneManager->ChangeScene("NewStageSelectScene");
+		auto sceneName = "NewStageSelectScene";
+		//sceneName = "StageSelectScene";
+		sceneManager->RemoveScene(sceneName);
+		sceneManager->LoadScene(sceneName);
+		sceneManager->ChangeScene(sceneName);
 
 	}
 }
@@ -46,6 +53,14 @@ void ButiEngine::TitleSceneManager::Start()
 	GetCamera("BloomSource")->vlp_transform->SetBaseTransform(mainCamera->vlp_transform, true);
 
 	gameObject.lock()->GetApplication().lock()->GetSoundManager()->PlayBGM(SoundTag("Sound/cube_BGM.wav"), 0.1f);
+
+	m_vwp_camera.lock()->transform->TranslateZ(-150);
+
+	auto anim = m_vwp_camera.lock()->AddGameComponent<TransformAnimation>();
+	anim->SetTargetTransform(m_vwp_camera.lock()->transform->Clone());
+	anim->GetTargetTransform()->TranslateZ(150);
+	anim->SetEaseType(Easing::EasingType::EaseOutCirc);
+	anim->SetSpeed(1.0f / 30.0f);
 
 
 	//auto finalScreen = GetManager().lock()->GetGameObject("Screen");

@@ -70,14 +70,14 @@ void ButiEngine::Player::OnUpdate()
 			if (m_mapPos == m_vwp_eyeBlockComponent.lock()->GetMapPos())
 			{
 				m_vwp_eyeBlockComponent.lock()->Dead();
+				m_vwp_eyeBlock = Value_weak_ptr<GameObject>();
 				m_vwp_eyeBlockComponent = Value_weak_ptr<EyeBlock>();
 			}
-		}
-
-		if (m_vwp_eyeBlockComponent.lock())
-		{
-			m_vwp_eyeBlockComponent.lock()->CheckLookBlock();
-			m_vwp_eyeBlockComponent.lock()->Flash();
+			else
+			{
+				m_vwp_eyeBlockComponent.lock()->CheckLookBlock();
+				m_vwp_eyeBlockComponent.lock()->Flash();
+			}
 		}
 		m_vwp_invisibleBlockManagerComponent.lock()->CheckSeen();
 		CheckExistUnderBlock(m_mapPos);
@@ -111,10 +111,10 @@ void ButiEngine::Player::OnUpdate()
 		}
 		auto vec_mapDatas = m_vwp_mapComponent.lock()->GetCurrentMapData().lock()->m_vec_mapDatas;
 		std::uint16_t mapNum = vec_mapDatas[m_mapPos.y][m_mapPos.z][m_mapPos.x];
-		if (mapNum == 0 && !m_vwp_eyeBlockComponent.lock() && InputManager::IsTriggerPutEyeBlockKey())
+		if (mapNum == 0 && m_canPutEyeBlock && !m_vwp_eyeBlockComponent.lock() && InputManager::IsTriggerPutEyeBlockKey())
 		{
-			auto eyeBlock = GetManager().lock()->AddObjectFromCereal("EyeBlock", gameObject.lock()->transform->Clone());
-			m_vwp_eyeBlockComponent = eyeBlock.lock()->GetGameComponent<EyeBlock>();
+			m_vwp_eyeBlock = GetManager().lock()->AddObjectFromCereal("EyeBlock", gameObject.lock()->transform->Clone());
+			m_vwp_eyeBlockComponent = m_vwp_eyeBlock.lock()->GetGameComponent<EyeBlock>();
 			m_vwp_eyeBlockComponent.lock()->SetMapPos(m_mapPos);
 		}
 	}
@@ -160,6 +160,12 @@ void ButiEngine::Player::Start()
 ButiEngine::Value_ptr<ButiEngine::GameComponent> ButiEngine::Player::Clone()
 {
 	return ObjectFactory::Create<Player>();
+}
+
+void ButiEngine::Player::SetEyeBlock(Value_weak_ptr<GameObject> arg_eyeBlock)
+{
+	m_vwp_eyeBlock = arg_eyeBlock;
+	m_vwp_eyeBlockComponent = m_vwp_eyeBlock.lock()->GetGameComponent<EyeBlock>();
 }
 
 bool ButiEngine::Player::IsRollFinish()
