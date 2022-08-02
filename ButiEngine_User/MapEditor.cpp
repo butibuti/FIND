@@ -6,6 +6,7 @@
 #include "NextStageBlock.h"
 #include "Player.h"
 #include"StartPlayerDirecting.h"
+#include"Glass.h"
 std::int32_t g_mapIndex = 0, g_cursorPos[3] = {0,0,0}, g_cursorPos_another[3] = { 0,0,0 }, g_currentBlockIndex = 0, g_currentPlayerDirection = 0
 , g_invisibleID=0, g_goalMode = 0, g_stageBlockIndex = 0;
 
@@ -441,7 +442,12 @@ void ButiEngine::MapEditor::OnUpdate()
                 gameObject->GetGameComponent<InvisibleBlock>()->SetMapPos(Vector3(g_cursorPos[0], g_cursorPos[1], g_cursorPos[2]));
 
             }break;
-            case BlockMode::Glass: Replace(Vector3(g_cursorPos[1], g_cursorPos[2], g_cursorPos[0]), "Glass", GameSettings::MAP_CHIP_GLASS); break;
+            case BlockMode::Glass:
+            {
+                auto gameObject= Replace(Vector3(g_cursorPos[1], g_cursorPos[2], g_cursorPos[0]), "Glass", GameSettings::MAP_CHIP_GLASS); 
+                gameObject->GetGameComponent<GlassBlock>()->SetMapPos(Vector3(g_cursorPos[0], g_cursorPos[1], g_cursorPos[2]));
+                gameObject->GetGameComponent<GlassBlock>()->SetMap(m_vwp_map);
+            }break;
             case BlockMode::Goal: {
                 std::string goalObjName;
                 switch (g_goalMode)

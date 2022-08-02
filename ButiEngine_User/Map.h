@@ -68,6 +68,7 @@ namespace ButiEngine {
 		static Value_ptr<Transform> m_vlp_eyeBlockTransform;
 		static Vector3 m_stageSelectStartPlayerPos;
 		static Vector3 m_stageSelectEyeBlockPos;
+		static Value_ptr<MapData> m_vlp_stageSelectMapData;
 		
 		Vector3 m_startPlayerPos;
 		Vector4 m_mapEndColor = Vector4(0.2f, 0.2f, 0.9f, 1.0f);
