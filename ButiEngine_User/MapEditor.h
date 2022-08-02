@@ -25,7 +25,7 @@ public:
 		Controll = 0, Cursor = 1, AnotherCursor = 2, StageSize = 3, None = 4
 	};
 	enum class BlockMode :std::int8_t {
-		Block = 0, Invisible = 1, Glass = 2, Goal = 3, Player = 4, Stage = 5, None = 6, Min = -1
+		Block = 0, Invisible = 1, Glass = 2, Goal = 3, Player = 4, Stage = 5, AlreadySeenStage = 6, None = 7, Min = -1
 	};
 	EditorMode GetEditorMode()const;
 	BlockMode GetBlockMode()const;
