@@ -37,7 +37,6 @@ void ButiEngine::InvisibleBlock::Active()
 	anim->SetSpeed(1.0f / 10);
 	anim->SetTargetTransform(t->Clone());
 	anim->GetTargetTransform()->SetLocalScale(1.1f);
-	anim->GetTargetTransform()->RollLocalRotationX_Degrees(0.1f);
 
 	anim->SetEaseType(Easing::EasingType::Parabola);
 
