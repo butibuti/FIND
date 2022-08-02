@@ -19,6 +19,8 @@ void ButiEngine::EyeBlock::OnSet()
 
 void ButiEngine::EyeBlock::Start()
 {
+	SetLookDirection();
+
 	m_vwp_cameraMesh = GetManager().lock()->AddObjectFromCereal("CameraMesh", ObjectFactory::Create<Transform>(Vector3(0, 0, -0.1f)));
 	m_vwp_cameraMeshComponent = m_vwp_cameraMesh.lock()->GetGameComponent<CameraMesh>();
 
@@ -189,6 +191,36 @@ void ButiEngine::EyeBlock::Shrink()
 		m_scale = 1.0f;
 	}
 	gameObject.lock()->transform->SetLocalScale(m_scale);
+}
+
+void ButiEngine::EyeBlock::SetLookDirection()
+{
+	Vector3 dir = gameObject.lock()->transform->GetFront().Round();
+
+	if (dir.x == 1.0f)
+	{
+		m_lookDirection = LookDirection::Right;
+	}
+	else if (dir.x == -1.0f)
+	{
+		m_lookDirection = LookDirection::Left;
+	}
+	else if (dir.y == 1.0f)
+	{
+		m_lookDirection = LookDirection::Up;
+	}
+	else if (dir.y == -1.0f)
+	{
+		m_lookDirection = LookDirection::Down;
+	}
+	else if (dir.z == 1.0f)
+	{
+		m_lookDirection = LookDirection::Front;
+	}
+	else if (dir.z == -1.0f)
+	{
+		m_lookDirection = LookDirection::Back;
+	}
 }
 
 ButiEngine::Value_weak_ptr<ButiEngine::GameObject> ButiEngine::EyeBlock::GetRightBlock(Vector3& ref_output_pos)

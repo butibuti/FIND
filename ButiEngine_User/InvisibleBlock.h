@@ -22,6 +22,7 @@ namespace ButiEngine {
 
 		void SetID(const std::uint16_t arg_id) { m_id = arg_id; }
 		int GetID() { return m_id; }
+		bool IsBlock() { return m_isBlock; }
 		void Active();
 		void UnActive();
 		void SetSeen(const bool arg_flag) { m_isSeen = arg_flag; }
@@ -31,7 +32,7 @@ namespace ButiEngine {
 		void Seen();
 	private:
 		std::uint16_t m_id;
-		bool m_isActive;
+		bool m_isBlock;
 		bool m_isSeen;
 		Vector3 m_mapPos;
 	};

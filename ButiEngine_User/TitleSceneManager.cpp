@@ -1,6 +1,7 @@
 #include "stdafx_u.h"
 #include "TitleSceneManager.h"
 #include "InputManager.h"
+#include "Map.h"
 
 void ButiEngine::TitleSceneManager::OnUpdate()
 {
@@ -20,6 +21,9 @@ void ButiEngine::TitleSceneManager::OnUpdate()
 	if (m_vlp_timer->Update()) 
 	{
 		m_vlp_timer->Stop();
+
+		Map::ResetStageSelectMapData();
+
 		auto sceneManager = gameObject.lock()->GetApplication().lock()->GetSceneManager();
 		sceneManager->RemoveScene("NewStageSelectScene");
 		sceneManager->LoadScene("NewStageSelectScene");

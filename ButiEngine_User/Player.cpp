@@ -24,7 +24,7 @@ void ButiEngine::Player::OnUpdate()
 		m_vlp_fallTimer->Stop();
 		m_isFall = false;
 		m_isFallStart = false;
-		m_mapPos = m_vwp_mapComponent.lock()->GetPlayerPos();
+		m_mapPos = m_vwp_mapComponent.lock()->GetStartPlayerPos();
 		auto rotation = gameObject.lock()->transform->GetLocalRotation().GetEulerOneValue_local();
 		rotation.x = 0;
 		rotation.y = MathHelper::ToRadian(m_startRotation);
@@ -116,7 +116,6 @@ void ButiEngine::Player::OnUpdate()
 			auto eyeBlock = GetManager().lock()->AddObjectFromCereal("EyeBlock", gameObject.lock()->transform->Clone());
 			m_vwp_eyeBlockComponent = eyeBlock.lock()->GetGameComponent<EyeBlock>();
 			m_vwp_eyeBlockComponent.lock()->SetMapPos(m_mapPos);
-			m_vwp_eyeBlockComponent.lock()->SetLookDirection(CheckLookDirection(gameObject.lock()->transform));
 		}
 	}
 }
@@ -147,7 +146,7 @@ void ButiEngine::Player::Start()
 	m_afterFallPos = Vector3Const::Zero;
 	m_length = 1.0f;
 	m_vwp_mapComponent = gameObject.lock()->GetGameObjectManager().lock()->GetGameObject("Map").lock()->GetGameComponent<Map>();
-	m_mapPos = m_vwp_mapComponent.lock()->GetPlayerPos();
+	m_mapPos = m_vwp_mapComponent.lock()->GetStartPlayerPos();
 	m_offset = m_mapPos - m_startPos;
 
 	m_vlp_timer = ObjectFactory::Create<RelativeTimer>(12);
@@ -2062,7 +2061,9 @@ ButiEngine::Value_weak_ptr<ButiEngine::GameObject> ButiEngine::Player::GetDownBl
 	{
 		if (arg_isCantThrough)
 		{
-			if (IsCantThroughBlock(mapData[i][m_mapPos.z][m_mapPos.x]))
+			Vector3 pos = m_mapPos;
+			pos.y = i;
+			if (IsCantThroughBlock(pos))
 			{
 				ref_output_diff = abs(m_mapPos.y - i);
 				auto mapObjectData = m_vwp_mapComponent.lock()->GetMapObjectData();
@@ -2174,11 +2175,11 @@ ButiEngine::MoveDirection ButiEngine::Player::CheckMoveDirection(const Vector3& 
 		return output;
 	}
 
-	if (IsCantThroughBlock(mapData[arg_movePos.y][arg_movePos.z][arg_movePos.x]))
+	if (IsCantThroughBlock(arg_movePos))
 	{
 		if (arg_movePos.y + 1 >= mapData.size() ||
-			IsCantThroughBlock(mapData[arg_movePos.y + 1][arg_movePos.z][arg_movePos.x]) ||
-			IsCantThroughBlock(mapData[m_mapPos.y + 1][m_mapPos.z][m_mapPos.x]))
+			IsCantThroughBlock(Vector3(arg_movePos.x, arg_movePos.y + 1, arg_movePos.z)) ||
+			IsCantThroughBlock(Vector3(m_mapPos.x, m_mapPos.y + 1, m_mapPos.z)))
 		{
 			output = MoveDirection::No;
 		}
@@ -2187,11 +2188,11 @@ ButiEngine::MoveDirection ButiEngine::Player::CheckMoveDirection(const Vector3& 
 			output = MoveDirection::Up;
 		}
 	}
-	else if (IsCantThroughBlock(mapData[arg_movePos.y - 1][arg_movePos.z][arg_movePos.x]))
+	else if (IsCantThroughBlock(Vector3(arg_movePos.x, arg_movePos.y - 1, arg_movePos.z)))
 	{
 		output = MoveDirection::Normal;
 	}
-	else if (arg_movePos.y - 2 >= 0 && IsCantThroughBlock(mapData[arg_movePos.y - 2][arg_movePos.z][arg_movePos.x]))
+	else if (arg_movePos.y - 2 >= 0 && IsCantThroughBlock(Vector3(arg_movePos.x, arg_movePos.y - 2, arg_movePos.z)))
 	{
 		output = MoveDirection::Down;
 	}
@@ -2210,7 +2211,7 @@ void ButiEngine::Player::CheckExistUnderBlock(const Vector3& arg_movePos)
 		return;
 	}
 	auto& mapData = m_vwp_mapComponent.lock()->GetCurrentMapData().lock()->m_vec_mapDatas;
-	if (IsCantThroughBlock(mapData[arg_movePos.y - 1][arg_movePos.z][arg_movePos.x]))
+	if (IsCantThroughBlock(Vector3(arg_movePos.x, arg_movePos.y - 1, arg_movePos.z)))
 	{
 		return;
 	}
@@ -2246,9 +2247,23 @@ bool ButiEngine::Player::IsBlock(std::uint16_t arg_mapChipNum)
 	return false;
 }
 
-bool ButiEngine::Player::IsCantThroughBlock(std::uint16_t arg_mapChipNum)
+bool ButiEngine::Player::IsCantThroughBlock(const Vector3& arg_mapPos)
 {
-	if (arg_mapChipNum == GameSettings::MAP_CHIP_BLOCK) { return true; }
-	if (arg_mapChipNum == GameSettings::MAP_CHIP_GLASS) { return true; }
+	auto mapData = m_vwp_mapComponent.lock()->GetCurrentMapData().lock()->m_vec_mapDatas;
+	auto mapObjectData = m_vwp_mapComponent.lock()->GetMapObjectData();
+
+	std::uint16_t mapChipNum = mapData[arg_mapPos.y][arg_mapPos.z][arg_mapPos.x];
+
+	if (mapChipNum == GameSettings::MAP_CHIP_BLOCK) { return true; }
+	if (mapChipNum == GameSettings::MAP_CHIP_GLASS) { return true; }
+	if (mapChipNum >= GameSettings::MAP_CHIP_INVISIBLEBLOCK && mapChipNum < GameSettings::MAP_CHIP_PLAYER_AND_GOAL)
+	{
+		auto object = mapObjectData[arg_mapPos.y][arg_mapPos.z][arg_mapPos.x];
+		auto invisibleBlockComponent = object.lock()->GetGameComponent<InvisibleBlock>();
+		if (invisibleBlockComponent && invisibleBlockComponent->IsBlock())
+		{
+			return true;
+		}
+	}
 	return false;
 }

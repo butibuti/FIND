@@ -16,14 +16,6 @@ void ButiEngine::InvisibleBlock::Start()
 {
 	auto meshDraw = gameObject.lock()->GetGameComponent<MeshDrawComponent>();
 	meshDraw->UnRegist();
-
-#ifdef DEBUG
-	auto sceneName = gameObject.lock()->GetApplication().lock()->GetSceneManager()->GetCurrentScene()->GetSceneInformation()->GetSceneName();
-	if (sceneName == "LevelEditor")
-	{
-		meshDraw->Regist();
-	}
-#endif
 }
 
 ButiEngine::Value_ptr<ButiEngine::GameComponent> ButiEngine::InvisibleBlock::Clone()
@@ -33,7 +25,7 @@ ButiEngine::Value_ptr<ButiEngine::GameComponent> ButiEngine::InvisibleBlock::Clo
 
 void ButiEngine::InvisibleBlock::Active()
 {
-	if (m_isActive)
+	if (m_isBlock)
 	{
 		return;
 	}
@@ -49,9 +41,9 @@ void ButiEngine::InvisibleBlock::Active()
 
 	anim->SetEaseType(Easing::EasingType::Parabola);
 
-	auto mapComp = GetManager().lock()->GetGameObject("Map").lock()->GetGameComponent<Map>();
-	mapComp->ChangeBlock(m_mapPos, GameSettings::MAP_CHIP_BLOCK);
-	m_isActive = true;
+	//auto mapComp = GetManager().lock()->GetGameObject("Map").lock()->GetGameComponent<Map>();
+	//mapComp->ChangeBlock(m_mapPos, GameSettings::MAP_CHIP_BLOCK);
+	m_isBlock = true;
 	auto meshDraw = gameObject.lock()->GetGameComponent<MeshDrawComponent>();
 	meshDraw->Regist();
 
@@ -60,14 +52,14 @@ void ButiEngine::InvisibleBlock::Active()
 
 void ButiEngine::InvisibleBlock::UnActive()
 {
-	if (!m_isActive)
+	if (!m_isBlock)
 	{
 		return;
 	}
 
 	auto mapComp = GetManager().lock()->GetGameObject("Map").lock()->GetGameComponent<Map>();
 	mapComp->ChangeBlock(m_mapPos, GameSettings::MAP_CHIP_INVISIBLEBLOCK + m_id);
-	m_isActive = false;
+	m_isBlock = false;
 	auto meshDraw = gameObject.lock()->GetGameComponent<MeshDrawComponent>();
 	meshDraw->UnRegist();
 #ifdef DEBUG

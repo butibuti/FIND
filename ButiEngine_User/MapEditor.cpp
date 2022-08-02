@@ -33,7 +33,8 @@ void PushPutModeNotification(){
 }
 void ButiEngine::MapEditor::OnUpdate()
 {
-    if (GetManager().lock()->GetGameObject("Player").lock()->GetGameComponent<StartPlayerDirecting>()->IsAnimation()) {
+    auto player = GetManager().lock()->GetGameObject("Player");
+    if (!player.lock() || player.lock()->GetGameComponent<StartPlayerDirecting>()->IsAnimation()) {
         return;
     }
     GetManager().lock()->GetGameObject("Player").lock()->GetGameComponent<Player>()->SetIsActive(g_editMode == EditorMode::Controll);
@@ -320,7 +321,7 @@ void ButiEngine::MapEditor::OnUpdate()
             Reload();
             break;
         case InputDir::Left:
-            if (m_vwp_map.lock()->GetPlayerPos().Round().x == m_vlp_currentEdit->m_vec_mapDatas[0][0].size() - 1)
+            if (m_vwp_map.lock()->GetStartPlayerPos().Round().x == m_vlp_currentEdit->m_vec_mapDatas[0][0].size() - 1)
             {
                 GUI::PushNotification(u8"プレイヤーがいる列です");
                 break;
@@ -344,7 +345,7 @@ void ButiEngine::MapEditor::OnUpdate()
         }
         break;
         case InputDir::Back:
-            if (m_vwp_map.lock()->GetPlayerPos().Round().z == m_vlp_currentEdit->m_vec_mapDatas[0].size() - 1)
+            if (m_vwp_map.lock()->GetStartPlayerPos().Round().z == m_vlp_currentEdit->m_vec_mapDatas[0].size() - 1)
             {
                 GUI::PushNotification(u8"プレイヤーがいる行です");
                 break;
@@ -368,7 +369,7 @@ void ButiEngine::MapEditor::OnUpdate()
 
         }   break;
         case InputDir::Down:
-            if (m_vwp_map.lock()->GetPlayerPos().Round().y == m_vlp_currentEdit->m_vec_mapDatas.size() - 1)
+            if (m_vwp_map.lock()->GetStartPlayerPos().Round().y == m_vlp_currentEdit->m_vec_mapDatas.size() - 1)
             {
                 GUI::PushNotification(u8"プレイヤーがいる面です");
                 break;
@@ -468,7 +469,7 @@ void ButiEngine::MapEditor::OnUpdate()
                 gameObject->GetGameComponent<NextStageBlock>()->SetStageNum(g_stageBlockIndex);
             }break;
             case BlockMode::Player: {
-                auto playerInitPos = m_vwp_map.lock()->GetPlayerPos().Round();
+                auto playerInitPos = m_vwp_map.lock()->GetStartPlayerPos().Round();
                 if (g_cursorPos[1] - 1<0||
                     (m_vlp_currentEdit->m_vec_mapDatas[g_cursorPos[1] - 1][g_cursorPos[2]][g_cursorPos[0]]!=GameSettings::MAP_CHIP_BLOCK&&
                         m_vlp_currentEdit->m_vec_mapDatas[g_cursorPos[1] - 1][g_cursorPos[2]][g_cursorPos[0]] != GameSettings::MAP_CHIP_GLASS)) {

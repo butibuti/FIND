@@ -13,6 +13,10 @@
 #include "NextStageBlock.h"
 #include"MapEditor.h"
 
+ButiEngine::Value_ptr<ButiEngine::MapData> ButiEngine::Map::m_vlp_stageSelectMapData;
+ButiEngine::Value_ptr<ButiEngine::Transform> ButiEngine::Map::m_vlp_playerTransform;
+ButiEngine::Value_ptr<ButiEngine::Transform> ButiEngine::Map::m_vlp_eyeBlockTransform;
+
 void ButiEngine::Map::OnUpdate()
 {
 	auto player = GetManager().lock()->GetGameObject("Player").lock();
@@ -20,6 +24,7 @@ void ButiEngine::Map::OnUpdate()
 	{
 		if (!m_vlp_stageEndTimer->IsOn())
 		{
+			SavePlayerData();
 			m_vlp_stageEndTimer->Start();
 			ShakeStop();
 			ShakeStart(0.06f);
@@ -32,21 +37,12 @@ void ButiEngine::Map::OnUpdate()
 	{
 		m_vlp_stageEndTimer->Stop();
 		auto sceneManager = gameObject.lock()->GetApplication().lock()->GetSceneManager();
-		//std::string sceneName = StageSelectManager::GetNextSceneName();
-		//sceneManager->RemoveScene(sceneName);
-		//sceneManager->LoadScene(sceneName);
-		//sceneManager->ChangeScene(sceneName);
-
-		//if (sceneName == "StageSelectScene") 
-		//{
-		//	
-		//}
 
 		std::string currentSceneName = sceneManager->GetCurrentScene()->GetSceneInformation()->GetSceneName();
 		std::string nextSceneName;
 		if (currentSceneName == "NewStageSelectScene")
 		{
-			Vector3 playerPos = player->GetGameComponent<Player>()->GetMapPos();
+			auto playerPos = player->GetGameComponent<Player>()->GetMapPos();
 			std::uint16_t mapNum = m_vlp_currentMapData->m_vec_mapDatas[playerPos.y][playerPos.z][playerPos.x];
 			std::uint16_t nextStageNum = mapNum - GameSettings::MAP_CHIP_NEXT_STAGE_BLOCK;
 			if (nextStageNum >= 100)
@@ -109,8 +105,9 @@ void ButiEngine::Map::Start()
 			m_vec_vlp_mapDatas.push_back(ObjectFactory::Create<MapData>(0));
 		}
 	}
-	else if (StringHelper::Contains(sceneName, "Select")) {
-		m_vec_vlp_mapDatas.push_back(ObjectFactory::Create<MapData>(0));
+	else if (StringHelper::Contains(sceneName, "Select") && m_vlp_stageSelectMapData)
+	{
+		m_vec_vlp_mapDatas.push_back(m_vlp_stageSelectMapData);
 	}
 	else {
 		auto mapFilePath = "Scene/" + sceneName + "/mapData.map";
@@ -118,6 +115,11 @@ void ButiEngine::Map::Start()
 			auto mapData = ObjectFactory::Create<MapData>();
 			InputCereal(mapData, mapFilePath);
 			m_vec_vlp_mapDatas.push_back(mapData);
+
+			if (StringHelper::Contains(sceneName, "Select"))
+			{
+				m_vlp_stageSelectMapData = mapData;
+			}
 		}
 		else {
 			m_vec_vlp_mapDatas.push_back(ObjectFactory::Create<MapData>(0));
@@ -130,8 +132,9 @@ void ButiEngine::Map::Start()
 	{
 		m_currentStageNum = atoi(splitSceneName[1].c_str());
 	}
-	m_playerPos = Vector3Const::Zero;
-	auto invManager = GetManager().lock()->AddObjectFromCereal("InvisibleBlockManager");
+	
+	m_startPlayerPos = Vector3Const::Zero;
+	GetManager().lock()->AddObjectFromCereal("InvisibleBlockManager");
 	PutBlock(0);
 	m_mapStartColor = Vector4(0.0f, 0.0f, 0.2f, 1.0f);
 	m_mapEndColor = Vector4(0.0f, 0.3f, 1.0f, 1.0f);
@@ -240,7 +243,7 @@ void ButiEngine::Map::PutBlock(std::uint16_t arg_stageNum)
 				}
 				else if (mapNum == GameSettings::MAP_CHIP_PLAYER || (mapNum >= GameSettings::MAP_CHIP_PLAYER_ROTATE_90 && mapNum <= GameSettings::MAP_CHIP_PLAYER_DOWN_ROTATE_90) || (mapNum >= GameSettings::MAP_CHIP_PLAYER_AND_GOAL && mapNum < GameSettings::MAP_CHIP_NEXT_STAGE_BLOCK))
 				{
-					m_playerPos = Vector3(x, y, z);
+					m_startPlayerPos = Vector3(x, y, z);
 					Vector3 spawnPos = position;
 					spawnPos.y += 30.0f;
 					gameObject = GetManager().lock()->AddObjectFromCereal("Player", ObjectFactory::Create<Transform>(position, Vector3Const::Zero, scale));
@@ -499,6 +502,24 @@ void ButiEngine::Map::AddTransformAnimation(Value_weak_ptr<ButiEngine::GameObjec
 	anim->GetTargetTransform()->RollLocalRotationX_Degrees(0.1f);
 
 	anim->SetEaseType(Easing::EasingType::EaseInOutQuint);
+}
+
+void ButiEngine::Map::SavePlayerData()
+{
+	auto sceneManager = gameObject.lock()->GetApplication().lock()->GetSceneManager();
+
+	std::string currentSceneName = sceneManager->GetCurrentScene()->GetSceneInformation()->GetSceneName();
+	std::string nextSceneName;
+	if (currentSceneName != "NewStageSelectScene")
+	{
+		return;
+	}
+
+	m_vlp_stageSelectMapData->m_vec_mapDatas[m_startPlayerPos.y][m_startPlayerPos.z][m_startPlayerPos.x] = 0;
+
+	auto player = GetManager().lock()->GetGameObject("Player").lock()->GetGameComponent<Player>();
+	Vector3 playerPos = player->GetMapPos();
+
 }
 
 ButiEngine::MapData::MapData(std::uint16_t arg_stageNum)

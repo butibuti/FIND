@@ -18,6 +18,7 @@ public:
 	static const std::uint16_t MAP_CHIP_PLAYER_UP_ROTATE_90 = 11;
 	static const std::uint16_t MAP_CHIP_PLAYER_DOWN = 12;
 	static const std::uint16_t MAP_CHIP_PLAYER_DOWN_ROTATE_90 = 13;
+	static const std::uint16_t MAP_CHIP_EYEBLOCK = 14;
 
 	static const std::uint16_t MAP_CHIP_INVISIBLEBLOCK = 100;
 	static const std::uint16_t MAP_CHIP_PLAYER_AND_GOAL = 200;

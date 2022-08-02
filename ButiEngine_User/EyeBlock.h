@@ -25,7 +25,6 @@ namespace ButiEngine {
 
 		void SetMapPos(const Vector3& arg_mapPos) { m_mapPos = arg_mapPos; }
 		Vector3 GetMapPos() { return m_mapPos; }
-		void SetLookDirection(const LookDirection arg_lookDirection) { m_lookDirection = arg_lookDirection; }
 
 		void Dead();
 
@@ -35,6 +34,7 @@ namespace ButiEngine {
 		void Expansion();
 		void Shrink();
 	private:
+		void SetLookDirection();
 		Value_weak_ptr<GameObject> GetRightBlock(Vector3& ref_output_pos);
 		Value_weak_ptr<GameObject> GetLeftBlock(Vector3& ref_output_pos);
 		Value_weak_ptr<GameObject> GetUpBlock(Vector3& ref_output_pos);
