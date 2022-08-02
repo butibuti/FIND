@@ -12,7 +12,7 @@
 #include "BackGround.h"
 #include "NextStageBlock.h"
 #include"MapEditor.h"
-
+#include"Glass.h"
 ButiEngine::Value_ptr<ButiEngine::MapData> ButiEngine::Map::m_vlp_stageSelectMapData;
 ButiEngine::Value_ptr<ButiEngine::Transform> ButiEngine::Map::m_vlp_playerTransform;
 ButiEngine::Value_ptr<ButiEngine::Transform> ButiEngine::Map::m_vlp_eyeBlockTransform;
@@ -204,6 +204,8 @@ void ButiEngine::Map::PutBlock(std::uint16_t arg_stageNum)
 					gameObject->transform->SetWorldPosition(position);
 					AddTransformAnimation(gameObject, targetPos.y);
 					gameObject->GetGameComponent<Shake>()->SetDefaultPos(targetPos);
+					gameObject->GetGameComponent<GlassBlock>()->SetMapPos(Vector3(x, y, z));
+					gameObject->GetGameComponent<GlassBlock>()->SetMap(GetThis<Map>());
 				}
 				else if (mapNum == GameSettings::MAP_CHIP_TUTORIALGOAL)
 				{
