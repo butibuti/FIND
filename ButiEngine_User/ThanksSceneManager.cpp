@@ -3,34 +3,29 @@
 
 void ButiEngine::ThanksSceneManager::OnUpdate()
 {
-    //if (!isClicked && (GameDevice::GetInput()->TriggerKey(Keys::Space) || GameDevice::GetInput()->GetAnyButtonTrigger())) {
-    //    isClicked = true;
+    if (GameDevice::GetInput()->TriggerKey(Keys::Esc))
+    {
+        GameDevice::SetIsEnd(true);
+    }
 
+    if (!isClicked && (GameDevice::GetInput()->TriggerKey(Keys::Space) || GameDevice::GetInput()->GetAnyButtonTrigger())) {
+        isClicked = true;
 
-    //    auto seTag = gameObject.lock()->GetResourceContainer()->GetSoundTag("Sound/thanks.wav");
-    //    gameObject.lock()->GetGameObjectManager().lock()->GetScene().lock()->GetSoundManager()->Play(seTag, 0.1f);
-    //}
+        gameObject.lock()->GetApplication().lock()->GetSoundManager()->PlaySE(SoundTag("Sound/thsnks.wav"), 0.1f);
+        m_vlp_timer->Start();
+    }
 
+    float alpha = 1.0f - Easing::EaseInCirc(m_vlp_timer->GetPercent());
+    m_vwp_thanksTexture.lock()->GetCBuffer<ButiRendering::ObjectInformation>()->Get().color.w = alpha;
 
-    //buffer->Get().lightDir.w = power;
-    //if (isClicked) {
-    //    t -= 0.02f;
-
-
-    //    buffer->Get().lightDir.x = t;
-    //    buffer->Get().lightDir.y = t;
-    //    buffer->Get().lightDir.z = t;
-
-    //    if (t <= -0.5) {
-
-    //        auto sceneManager = gameObject.lock()->GetApplication().lock()->GetSceneManager();
-    //        std::string sceneName = "TitleScene";
-    //        sceneManager->RemoveScene(sceneName);
-    //        sceneManager->LoadScene(sceneName);
-    //        sceneManager->ChangeScene(sceneName);
-    //    }
-
-    //}
+    if (m_vlp_timer->Update())
+    {
+        auto sceneManager = gameObject.lock()->GetApplication().lock()->GetSceneManager();
+        std::string sceneName = "TitleScene";
+        sceneManager->RemoveScene(sceneName);
+        sceneManager->LoadScene(sceneName);
+        sceneManager->ChangeScene(sceneName);
+    }
 }
 
 void ButiEngine::ThanksSceneManager::OnSet()
@@ -39,15 +34,17 @@ void ButiEngine::ThanksSceneManager::OnSet()
 
 void ButiEngine::ThanksSceneManager::Start()
 {
-    //buffer = gameObject.lock()->GetGameComponent<MeshDrawComponent>()->GetCBuffer<LightVariable>("LightBuffer");
+    m_vlp_timer = ObjectFactory::Create<RelativeTimer>(90);
 
-    //auto finalScreen = GetManager().lock()->GetGameObject("FinalScreen");
-    //auto anim = finalScreen.lock()->AddGameComponent<TransformAnimation>();
+    auto thanksTexture = GetManager().lock()->GetGameObject("ThanksTexture");
+    m_vwp_thanksTexture = thanksTexture.lock()->GetGameComponent<MeshDrawComponent>();
 
-    //anim->SetSpeed(1 / 60.0f);
-    //anim->SetTargetTransform(finalScreen.lock()->transform->Clone());
-    //anim->GetTargetTransform()->SetLocalScale(Vector3(1980, 1080, 1));
-    //anim->SetEaseType(Easing::EasingType::EaseOutCirc);
+    auto anim = thanksTexture.lock()->AddGameComponent<TransformAnimation>();
+
+    anim->SetSpeed(1 / 90.0f);
+    anim->SetTargetTransform(thanksTexture.lock()->transform->Clone());
+    anim->GetTargetTransform()->SetLocalScale(Vector3(1980, 1080, 1));
+    anim->SetEaseType(Easing::EasingType::EaseInOutCirc);
 }
 
 ButiEngine::Value_ptr<ButiEngine::GameComponent> ButiEngine::ThanksSceneManager::Clone()

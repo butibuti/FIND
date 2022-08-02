@@ -2,6 +2,7 @@
 #include "TitleSceneManager.h"
 #include "InputManager.h"
 #include "Map.h"
+#include "NextStageBlock.h"
 
 void ButiEngine::TitleSceneManager::OnUpdate()
 {
@@ -28,6 +29,7 @@ void ButiEngine::TitleSceneManager::OnUpdate()
 		m_vlp_timer->Stop();
 
 		Map::ResetStageSelectPlayerData();
+		NextStageBlock::InitializeStatus();
 
 		auto sceneManager = gameObject.lock()->GetApplication().lock()->GetSceneManager();
 		auto sceneName = "NewStageSelectScene";
@@ -60,17 +62,7 @@ void ButiEngine::TitleSceneManager::Start()
 	anim->SetTargetTransform(m_vwp_camera.lock()->transform->Clone());
 	anim->GetTargetTransform()->TranslateZ(150);
 	anim->SetEaseType(Easing::EasingType::EaseOutCirc);
-	anim->SetSpeed(1.0f / 30.0f);
-
-
-	//auto finalScreen = GetManager().lock()->GetGameObject("Screen");
-	//finalScreen.lock()->transform->SetLocalScale(Vector3());
-	//auto anim = finalScreen.lock()->AddGameComponent<TransformAnimation>();
-
-	//anim->SetSpeed(1 / 60.0f);
-	//anim->SetTargetTransform(finalScreen.lock()->transform->Clone());
-	//anim->GetTargetTransform()->SetLocalScale(Vector3(1980, 1080, 1));
-	//anim->SetEaseType(Easing::EasingType::EaseOutCirc);
+	anim->SetSpeed(1.0f / 45.0f);
 }
 
 ButiEngine::Value_ptr<ButiEngine::GameComponent> ButiEngine::TitleSceneManager::Clone()

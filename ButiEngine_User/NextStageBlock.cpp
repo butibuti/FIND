@@ -76,7 +76,7 @@ void ButiEngine::NextStageBlock::InitializeStatus()
 
 	std::uint16_t maxStageNum = StageSelectManager::GetMaxStageNum();
 
-	for (std::uint16_t i = 0; i < maxStageNum; i++)
+	for (std::uint16_t i = 0; i < maxStageNum + 1; i++)
 	{
 		m_vec_statuss.push_back(NextStageBlockStatus::InActive);
 	}

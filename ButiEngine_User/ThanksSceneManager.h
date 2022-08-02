@@ -18,8 +18,8 @@ namespace ButiEngine {
 			archive(isActive);
 		}
 	private:
-		//std::shared_ptr<RelativeTimer>shp_timer;
-		//std::shared_ptr<CBuffer<LightVariable>> buffer;
+		Value_ptr<RelativeTimer> m_vlp_timer;
+		Value_weak_ptr<MeshDrawComponent> m_vwp_thanksTexture;
 		float t = 1.0f;
 		float power = 0.0f;
 		float pase = 0.016f;
