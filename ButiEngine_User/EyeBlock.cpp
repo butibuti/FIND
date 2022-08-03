@@ -49,6 +49,15 @@ ButiEngine::Value_ptr<ButiEngine::GameComponent> ButiEngine::EyeBlock::Clone()
 
 void ButiEngine::EyeBlock::Dead()
 {
+	auto aura = GetManager().lock()->AddObjectFromCereal("GoalAura", gameObject.lock()->transform->Clone());
+	auto auraComponent = aura.lock()->GetGameComponent<GoalAura>();
+	auraComponent->SetColor(ButiColor::Yellow());
+	auraComponent->SetStartScale(5.0f);
+	auraComponent->SetTargetScale(0.0f);
+	auraComponent->SetStartAlpha(0.5f);
+	auraComponent->SetTargetAlpha(0.0f);
+	auraComponent->SetEasingType(Easing::EasingType::EaseOutCirc);
+	auraComponent->SetAnimFrame(60);
 	m_vwp_cameraMesh.lock()->SetIsRemove(true);
 	gameObject.lock()->SetIsRemove(true);
 }

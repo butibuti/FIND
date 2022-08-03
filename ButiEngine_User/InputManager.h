@@ -28,6 +28,7 @@ namespace ButiEngine {
 		static bool IsPushBackKey();
 		static bool IsTriggerCameraRotateRightKey();
 		static bool IsTriggerCameraRotateLeftKey();
+		static bool IsTriggerResetKey();
 	private:
 		static const float m_DEADZONE;
 		static Vector2 m_currentLeftStick;

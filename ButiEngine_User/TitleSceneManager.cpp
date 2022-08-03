@@ -33,7 +33,7 @@ void ButiEngine::TitleSceneManager::OnUpdate()
 
 		auto sceneManager = gameObject.lock()->GetApplication().lock()->GetSceneManager();
 		auto sceneName = "NewStageSelectScene";
-		//sceneName = "StageSelectScene";
+		sceneName = "StageSelectScene";
 		sceneManager->RemoveScene(sceneName);
 		sceneManager->LoadScene(sceneName);
 		sceneManager->ChangeScene(sceneName);

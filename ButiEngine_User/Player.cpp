@@ -16,10 +16,15 @@
 #include "SeenObject.h"
 #include "CameraController.h"
 
-bool ButiEngine::Player::m_canPutEyeBlock = true;
+bool ButiEngine::Player::m_canPutEyeBlock = false;
 
 void ButiEngine::Player::OnUpdate()
 {
+	Shrink();
+	if (m_vwp_eyeBlockComponent.lock())
+	{
+		m_vwp_eyeBlockComponent.lock()->Shrink();
+	}
 	if (m_isGoal) { return; }
 
 	auto directing = gameObject.lock()->GetGameComponent<StartPlayerDirecting>();
@@ -77,6 +82,8 @@ void ButiEngine::Player::OnUpdate()
 		{
 			if (m_mapPos == m_vwp_eyeBlockComponent.lock()->GetMapPos())
 			{
+				gameObject.lock()->GetGameComponent<MeshDrawComponent>(1)->Regist();
+				gameObject.lock()->GetApplication().lock()->GetSoundManager()->PlaySE(SoundTag("Sound/select.wav"), 0.1f);
 				m_vwp_eyeBlockComponent.lock()->Dead();
 				m_vwp_eyeBlock = Value_weak_ptr<GameObject>();
 				m_vwp_eyeBlockComponent = Value_weak_ptr<EyeBlock>();
@@ -104,11 +111,6 @@ void ButiEngine::Player::OnUpdate()
 			m_vwp_eyeBlockComponent.lock()->Expansion();
 		}
 	}
-	Shrink();
-	if (m_vwp_eyeBlockComponent.lock())
-	{
-		m_vwp_eyeBlockComponent.lock()->Shrink();
-	}
 	Fall();
 
 	if (IsRollFinish())
@@ -118,12 +120,17 @@ void ButiEngine::Player::OnUpdate()
 			Goal();
 		}
 		auto vec_mapDatas = m_vwp_mapComponent.lock()->GetCurrentMapData().lock()->m_vec_mapDatas;
-		std::uint16_t mapNum = vec_mapDatas[m_mapPos.y][m_mapPos.z][m_mapPos.x];
-		if (mapNum == 0 && m_canPutEyeBlock && !m_vwp_eyeBlockComponent.lock() && InputManager::IsTriggerPutEyeBlockKey())
+		auto mapObjectData = m_vwp_mapComponent.lock()->GetMapObjectData();
+		auto object = mapObjectData[m_mapPos.y][m_mapPos.z][m_mapPos.x];
+		if (CanPutEyeBlock(object) && !m_vwp_eyeBlockComponent.lock() && InputManager::IsTriggerPutEyeBlockKey())
 		{
 			m_vwp_eyeBlock = GetManager().lock()->AddObjectFromCereal("EyeBlock", gameObject.lock()->transform->Clone());
 			m_vwp_eyeBlockComponent = m_vwp_eyeBlock.lock()->GetGameComponent<EyeBlock>();
 			m_vwp_eyeBlockComponent.lock()->SetMapPos(m_mapPos);
+
+			gameObject.lock()->GetGameComponent<MeshDrawComponent>(1)->UnRegist();
+
+			gameObject.lock()->GetApplication().lock()->GetSoundManager()->PlaySE(SoundTag("PutEye.wav"), 0.1f);
 		}
 	}
 }
@@ -174,6 +181,7 @@ void ButiEngine::Player::Start()
 	if (m_canPutEyeBlock)
 	{
 		m_vwp_rightCameraMesh.lock()->GetGameComponent<CameraMesh>()->SetColor(ButiColor::Yellow());
+		gameObject.lock()->GetGameComponent<MeshDrawComponent>(1)->GetCBuffer<ButiRendering::ObjectInformation>()->Get().color = ButiColor::Yellow();
 	}
 	m_vwp_leftCameraMesh.lock()->GetGameComponent<CameraMesh>()->SetColor(ButiColor::White());
 
@@ -293,6 +301,11 @@ void ButiEngine::Player::RollCameraDirection(const std::uint16_t arg_rotateDir)
 	else if (m_cameraDirection < CameraDirection::Front) {
 		m_cameraDirection = (CameraDirection)((std::uint16_t)m_cameraDirection + 4);
 	}
+}
+
+void ButiEngine::Player::SetCanPutEyeBlock(const bool arg_canPutEyeBlock)
+{
+	m_canPutEyeBlock = arg_canPutEyeBlock;
 }
 
 void ButiEngine::Player::FlashMeshSet(Value_ptr<Transform> arg_vlp_transform, const LookDirection arg_dir, const Vector3& arg_pos)
@@ -2229,7 +2242,11 @@ void ButiEngine::Player::Fall()
 			CheckLookBlock();
 			//ƒtƒ‰ƒbƒVƒ…
 			FlashMeshSet(gameObject.lock()->transform, m_lookDirection, m_mapPos);
-			GetManager().lock()->GetGameObject("CameraMesh").lock()->GetGameComponent<CameraMesh>()->Flash();
+			if (!m_vwp_eyeBlockComponent.lock())
+			{
+				m_vwp_rightCameraMesh.lock()->GetGameComponent<CameraMesh>()->Flash();
+			}
+			m_vwp_leftCameraMesh.lock()->GetGameComponent<CameraMesh>()->Flash();
 			m_vwp_invisibleBlockManagerComponent.lock()->CheckSeen();
 			CheckExistUnderBlock(m_mapPos);
 			CheckTouchNextStageBlock();
@@ -2344,4 +2361,17 @@ bool ButiEngine::Player::IsCantThroughBlock(const Vector3& arg_mapPos)
 		}
 	}
 	return false;
+}
+
+bool ButiEngine::Player::CanPutEyeBlock(Value_weak_ptr<GameObject> arg_object)
+{
+	if (!m_canPutEyeBlock) { return false; }
+	if (!arg_object.lock()) { return true; }
+
+	auto name = arg_object.lock()->GetGameObjectName();
+	if (StringHelper::Contains(name, "Goal") || StringHelper::Contains(name, "NextStageBlock"))
+	{
+		return false;
+	}
+	return true;
 }

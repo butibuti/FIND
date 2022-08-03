@@ -74,6 +74,8 @@ namespace ButiEngine {
 			m_lookDirection = CheckLookDirection(gameObject.lock()->transform);
 			FlashMeshSet(gameObject.lock()->transform, m_lookDirection, m_mapPos);
 		};
+
+		static void SetCanPutEyeBlock(const bool arg_canPutEyeBlock);
 	private:
 		float m_length;
 		static bool m_canPutEyeBlock;
@@ -144,6 +146,7 @@ namespace ButiEngine {
 
 		bool IsBlock(std::uint16_t arg_mapChipNum);
 		bool IsCantThroughBlock(const Vector3& arg_mapPos);
+		bool CanPutEyeBlock(Value_weak_ptr<GameObject> arg_object);
 	};
 
 }

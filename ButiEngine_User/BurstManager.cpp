@@ -1,5 +1,6 @@
 #include "stdafx_u.h"
 #include "BurstManager.h"
+#include "NextStageBlock.h"
 
 void ButiEngine::BurstManager::OnUpdate()
 {
@@ -32,6 +33,14 @@ void ButiEngine::BurstManager::Burst()
 	auto goals = GetManager().lock()->GetGameObjects(GetTagManager()->GetObjectTag("Goal"));
 	auto invBlocks = GetManager().lock()->GetGameObjects(GetTagManager()->GetObjectTag("InvisibleBlock"));
 	auto nextStageBlocks = GetManager().lock()->GetGameObjects(GetTagManager()->GetObjectTag("NextStageBlock"));
+
+	{
+		auto end = nextStageBlocks.end();
+		for (auto itr = nextStageBlocks.begin(); itr != end; ++itr)
+		{
+			(*itr)->GetGameComponent<NextStageBlock>()->DisappearPreview();
+		}
+	}
 
 	objects.insert(objects.end(), goals.begin(), goals.end());
 	objects.insert(objects.end(), invBlocks.begin(), invBlocks.end());

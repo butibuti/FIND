@@ -33,7 +33,7 @@ bool ButiEngine::InputManager::IsTriggerDecisionKey()
 
 bool ButiEngine::InputManager::IsTriggerPutEyeBlockKey()
 {
-    bool key = GameDevice::GetInput()->TriggerKey(Keys::R);
+    bool key = GameDevice::GetInput()->TriggerKey(Keys::F);
     bool button = GameDevice::GetInput()->GetPadButtonTrigger(PadButtons::XBOX_B);
 
     return (key || button);
@@ -87,6 +87,14 @@ bool ButiEngine::InputManager::IsTriggerCameraRotateLeftKey()
 {
     bool key = GameDevice::GetInput()->TriggerKey(Keys::Q);
     bool button = GameDevice::GetInput()->GetPadButtonTrigger(PadButtons::XBOX_BUTTON_LEFT);
+
+    return (key || button);
+}
+
+bool ButiEngine::InputManager::IsTriggerResetKey()
+{
+    bool key = GameDevice::GetInput()->TriggerKey(Keys::R);
+    bool button = GameDevice::GetInput()->GetPadButtonTrigger(PadButtons::XBOX_START);
 
     return (key || button);
 }

@@ -10,7 +10,7 @@ void ButiEngine::GoalAura::OnUpdate()
 		return;
 	}
 
-	float alpha = 1.0f - Easing::EaseOutExpo(m_vlp_timer->GetPercent());
+	float alpha = MathHelper::Lerp(m_startAlpha, m_targetAlpha, Easing::EaseOutExpo(m_vlp_timer->GetPercent()));
 	gameObject.lock()->GetGameComponent<MeshDrawComponent>()->GetCBuffer<ButiRendering::ObjectInformation>()->Get().color.w = alpha;
 }
 
@@ -40,5 +40,5 @@ void ButiEngine::GoalAura::AnimInitialize()
 	anim->SetTargetTransform(t->Clone());
 	anim->GetTargetTransform()->SetLocalScale(m_targetScale);
 
-	anim->SetEaseType(Easing::EasingType::EaseOutQuart);
+	anim->SetEaseType(m_easingType);
 }

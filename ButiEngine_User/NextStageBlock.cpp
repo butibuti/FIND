@@ -3,11 +3,20 @@
 #include "StageSelectManager.h"
 #include "StagePreviewParent.h"
 #include "GameSettings.h"
+#include "FloatMotion.h"
 
 std::vector<ButiEngine::NextStageBlockStatus> ButiEngine::NextStageBlock::m_vec_statuss;
 
 void ButiEngine::NextStageBlock::OnUpdate()
 {
+	auto anim = gameObject.lock()->GetGameComponent<TransformAnimation>();
+	auto floatMotion = gameObject.lock()->GetGameComponent<FloatMotion>();
+	if (!anim && !floatMotion)
+	{
+		gameObject.lock()->AddGameComponent<FloatMotion>();
+	}
+
+	m_vwp_stagePreviewParent.lock()->transform->SetLocalPosition(gameObject.lock()->transform->GetLocalPosition());
 }
 
 void ButiEngine::NextStageBlock::OnSet()
@@ -17,7 +26,6 @@ void ButiEngine::NextStageBlock::OnSet()
 void ButiEngine::NextStageBlock::Start()
 {
 	m_vwp_stagePreviewParent = GetManager().lock()->AddObjectFromCereal("StagePreviewParent");
-	m_vwp_stagePreviewParent.lock()->transform->SetBaseTransform(gameObject.lock()->transform);
 	m_vwp_stagePreviewParent.lock()->transform->SetLocalPosition(0.0f);
 	m_vwp_stagePreviewParent.lock()->GetGameComponent<StagePreviewParent>()->CreatePreview(m_stageNum);
 

@@ -14,6 +14,8 @@
 #include "MapEditor.h"
 #include "EyeBlock.h"
 #include"Glass.h"
+#include"InputManager.h"
+
 ButiEngine::Value_ptr<ButiEngine::MapData> ButiEngine::Map::m_vlp_stageSelectMapData;
 ButiEngine::Value_ptr<ButiEngine::Transform> ButiEngine::Map::m_vlp_playerTransform;
 ButiEngine::Value_ptr<ButiEngine::Transform> ButiEngine::Map::m_vlp_eyeBlockTransform;
@@ -25,6 +27,18 @@ void ButiEngine::Map::OnUpdate()
 	if (GameDevice::GetInput()->TriggerKey(Keys::Esc))
 	{
 		GameDevice::SetIsEnd(true);
+	}
+
+	if (InputManager::IsTriggerResetKey())
+	{
+		auto sceneManager = gameObject.lock()->GetApplication().lock()->GetSceneManager();
+		auto sceneName =sceneManager->GetCurrentScene()->GetSceneInformation()->GetSceneName();
+		if (sceneName != "LevelEditor" && sceneName != "NewStageSelectScene")
+		{
+			sceneManager->RemoveScene(sceneName);
+			sceneManager->LoadScene(sceneName);
+			sceneManager->ChangeScene(sceneName);
+		}
 	}
 
 	auto player = GetManager().lock()->GetGameObject("Player").lock();
@@ -66,6 +80,8 @@ void ButiEngine::Map::OnUpdate()
 				nextStageNum -= 100;
 			}
 			nextSceneName = "Stage_" + std::to_string(nextStageNum);
+
+			Player::SetCanPutEyeBlock(nextStageNum >= 21);
 		}
 		else
 		{
@@ -375,7 +391,7 @@ void ButiEngine::Map::PutBlock(std::uint16_t arg_stageNum)
 					position.y = m_vec_randomBlockPoss[z][x] - (vec_mapDatas.size() - y) * 3.5f;
 					gameObject = GetManager().lock()->AddObjectFromCereal("NextStageBlock");
 					gameObject->transform->SetWorldPosition(position);
-					gameObject->transform->SetLocalScale(scale * 0.75f);
+					gameObject->transform->SetLocalScale(scale * 0.5f);
 					auto nextStageBlockComponent = gameObject->GetGameComponent<NextStageBlock>();
 					gameObject->GetGameComponent<NextStageBlock>()->SetStageNum(stageNum);
 
@@ -389,7 +405,7 @@ void ButiEngine::Map::PutBlock(std::uint16_t arg_stageNum)
 					position.y = m_vec_randomBlockPoss[z][x] - (vec_mapDatas.size() - y) * 3.5f;
 					gameObject = GetManager().lock()->AddObjectFromCereal("NextStageBlock");
 					gameObject->transform->SetWorldPosition(position);
-					gameObject->transform->SetLocalScale(scale * 0.75f);
+					gameObject->transform->SetLocalScale(scale * 0.5f);
 					auto nextStageBlockComponent = gameObject->GetGameComponent<NextStageBlock>();
 					gameObject->GetGameComponent<NextStageBlock>()->SetStageNum(stageNum);
 					nextStageBlockComponent->SetStatus(stageNum, NextStageBlockStatus::Active);
