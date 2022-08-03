@@ -26,7 +26,7 @@ void ButiEngine::EyeBlock::Start()
 	m_vwp_cameraMesh = GetManager().lock()->AddObjectFromCereal("CameraMesh", ObjectFactory::Create<Transform>(Vector3(0, 0, -0.1f)));
 	m_vwp_cameraMesh.lock()->SetObjectName("EyeBlockCameraMesh");
 	m_vwp_cameraMeshComponent = m_vwp_cameraMesh.lock()->GetGameComponent<CameraMesh>();
-	m_vwp_cameraMeshComponent.lock()->SetColor(ButiColor::Yellow());
+	m_vwp_cameraMeshComponent.lock()->SetColor(Vector4(0.0f, 1.0f, 1.0f, 1.0f));
 
 	m_vwp_mapComponent = GetManager().lock()->GetGameObject("Map").lock()->GetGameComponent<Map>();
 
@@ -37,7 +37,8 @@ void ButiEngine::EyeBlock::Start()
 
 	auto aura = GetManager().lock()->AddObjectFromCereal("GoalAura", gameObject.lock()->transform->Clone());
 	auto auraComponent = aura.lock()->GetGameComponent<GoalAura>();
-	auraComponent->SetColor(ButiColor::Yellow());
+	auraComponent->SetColor(Vector4(0.0f, 1.0f, 1.0f, 1.0f));
+	auraComponent->SetColor(Vector4(0.0f, 1.0f, 1.0f, 1.0f));
 	auraComponent->SetTargetScale(10.0f);
 	auraComponent->SetAnimFrame(60);
 }
@@ -47,17 +48,20 @@ ButiEngine::Value_ptr<ButiEngine::GameComponent> ButiEngine::EyeBlock::Clone()
 	return ObjectFactory::Create<EyeBlock>();
 }
 
-void ButiEngine::EyeBlock::Dead()
+void ButiEngine::EyeBlock::Dead(const bool arg_isSpawnAura)
 {
-	auto aura = GetManager().lock()->AddObjectFromCereal("GoalAura", gameObject.lock()->transform->Clone());
-	auto auraComponent = aura.lock()->GetGameComponent<GoalAura>();
-	auraComponent->SetColor(ButiColor::Yellow());
-	auraComponent->SetStartScale(5.0f);
-	auraComponent->SetTargetScale(0.0f);
-	auraComponent->SetStartAlpha(0.5f);
-	auraComponent->SetTargetAlpha(0.0f);
-	auraComponent->SetEasingType(Easing::EasingType::EaseOutCirc);
-	auraComponent->SetAnimFrame(60);
+	if (arg_isSpawnAura)
+	{
+		auto aura = GetManager().lock()->AddObjectFromCereal("GoalAura", gameObject.lock()->transform->Clone());
+		auto auraComponent = aura.lock()->GetGameComponent<GoalAura>();
+		auraComponent->SetColor(Vector4(0.0f, 1.0f, 1.0f, 1.0f));
+		auraComponent->SetStartScale(5.0f);
+		auraComponent->SetTargetScale(0.0f);
+		auraComponent->SetStartAlpha(0.5f);
+		auraComponent->SetTargetAlpha(0.1f);
+		auraComponent->SetEasingType(Easing::EasingType::EaseOutCirc);
+		auraComponent->SetAnimFrame(60);
+	}
 	m_vwp_cameraMesh.lock()->SetIsRemove(true);
 	gameObject.lock()->SetIsRemove(true);
 }

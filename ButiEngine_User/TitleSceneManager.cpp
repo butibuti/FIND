@@ -3,6 +3,7 @@
 #include "InputManager.h"
 #include "Map.h"
 #include "NextStageBlock.h"
+#include "Player.h"
 
 void ButiEngine::TitleSceneManager::OnUpdate()
 {
@@ -30,6 +31,7 @@ void ButiEngine::TitleSceneManager::OnUpdate()
 
 		Map::ResetStageSelectPlayerData();
 		NextStageBlock::InitializeStatus();
+		Player::SetCanPutEyeBlock(false);
 
 		auto sceneManager = gameObject.lock()->GetApplication().lock()->GetSceneManager();
 		auto sceneName = "NewStageSelectScene";

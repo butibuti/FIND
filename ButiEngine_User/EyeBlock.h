@@ -28,7 +28,7 @@ namespace ButiEngine {
 
 		Value_weak_ptr<GameObject> GetLookObject() { return m_vwp_lookObject; }
 
-		void Dead();
+		void Dead(const bool arg_isSpawnAura = true);
 
 		void CheckLookBlock();
 		void FlashMeshSet(const Vector3& arg_playerPos);

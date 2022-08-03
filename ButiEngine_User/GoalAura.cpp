@@ -6,12 +6,17 @@ void ButiEngine::GoalAura::OnUpdate()
 	if (m_vlp_timer->Update())
 	{
 		m_vlp_timer->Stop();
+		m_vlp_timer->SetCount(m_animFrame);
+	}
+	float alpha = MathHelper::Lerp(m_startAlpha, m_targetAlpha, Easing::EaseOutExpo(m_vlp_timer->GetPercent()));
+	gameObject.lock()->GetGameComponent<MeshDrawComponent>()->GetCBuffer<ButiRendering::ObjectInformation>()->Get().color.w = alpha;
+
+	auto anim = gameObject.lock()->GetGameComponent<TransformAnimation>();
+	if (!anim)
+	{
 		gameObject.lock()->SetIsRemove(true);
 		return;
 	}
-
-	float alpha = MathHelper::Lerp(m_startAlpha, m_targetAlpha, Easing::EaseOutExpo(m_vlp_timer->GetPercent()));
-	gameObject.lock()->GetGameComponent<MeshDrawComponent>()->GetCBuffer<ButiRendering::ObjectInformation>()->Get().color.w = alpha;
 }
 
 void ButiEngine::GoalAura::OnSet()

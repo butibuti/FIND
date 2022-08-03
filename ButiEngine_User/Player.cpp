@@ -31,6 +31,15 @@ void ButiEngine::Player::OnUpdate()
 	if (gameObject.lock()->transform->GetWorldPosition().y < -40.0f)
 	{
 		m_vlp_fallTimer->Stop();
+
+		if (m_vwp_eyeBlockComponent.lock())
+		{
+			gameObject.lock()->GetGameComponent<MeshDrawComponent>(1)->Regist();
+			m_vwp_eyeBlockComponent.lock()->Dead(false);
+			m_vwp_eyeBlock = Value_weak_ptr<GameObject>();
+			m_vwp_eyeBlockComponent = Value_weak_ptr<EyeBlock>();
+		}
+
 		m_isFall = false;
 		m_isFallStart = false;
 		m_mapPos = m_vwp_mapComponent.lock()->GetStartPlayerPos();
@@ -180,8 +189,8 @@ void ButiEngine::Player::Start()
 	m_vwp_rightCameraMesh.lock()->GetGameComponent<CameraMesh>()->SetColor(ButiColor::White());
 	if (m_canPutEyeBlock)
 	{
-		m_vwp_rightCameraMesh.lock()->GetGameComponent<CameraMesh>()->SetColor(ButiColor::Yellow());
-		gameObject.lock()->GetGameComponent<MeshDrawComponent>(1)->GetCBuffer<ButiRendering::ObjectInformation>()->Get().color = ButiColor::Yellow();
+		m_vwp_rightCameraMesh.lock()->GetGameComponent<CameraMesh>()->SetColor(Vector4(0.0f, 1.0f, 1.0f, 1.0f));
+		gameObject.lock()->GetGameComponent<MeshDrawComponent>(1)->GetCBuffer<ButiRendering::ObjectInformation>()->Get().color = Vector4(0.0f, 1.0f, 1.0f, 1.0f);
 	}
 	m_vwp_leftCameraMesh.lock()->GetGameComponent<CameraMesh>()->SetColor(ButiColor::White());
 
