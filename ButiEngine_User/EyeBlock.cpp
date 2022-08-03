@@ -23,7 +23,7 @@ void ButiEngine::EyeBlock::Start()
 {
 	SetLookDirection();
 
-	m_vwp_cameraMesh = GetManager().lock()->AddObjectFromCereal("CameraMesh", ObjectFactory::Create<Transform>(Vector3(0, 0, -0.1f)));
+	m_vwp_cameraMesh = GetManager().lock()->AddObjectFromCereal("CameraMesh", ObjectFactory::Create<Transform>(Vector3(0, 0, 10000.0f)));
 	m_vwp_cameraMesh.lock()->SetObjectName("EyeBlockCameraMesh");
 	m_vwp_cameraMeshComponent = m_vwp_cameraMesh.lock()->GetGameComponent<CameraMesh>();
 	m_vwp_cameraMeshComponent.lock()->SetColor(Vector4(0.0f, 1.0f, 1.0f, 1.0f));

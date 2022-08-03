@@ -87,7 +87,7 @@ void ButiEngine::Map::OnUpdate()
 		{
 			NextStageBlock::SetStatus(m_currentStageNum, NextStageBlockStatus::Cleared);
 			nextSceneName = "NewStageSelectScene";
-			if (NextStageBlock::IsAllCleared())
+			if (/*NextStageBlock::IsAllCleared()*/ currentSceneName == "Stage_29")
 			{
 				nextSceneName = "ThanksScene";
 			}

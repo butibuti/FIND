@@ -1,9 +1,15 @@
 #include "stdafx_u.h"
 #include "SeenObject.h"
 #include "GoalAura.h"
+#include "Player.h"
 
 void ButiEngine::SeenObject::OnUpdate()
 {
+	if (m_vwp_player.lock()->IsGoal())
+	{
+		SetIsRemove(true);
+		return;
+	}
 	if (!m_vlp_auraIntervalTimer) { return; }
 
 	if (m_vlp_auraIntervalTimer->Update())
@@ -18,6 +24,7 @@ void ButiEngine::SeenObject::OnUpdate()
 
 void ButiEngine::SeenObject::OnSet()
 {
+	m_vwp_player = GetManager().lock()->GetGameObject("Player").lock()->GetGameComponent<Player>();
 	m_vlp_auraIntervalTimer = ObjectFactory::Create<RelativeTimer>(40);
 	m_vlp_auraIntervalTimer->Start();
 

@@ -139,6 +139,8 @@ void ButiEngine::Player::OnUpdate()
 
 			gameObject.lock()->GetGameComponent<MeshDrawComponent>(1)->UnRegist();
 
+			m_vwp_rightCameraMesh.lock()->transform->SetLocalScale(0.0f);
+
 			gameObject.lock()->GetApplication().lock()->GetSoundManager()->PlaySE(SoundTag("PutEye.wav"), 0.1f);
 		}
 	}
@@ -410,7 +412,10 @@ void ButiEngine::Player::FlashMeshSet(Value_ptr<Transform> arg_vlp_transform, co
 	m_vwp_rightCameraMesh.lock()->transform->SetWorldPosition(midPoint_right);
 	m_vwp_leftCameraMesh.lock()->transform->SetWorldPosition(midPoint_left);
 
-	m_vwp_rightCameraMesh.lock()->transform->SetLocalScale(cameraMeshScale);
+	if (!m_vwp_eyeBlockComponent.lock())
+	{
+		m_vwp_rightCameraMesh.lock()->transform->SetLocalScale(cameraMeshScale);
+	}
 	m_vwp_leftCameraMesh.lock()->transform->SetLocalScale(cameraMeshScale);
 }
 
@@ -2224,6 +2229,9 @@ void ButiEngine::Player::Fall()
 	{
 		m_vlp_fallTimer->Stop();
 		m_isFall = true;
+
+		m_vwp_rightCameraMesh.lock()->transform->SetLocalScale(0.0f);
+		m_vwp_leftCameraMesh.lock()->transform->SetLocalScale(0.0f);
 	}
 
 	if (!m_isFall && m_vlp_fallTimer->GetRemainFrame() == 6)

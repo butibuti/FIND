@@ -2,6 +2,8 @@
 #include"Header/GameComponentHeader.h"
 namespace ButiEngine {
 
+	class Player;
+
 	class SeenObject :public GameComponent
 	{
 	public:
@@ -34,7 +36,7 @@ namespace ButiEngine {
 
 	private:
 		Value_ptr<RelativeTimer> m_vlp_auraIntervalTimer;
-		Value_weak_ptr<GameObject> m_vwp_observer;
+		Value_weak_ptr<Player> m_vwp_player;
 
 		std::int8_t m_observerCount;
 	};
