@@ -17,7 +17,7 @@
 #include "CameraController.h"
 
 bool ButiEngine::Player::m_canPutEyeBlock = false;
-
+bool g_canAlreadyPutEyeBlock = false;
 void ButiEngine::Player::OnUpdate()
 {
 	Shrink();
@@ -317,6 +317,12 @@ void ButiEngine::Player::RollCameraDirection(const std::uint16_t arg_rotateDir)
 void ButiEngine::Player::SetCanPutEyeBlock(const bool arg_canPutEyeBlock)
 {
 	m_canPutEyeBlock = arg_canPutEyeBlock;
+	g_canAlreadyPutEyeBlock |= arg_canPutEyeBlock;
+}
+
+bool ButiEngine::Player::GetCanAlreadyPutEyeBlock()
+{
+	return g_canAlreadyPutEyeBlock;
 }
 
 void ButiEngine::Player::FlashMeshSet(Value_ptr<Transform> arg_vlp_transform, const LookDirection arg_dir, const Vector3& arg_pos)

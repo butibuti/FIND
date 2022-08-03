@@ -127,7 +127,7 @@ void ButiEngine::CameraController::ZoomOut()
 void ButiEngine::CameraController::AddChaseComponent()
 {
     std::string currentSceneName = GetManager().lock()->GetScene().lock()->GetSceneInformation()->GetSceneName();
-    if (currentSceneName != "NewStageSelectScene") { return; }
+    if (currentSceneName != "NewStageSelectScene"&& currentSceneName!="LevelEditor") { return; }
     auto chaseComponent = m_vwp_cameraAxis.lock()->GetGameComponent<ChaseComponent>();
     if (chaseComponent)
     {

@@ -10,6 +10,7 @@
 #include"cereal/include/cereal/archives/json.hpp"
 #include"StageSelectManager.h"
 #include"ButiEngineHeader/Header/Resources/ResourceSystem.h"
+#include"NextStageBlock.h"
 #define _CRTDBG_MAP_ALLOC
 
 using namespace::ButiEngine;
@@ -52,6 +53,7 @@ std::int32_t APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR arg, std::in
 #ifdef _IMGUIEDITOR
 	ButiTaskSystem::Start();
 	GameAssetData::ApplicationInitData init;
+	NextStageBlock::InitializeStatus();
 	InputCereal(init, "Application/ButiEngine.ini");
 	OutputCereal(init, "Application/ButiEngine.ini");
 	auto vlp_app = CreateApplicationInstance(init);
