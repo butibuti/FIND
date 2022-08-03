@@ -33,7 +33,7 @@ void ButiEngine::Map::OnUpdate()
 	{
 		auto sceneManager = gameObject.lock()->GetApplication().lock()->GetSceneManager();
 		auto sceneName =sceneManager->GetCurrentScene()->GetSceneInformation()->GetSceneName();
-		if (sceneName != "LevelEditor" && sceneName != "NewStageSelectScene")
+		if (sceneName != "LevelEditor")
 		{
 			sceneManager->RemoveScene(sceneName);
 			sceneManager->LoadScene(sceneName);

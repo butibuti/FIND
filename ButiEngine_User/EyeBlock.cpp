@@ -58,9 +58,9 @@ void ButiEngine::EyeBlock::Dead(const bool arg_isSpawnAura)
 		auraComponent->SetStartScale(5.0f);
 		auraComponent->SetTargetScale(0.0f);
 		auraComponent->SetStartAlpha(0.5f);
-		auraComponent->SetTargetAlpha(0.1f);
+		auraComponent->SetTargetAlpha(0.0f);
 		auraComponent->SetEasingType(Easing::EasingType::EaseOutCirc);
-		auraComponent->SetAnimFrame(60);
+		auraComponent->SetAnimFrame(50);
 	}
 	m_vwp_cameraMesh.lock()->SetIsRemove(true);
 	gameObject.lock()->SetIsRemove(true);

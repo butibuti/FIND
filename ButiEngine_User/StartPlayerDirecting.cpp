@@ -62,7 +62,14 @@ void ButiEngine::StartPlayerDirecting::OnSet()
 
 void ButiEngine::StartPlayerDirecting::Start()
 {
-	m_vlp_timer = ObjectFactory::Create<RelativeTimer>(60);
+	std::uint16_t countNum = 60;
+	auto sceneManager = gameObject.lock()->GetApplication().lock()->GetSceneManager();
+	auto sceneName = sceneManager->GetCurrentScene()->GetSceneInformation()->GetSceneName();
+	if (sceneName == "NewStageSelectScene")
+	{
+		countNum = 90;
+	}
+	m_vlp_timer = ObjectFactory::Create<RelativeTimer>(countNum);
 	m_vlp_timer->Start();
 	m_isStart = false;
 	m_isFallStart = false;

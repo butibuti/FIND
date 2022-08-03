@@ -77,6 +77,7 @@ namespace ButiEngine {
 
 		static void SetCanPutEyeBlock(const bool arg_canPutEyeBlock);
 		static bool GetCanAlreadyPutEyeBlock();
+		static void SetCanAlreadyPutEyeBlock(const bool arg_canAlreadyPutEyeBlock);
 	private:
 		float m_length;
 		static bool m_canPutEyeBlock;

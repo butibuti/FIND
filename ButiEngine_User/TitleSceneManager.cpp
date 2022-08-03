@@ -32,6 +32,7 @@ void ButiEngine::TitleSceneManager::OnUpdate()
 		Map::ResetStageSelectPlayerData();
 		NextStageBlock::InitializeStatus();
 		Player::SetCanPutEyeBlock(false);
+		Player::SetCanAlreadyPutEyeBlock(false);
 
 		auto sceneManager = gameObject.lock()->GetApplication().lock()->GetSceneManager();
 		auto sceneName = "NewStageSelectScene";

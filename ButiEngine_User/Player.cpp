@@ -141,7 +141,7 @@ void ButiEngine::Player::OnUpdate()
 
 			m_vwp_rightCameraMesh.lock()->transform->SetLocalScale(0.0f);
 
-			gameObject.lock()->GetApplication().lock()->GetSoundManager()->PlaySE(SoundTag("PutEye.wav"), 0.1f);
+			gameObject.lock()->GetApplication().lock()->GetSoundManager()->PlaySE(SoundTag("PutEye.wav"), 0.5f);
 		}
 	}
 }
@@ -331,6 +331,11 @@ void ButiEngine::Player::SetCanPutEyeBlock(const bool arg_canPutEyeBlock)
 bool ButiEngine::Player::GetCanAlreadyPutEyeBlock()
 {
 	return g_canAlreadyPutEyeBlock;
+}
+
+void ButiEngine::Player::SetCanAlreadyPutEyeBlock(const bool arg_canAlreadyPutEyeBlock)
+{
+	g_canAlreadyPutEyeBlock = arg_canAlreadyPutEyeBlock;
 }
 
 void ButiEngine::Player::FlashMeshSet(Value_ptr<Transform> arg_vlp_transform, const LookDirection arg_dir, const Vector3& arg_pos)

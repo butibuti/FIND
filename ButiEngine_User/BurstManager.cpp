@@ -46,10 +46,19 @@ void ButiEngine::BurstManager::Burst()
 	objects.insert(objects.end(), invBlocks.begin(), invBlocks.end());
 	objects.insert(objects.end(), nextStageBlocks.begin(), nextStageBlocks.end());
 
+	auto playerPos = GetManager().lock()->GetGameObject("Player").lock()->transform->GetLocalPosition();
+	playerPos.y -= 3.0f;
+	auto sceneManager = gameObject.lock()->GetApplication().lock()->GetSceneManager();
+	auto sceneName = sceneManager->GetCurrentScene()->GetSceneInformation()->GetSceneName();
+
 	auto mapChipEnd = objects.end();
 	for (auto itr = objects.begin(); itr != mapChipEnd; ++itr)
 	{
 		Vector3 dir = (*itr)->transform->GetWorldPosition() - Vector3Const::Zero;
+		if (sceneName == "NewSceneManager")
+		{
+			dir = playerPos - (*itr)->transform->GetWorldPosition();
+		}
 		dir.Normalize();
 		if (dir.GetLengthSqr() == 0)
 		{
