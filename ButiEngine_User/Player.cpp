@@ -2242,7 +2242,13 @@ void ButiEngine::Player::Fall()
 			CheckLookBlock();
 			//ƒtƒ‰ƒbƒVƒ…
 			FlashMeshSet(gameObject.lock()->transform, m_lookDirection, m_mapPos);
-			if (!m_vwp_eyeBlockComponent.lock())
+			if (m_vwp_eyeBlockComponent.lock())
+			{
+				m_vwp_eyeBlockComponent.lock()->FlashMeshSet(m_mapPos);
+				m_vwp_eyeBlockComponent.lock()->CheckLookBlock();
+				m_vwp_eyeBlockComponent.lock()->Flash();
+			}
+			else
 			{
 				m_vwp_rightCameraMesh.lock()->GetGameComponent<CameraMesh>()->Flash();
 			}
