@@ -10,7 +10,7 @@ void ButiEngine::SeenObject::OnUpdate()
 	{
 		auto aura = GetManager().lock()->AddObjectFromCereal("GoalAura", gameObject.lock()->transform->Clone());
 		auto auraComponent = aura.lock()->GetGameComponent<GoalAura>();
-		auraComponent->SetColor(ButiColor::Grey(ButiColor::ShadeIndex::Shade_Dark));
+		auraComponent->SetColor(ButiColor::Grey());
 		auraComponent->SetTargetScale(1.5f);
 		auraComponent->SetAnimFrame(60);
 	}
@@ -23,7 +23,7 @@ void ButiEngine::SeenObject::OnSet()
 
 	auto aura = GetManager().lock()->AddObjectFromCereal("GoalAura", gameObject.lock()->transform->Clone());
 	auto auraComponent = aura.lock()->GetGameComponent<GoalAura>();
-	auraComponent->SetColor(ButiColor::Grey(ButiColor::ShadeIndex::Shade_Dark));
+	auraComponent->SetColor(ButiColor::Grey());
 	auraComponent->SetTargetScale(1.5f);
 	auraComponent->SetAnimFrame(60);
 }

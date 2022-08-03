@@ -647,7 +647,8 @@ void ButiEngine::Player::Contoroll()
 	if (isInputed ) {
 		auto vlp_anim = gameObject.lock()->GetGameComponent<CubeTransformAnimation>();
 		if(vlp_anim){
-			
+			m_vwp_rightCameraMesh.lock()->transform->SetLocalScale(0.0f);
+			m_vwp_leftCameraMesh.lock()->transform->SetLocalScale(0.0f);
 		}		
 	}
 }

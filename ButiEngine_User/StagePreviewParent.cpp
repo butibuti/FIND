@@ -45,6 +45,10 @@ void ButiEngine::StagePreviewParent::CreatePreview(const std::uint16_t arg_stage
 {
 	m_vwp_preview = GetManager().lock()->AddObjectFromCereal("StagePreview");
 
+	auto materialName = "Material/StagePreview_" + std::to_string(arg_stageNum) + ".mat";
+	auto meshDrawComponent = m_vwp_preview.lock()->GetGameComponent<MeshDrawComponent>();
+	meshDrawComponent->SetMaterialTag(MaterialTag(materialName), 0);
+	meshDrawComponent->ReRegist();
 }
 
 void ButiEngine::StagePreviewParent::AddScaleAnimation(const Vector3& arg_targetScale)

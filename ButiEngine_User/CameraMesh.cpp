@@ -4,9 +4,9 @@
 void ButiEngine::CameraMesh::OnUpdate()
 {
 	m_alpha -= 0.1f;
-	if (m_alpha < 0)
+	if (m_alpha < 0.3f)
 	{
-		m_alpha = 0;
+		m_alpha = 0.3f;
 	}
 
 	gameObject.lock()->GetGameComponent<MeshDrawComponent>()->GetCBuffer<ButiRendering::ObjectInformation>()->Get().color.w = m_alpha;
@@ -18,7 +18,7 @@ void ButiEngine::CameraMesh::OnSet()
 
 void ButiEngine::CameraMesh::Start()
 {
-	m_alpha = 0.0f;
+	m_alpha = 0.3f;
 }
 
 ButiEngine::Value_ptr<ButiEngine::GameComponent> ButiEngine::CameraMesh::Clone()
