@@ -150,6 +150,7 @@ void ButiEngine::Map::Start()
 	}
 	if (sceneName == "NewStageSelectScene" && Player::GetCanAlreadyPutEyeBlock()) {
 		AddObjectFromCereal("UI_DetachEyeTutorial");
+		Player::SetCanPutEyeBlock(true);
 	}
 	m_currentStageNum = 0;
 	auto splitSceneName = StringHelper::Split(sceneName, "_");

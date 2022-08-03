@@ -188,6 +188,9 @@ void ButiEngine::Player::Start()
 	m_vwp_rightCameraMesh.lock()->SetObjectName("RightCameraMesh");
 	m_vwp_leftCameraMesh.lock()->SetObjectName("LeftCameraMesh");
 
+	m_vwp_rightCameraMesh.lock()->transform->SetLocalScale(0.0f);
+	m_vwp_leftCameraMesh.lock()->transform->SetLocalScale(0.0f);
+
 	m_vwp_rightCameraMesh.lock()->GetGameComponent<CameraMesh>()->SetColor(ButiColor::White());
 	if (m_canPutEyeBlock)
 	{
@@ -201,6 +204,11 @@ void ButiEngine::Player::Start()
 
 	m_vlp_leftEyeTransform = ObjectFactory::Create<Transform>(Vector3(-0.2f, 0.0f, 0.0f));
 	m_vlp_leftEyeTransform->SetBaseTransform(gameObject.lock()->transform, true);
+
+	if (m_vwp_eyeBlockComponent.lock())
+	{
+		gameObject.lock()->GetGameComponent<MeshDrawComponent>(1)->UnRegist();
+	}
 }
 
 ButiEngine::Value_ptr<ButiEngine::GameComponent> ButiEngine::Player::Clone()
