@@ -29,7 +29,6 @@ void ButiEngine::TitleSceneManager::OnUpdate()
 		m_vlp_timer->Stop();
 
 		Map::ResetStageSelectPlayerData();
-		NextStageBlock::InitializeStatus();
 
 		auto sceneManager = gameObject.lock()->GetApplication().lock()->GetSceneManager();
 		auto sceneName = "NewStageSelectScene";

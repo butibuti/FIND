@@ -137,7 +137,7 @@ void ButiEngine::Map::Start()
 			m_vec_vlp_mapDatas.push_back(ObjectFactory::Create<MapData>(0));
 		}
 	}
-	else {
+	else{
 		auto mapFilePath = "Scene/" + sceneName + "/mapData.map";
 		if (ResourceSystem::ExistResource(mapFilePath)) {
 			auto mapData = ObjectFactory::Create<MapData>();
@@ -148,7 +148,9 @@ void ButiEngine::Map::Start()
 			m_vec_vlp_mapDatas.push_back(ObjectFactory::Create<MapData>(0));
 		}
 	}
-
+	if (sceneName == "NewStageSelectScene" && Player::GetCanAlreadyPutEyeBlock()) {
+		AddObjectFromCereal("UI_DetachEyeTutorial");
+	}
 	m_currentStageNum = 0;
 	auto splitSceneName = StringHelper::Split(sceneName, "_");
 	if (splitSceneName.size() > 1)

@@ -4,7 +4,12 @@
 #include "InputManager.h"
 
 std::int8_t ButiEngine::StageSelectManager::m_stageNum = 0;
+#ifdef DEBUG
+std::uint16_t ButiEngine::StageSelectManager::m_maxStageNum = 20000;
+#else
 std::uint16_t ButiEngine::StageSelectManager::m_maxStageNum = 29;
+#endif // !DEBUG
+
 
 void ButiEngine::StageSelectManager::OnUpdate()
 {
