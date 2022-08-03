@@ -128,6 +128,15 @@ void ButiEngine::CameraController::AddChaseComponent()
 {
     std::string currentSceneName = GetManager().lock()->GetScene().lock()->GetSceneInformation()->GetSceneName();
     if (currentSceneName != "NewStageSelectScene") { return; }
+    auto chaseComponent = m_vwp_cameraAxis.lock()->GetGameComponent<ChaseComponent>();
+    if (chaseComponent)
+    {
+        if (chaseComponent->IsRemove())
+        {
+            chaseComponent->SetIsRemove(false);
+        }
+        return;
+    }
 
     m_vwp_cameraAxis.lock()->AddGameComponent<ChaseComponent>(m_vwp_player.lock()->transform, 3.0f);
 }

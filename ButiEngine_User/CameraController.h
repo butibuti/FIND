@@ -29,6 +29,7 @@ namespace ButiEngine {
 
 		void AddChaseComponent();
 		void RemoveChaseComponent();
+		void SetCameraAxisPosition();
 	private:
 		Vector3 m_offset;
 		Value_weak_ptr<GameObject> m_vwp_cameraAxis;
@@ -39,8 +40,6 @@ namespace ButiEngine {
 		Value_weak_ptr<MapEditor> m_vwp_mapEditor;
 #endif
 		float m_pase;
-
-		void SetCameraAxisPosition();
 	};
 
 }

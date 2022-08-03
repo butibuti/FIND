@@ -85,6 +85,8 @@ void ButiEngine::StartPlayerDirecting::Animation()
 	anim->GetTargetTransform()->TranslateY(m_startPos.y - m_spawnPos.y);
 
 	anim->SetEaseType(Easing::EasingType::Liner);
+
+	GetManager().lock()->GetGameObject("MainCamera").lock()->GetGameComponent<CameraController>()->SetCameraAxisPosition();
 }
 
 bool ButiEngine::StartPlayerDirecting::IsAnimation() const

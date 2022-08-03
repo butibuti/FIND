@@ -14,6 +14,7 @@
 #include "NextStageBlock.h"
 #include "EyeBlock.h"
 #include "SeenObject.h"
+#include "CameraController.h"
 
 bool ButiEngine::Player::m_canPutEyeBlock = true;
 
@@ -2307,6 +2308,7 @@ void ButiEngine::Player::CheckExistUnderBlock(const Vector3& arg_movePos)
 	}
 	else
 	{
+		GetManager().lock()->GetGameObject("MainCamera").lock()->GetGameComponent<CameraController>()->RemoveChaseComponent();
 		m_afterFallPos = gameObject.lock()->transform->GetLocalPosition();
 		m_afterFallPos.y = -500.0f;
 	}
