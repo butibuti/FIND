@@ -15,8 +15,9 @@
 #include "EyeBlock.h"
 #include "SeenObject.h"
 #include "CameraController.h"
+#include "Header/GameObjects/DefaultGameComponent/PositionAnimationComponent.h"
 
-bool ButiEngine::Player::m_canPutEyeBlock = false;
+bool ButiEngine::Player::g_canPutEyeBlock = false;
 bool g_canAlreadyPutEyeBlock = false;
 void ButiEngine::Player::OnUpdate()
 {
@@ -60,7 +61,15 @@ void ButiEngine::Player::OnUpdate()
 	if (m_vlp_flashMeshTimer->Update()) {
 		m_vlp_flashMeshTimer->Stop();
 		auto anim = gameObject.lock()->GetGameComponent<CubeTransformAnimation>();
-		FlashMeshSet(anim->GetTargetTransform(), CheckLookDirection(anim->GetTargetTransform()), m_nextMapPos);
+		if (anim)
+		{
+			FlashMeshSet(anim->GetTargetTransform(), CheckLookDirection(anim->GetTargetTransform()), m_nextMapPos);
+		}
+		else
+		{
+			auto tAnim = gameObject.lock()->GetGameComponent<TransformAnimation>();
+			FlashMeshSet(tAnim->GetTargetTransform(), CheckLookDirection(tAnim->GetTargetTransform()), m_nextMapPos);
+		}
 		if (m_vwp_eyeBlockComponent.lock())
 		{
 			auto a = m_mapPos;
@@ -70,6 +79,9 @@ void ButiEngine::Player::OnUpdate()
 	if (m_vlp_timer->Update())
 	{
 		m_vlp_timer->Stop();
+
+		m_isMoveUp = false;
+		m_isMoveDown = false;
 
 		int rand = ButiRandom::GetRandom(0, 2, 1);
 		gameObject.lock()->GetApplication().lock()->GetSoundManager()->PlaySE(m_moveSounds[rand], 0.1f);
@@ -144,6 +156,15 @@ void ButiEngine::Player::OnUpdate()
 			gameObject.lock()->GetApplication().lock()->GetSoundManager()->PlaySE(SoundTag("PutEye.wav"), 0.25f);
 		}
 	}
+
+	if (m_isMoveUp)
+	{
+		OnMoveUp();
+	}
+	else if (m_isMoveDown)
+	{
+		OnMoveDown();
+	}
 }
 
 void ButiEngine::Player::OnSet()
@@ -192,7 +213,7 @@ void ButiEngine::Player::Start()
 	m_vwp_leftCameraMesh.lock()->transform->SetLocalScale(0.0f);
 
 	m_vwp_rightCameraMesh.lock()->GetGameComponent<CameraMesh>()->SetColor(ButiColor::White());
-	if (m_canPutEyeBlock)
+	if (g_canPutEyeBlock)
 	{
 		m_vwp_rightCameraMesh.lock()->GetGameComponent<CameraMesh>()->SetColor(Vector4(0.0f, 1.0f, 1.0f, 1.0f));
 		gameObject.lock()->GetGameComponent<MeshDrawComponent>(1)->GetCBuffer<ButiRendering::ObjectInformation>()->Get().color = Vector4(0.0f, 1.0f, 1.0f, 1.0f);
@@ -324,7 +345,7 @@ void ButiEngine::Player::RollCameraDirection(const std::uint16_t arg_rotateDir)
 
 void ButiEngine::Player::SetCanPutEyeBlock(const bool arg_canPutEyeBlock)
 {
-	m_canPutEyeBlock = arg_canPutEyeBlock;
+	g_canPutEyeBlock = arg_canPutEyeBlock;
 	g_canAlreadyPutEyeBlock |= arg_canPutEyeBlock;
 }
 
@@ -549,8 +570,10 @@ ButiEngine::LookDirection ButiEngine::Player::CheckLookDirection(Value_ptr<Trans
 
 void ButiEngine::Player::Contoroll()
 {
-	auto anim = gameObject.lock()->GetGameComponent<CubeTransformAnimation>();
-	if (anim) { return; }
+	if (m_isMoveUp || m_isMoveDown) { return; }
+	auto cAnim = gameObject.lock()->GetGameComponent<CubeTransformAnimation>();
+	auto tAnim = gameObject.lock()->GetGameComponent<TransformAnimation>();
+	if (cAnim || tAnim) { return; }
 	bool isInputed=false;
 	if (InputManager::IsPushRightKey())
 	{
@@ -1820,44 +1843,52 @@ void TargetTransformRotation_WorldXAxis_m180(const LookDirection arg_dir, Value_
 void ButiEngine::Player::MoveRightUp()
 {
 
-	auto t = gameObject.lock()->transform;
-	auto anim = gameObject.lock()->GetGameComponent<CubeTransformAnimation>();
+	//auto t = gameObject.lock()->transform;
+	//auto anim = gameObject.lock()->GetGameComponent<CubeTransformAnimation>();
 
-	if (!anim)
-	{
-		m_vlp_timer->Reset();
-		m_vlp_timer->Start();
-		m_vlp_flashMeshTimer->Reset();
-		m_vlp_flashMeshTimer->Start();
-		m_vlp_expantionTimer->Reset();
-		m_vlp_expantionTimer->Start();
-		anim = gameObject.lock()->AddGameComponent<CubeTransformAnimation>();
-		anim->SetSpeed(1.0f / 10);
-		anim->SetTargetTransform(t->Clone());
-		anim->GetTargetTransform()->Translate(Vector3(m_length, m_length, 0));
-		TargetTransformRotation_WorldZAxis_m180(m_lookDirection, anim);
-		anim->SetEaseType(Easing::EasingType::Liner);
-		anim->SetXEaseType(Easing::EasingType::CubeRotateMin180);
-		anim->SetYEaseType(Easing::EasingType::CubeRotate180);
+	//if (!anim)
+	//{
+	//	m_vlp_timer->Reset();
+	//	m_vlp_timer->Start();
+	//	m_vlp_flashMeshTimer->Reset();
+	//	m_vlp_flashMeshTimer->Start();
+	//	m_vlp_expantionTimer->Reset();
+	//	m_vlp_expantionTimer->Start();
+	//	anim = gameObject.lock()->AddGameComponent<CubeTransformAnimation>();
+	//	anim->SetSpeed(1.0f / 10);
+	//	anim->SetTargetTransform(t->Clone());
+	//	anim->GetTargetTransform()->Translate(Vector3(m_length, m_length, 0));
+	//	TargetTransformRotation_WorldZAxis_m180(m_lookDirection, anim);
+	//	anim->SetEaseType(Easing::EasingType::Liner);
+	//	anim->SetXEaseType(Easing::EasingType::CubeRotateMin180);
+	//	anim->SetYEaseType(Easing::EasingType::CubeRotate180);
 
-		m_mapPos.x++;
-		m_mapPos.y++;
-	}
+	//	m_mapPos.x++;
+	//	m_mapPos.y++;
+	//}
+
+	MoveUp(AfterMoveDirection::Right);
 }
-void ButiEngine::Player::MoveRight()
+void ButiEngine::Player::MoveRight(std::uint16_t arg_frame)
 {
+	auto tAnim = gameObject.lock()->GetGameComponent<TransformAnimation>();
+	if (tAnim) { return; }
+
 	auto t = gameObject.lock()->transform;
 	auto anim = gameObject.lock()->GetGameComponent<CubeTransformAnimation>();
 	if (!anim)
 	{
-		m_vlp_timer->Reset();
-		m_vlp_timer->Start();
-		m_vlp_flashMeshTimer->Reset();
-		m_vlp_flashMeshTimer->Start();
-		m_vlp_expantionTimer->Reset();
-		m_vlp_expantionTimer->Start();
+		if (!m_isMoveUp)
+		{
+			m_vlp_timer->Reset();
+			m_vlp_timer->Start();
+			m_vlp_flashMeshTimer->Reset();
+			m_vlp_flashMeshTimer->Start();
+			m_vlp_expantionTimer->Reset();
+			m_vlp_expantionTimer->Start();
+		}
 		anim = gameObject.lock()->AddGameComponent<CubeTransformAnimation>();
-		anim->SetSpeed(1.0f / 10);
+		anim->SetSpeed(1.0f / arg_frame);
 		anim->SetTargetTransform(t->Clone());
 		anim->GetTargetTransform()->TranslateX(m_length);
 		TargetTransformRotation_WorldZAxis_m90(m_lookDirection, anim);
@@ -1870,73 +1901,86 @@ void ButiEngine::Player::MoveRight()
 
 void ButiEngine::Player::MoveRightDown()
 {
-	auto t = gameObject.lock()->transform;
-	auto anim = gameObject.lock()->GetGameComponent<CubeTransformAnimation>();
-	if (!anim)
-	{
-		m_vlp_timer->Reset();
-		m_vlp_timer->Start();
-		m_vlp_flashMeshTimer->Reset();
-		m_vlp_flashMeshTimer->Start();
-		m_vlp_expantionTimer->Reset();
-		m_vlp_expantionTimer->Start();
-		anim = gameObject.lock()->AddGameComponent<CubeTransformAnimation>();
-		anim->SetSpeed(1.0f / 10);
-		anim->SetTargetTransform(t->Clone());
-		anim->GetTargetTransform()->Translate(Vector3(m_length, -m_length, 0));
+	//auto t = gameObject.lock()->transform;
+	//auto anim = gameObject.lock()->GetGameComponent<CubeTransformAnimation>();
+	//if (!anim)
+	//{
+	//	m_vlp_timer->Reset();
+	//	m_vlp_timer->Start();
+	//	m_vlp_flashMeshTimer->Reset();
+	//	m_vlp_flashMeshTimer->Start();
+	//	m_vlp_expantionTimer->Reset();
+	//	m_vlp_expantionTimer->Start();
+	//	anim = gameObject.lock()->AddGameComponent<CubeTransformAnimation>();
+	//	anim->SetSpeed(1.0f / 10);
+	//	anim->SetTargetTransform(t->Clone());
+	//	anim->GetTargetTransform()->Translate(Vector3(m_length, -m_length, 0));
 
-		TargetTransformRotation_WorldZAxis_m180(m_lookDirection, anim);
-		anim->SetEaseType(Easing::EasingType::Liner);
-		anim->SetXEaseType(Easing::EasingType::CubeRotate180);
-		anim->SetYEaseType(Easing::EasingType::CubeRotate180);
+	//	TargetTransformRotation_WorldZAxis_m180(m_lookDirection, anim);
+	//	anim->SetEaseType(Easing::EasingType::Liner);
+	//	anim->SetXEaseType(Easing::EasingType::CubeRotate180);
+	//	anim->SetYEaseType(Easing::EasingType::CubeRotate180);
 
-		if (m_isFall) { return; }
-		m_mapPos.x++;
-		m_mapPos.y--;
-	}
+	//	if (m_isFall) { return; }
+	//	m_mapPos.x++;
+	//	m_mapPos.y--;
+	//}
+	auto cAnim = gameObject.lock()->GetGameComponent<CubeTransformAnimation>();
+	auto tAnim = gameObject.lock()->GetGameComponent<TransformAnimation>();
+	if (cAnim || tAnim) { return; }
+	m_isMoveDown = true;
+	MoveRight(5);
 }
 
 void ButiEngine::Player::MoveLeftUp()
 {
-	auto t = gameObject.lock()->transform;
-	auto anim = gameObject.lock()->GetGameComponent<CubeTransformAnimation>();
-	if (!anim)
-	{
-		m_vlp_timer->Reset();
-		m_vlp_timer->Start();
-		m_vlp_flashMeshTimer->Reset();
-		m_vlp_flashMeshTimer->Start();
-		m_vlp_expantionTimer->Reset();
-		m_vlp_expantionTimer->Start();
-		anim = gameObject.lock()->AddGameComponent<CubeTransformAnimation>();
-		anim->SetSpeed(1.0f / 10);
-		anim->SetTargetTransform(t->Clone());
-		anim->GetTargetTransform()->Translate(Vector3(-m_length, m_length, 0));
+	//auto t = gameObject.lock()->transform;
+	//auto anim = gameObject.lock()->GetGameComponent<CubeTransformAnimation>();
+	//if (!anim)
+	//{
+	//	m_vlp_timer->Reset();
+	//	m_vlp_timer->Start();
+	//	m_vlp_flashMeshTimer->Reset();
+	//	m_vlp_flashMeshTimer->Start();
+	//	m_vlp_expantionTimer->Reset();
+	//	m_vlp_expantionTimer->Start();
+	//	anim = gameObject.lock()->AddGameComponent<CubeTransformAnimation>();
+	//	anim->SetSpeed(1.0f / 10);
+	//	anim->SetTargetTransform(t->Clone());
+	//	anim->GetTargetTransform()->Translate(Vector3(-m_length, m_length, 0));
 
-		TargetTransformRotation_WorldZAxis_180(m_lookDirection, anim);
-		anim->SetEaseType(Easing::EasingType::Liner);
-		anim->SetXEaseType(Easing::EasingType::CubeRotate180);
-		anim->SetYEaseType(Easing::EasingType::CubeRotate180);
+	//	TargetTransformRotation_WorldZAxis_180(m_lookDirection, anim);
+	//	anim->SetEaseType(Easing::EasingType::Liner);
+	//	anim->SetXEaseType(Easing::EasingType::CubeRotate180);
+	//	anim->SetYEaseType(Easing::EasingType::CubeRotate180);
 
-		m_mapPos.x--;
-		m_mapPos.y++;
-	}
+	//	m_mapPos.x--;
+	//	m_mapPos.y++;
+	//}
+
+	MoveUp(AfterMoveDirection::Left);
 }
 
-void ButiEngine::Player::MoveLeft()
+void ButiEngine::Player::MoveLeft(std::uint16_t arg_frame)
 {
+	auto tAnim = gameObject.lock()->GetGameComponent<TransformAnimation>();
+	if (tAnim) { return; }
+
 	auto t = gameObject.lock()->transform;
 	auto anim = gameObject.lock()->GetGameComponent<CubeTransformAnimation>();
 	if (!anim)
 	{
-		m_vlp_timer->Reset();
-		m_vlp_timer->Start();
-		m_vlp_flashMeshTimer->Reset();
-		m_vlp_flashMeshTimer->Start();
-		m_vlp_expantionTimer->Reset();
-		m_vlp_expantionTimer->Start();
+		if (!m_isMoveUp)
+		{
+			m_vlp_timer->Reset();
+			m_vlp_timer->Start();
+			m_vlp_flashMeshTimer->Reset();
+			m_vlp_flashMeshTimer->Start();
+			m_vlp_expantionTimer->Reset();
+			m_vlp_expantionTimer->Start();
+		}
 		anim = gameObject.lock()->AddGameComponent<CubeTransformAnimation>();
-		anim->SetSpeed(1.0f / 10);
+		anim->SetSpeed(1.0f / arg_frame);
 		anim->SetTargetTransform(t->Clone());
 		anim->GetTargetTransform()->TranslateX(-m_length);
 
@@ -1950,73 +1994,86 @@ void ButiEngine::Player::MoveLeft()
 
 void ButiEngine::Player::MoveLeftDown()
 {
-	auto t = gameObject.lock()->transform;
-	auto anim = gameObject.lock()->GetGameComponent<CubeTransformAnimation>();
-	if (!anim)
-	{
-		m_vlp_timer->Reset();
-		m_vlp_timer->Start();
-		m_vlp_flashMeshTimer->Reset();
-		m_vlp_flashMeshTimer->Start();
-		m_vlp_expantionTimer->Reset();
-		m_vlp_expantionTimer->Start();
-		anim = gameObject.lock()->AddGameComponent<CubeTransformAnimation>();
-		anim->SetSpeed(1.0f / 10);
-		anim->SetTargetTransform(t->Clone());
-		anim->GetTargetTransform()->Translate(Vector3(-m_length, -m_length, 0));
+	//auto t = gameObject.lock()->transform;
+	//auto anim = gameObject.lock()->GetGameComponent<CubeTransformAnimation>();
+	//if (!anim)
+	//{
+	//	m_vlp_timer->Reset();
+	//	m_vlp_timer->Start();
+	//	m_vlp_flashMeshTimer->Reset();
+	//	m_vlp_flashMeshTimer->Start();
+	//	m_vlp_expantionTimer->Reset();
+	//	m_vlp_expantionTimer->Start();
+	//	anim = gameObject.lock()->AddGameComponent<CubeTransformAnimation>();
+	//	anim->SetSpeed(1.0f / 10);
+	//	anim->SetTargetTransform(t->Clone());
+	//	anim->GetTargetTransform()->Translate(Vector3(-m_length, -m_length, 0));
 
-		TargetTransformRotation_WorldZAxis_180(m_lookDirection, anim);
-		anim->SetEaseType(Easing::EasingType::Liner);
-		anim->SetXEaseType(Easing::EasingType::CubeRotateMin180);
-		anim->SetYEaseType(Easing::EasingType::CubeRotate180);
+	//	TargetTransformRotation_WorldZAxis_180(m_lookDirection, anim);
+	//	anim->SetEaseType(Easing::EasingType::Liner);
+	//	anim->SetXEaseType(Easing::EasingType::CubeRotateMin180);
+	//	anim->SetYEaseType(Easing::EasingType::CubeRotate180);
 
-		if (m_isFall) { return; }
-		m_mapPos.x--;
-		m_mapPos.y--;
-	}
+	//	if (m_isFall) { return; }
+	//	m_mapPos.x--;
+	//	m_mapPos.y--;
+	//}
+	auto cAnim = gameObject.lock()->GetGameComponent<CubeTransformAnimation>();
+	auto tAnim = gameObject.lock()->GetGameComponent<TransformAnimation>();
+	if (cAnim || tAnim) { return; }
+	m_isMoveDown = true;
+	MoveLeft(5);
 }
 
 void ButiEngine::Player::MoveUpFront()
 {
-	auto t = gameObject.lock()->transform;
-	auto anim = gameObject.lock()->GetGameComponent<CubeTransformAnimation>();
-	if (!anim)
-	{
-		m_vlp_timer->Reset();
-		m_vlp_timer->Start();
-		m_vlp_flashMeshTimer->Reset();
-		m_vlp_flashMeshTimer->Start();
-		m_vlp_expantionTimer->Reset();
-		m_vlp_expantionTimer->Start();
-		anim = gameObject.lock()->AddGameComponent<CubeTransformAnimation>();
-		anim->SetSpeed(1.0f / 10);
-		anim->SetTargetTransform(t->Clone());
-		anim->GetTargetTransform()->Translate(Vector3(0, m_length, m_length));
+	//auto t = gameObject.lock()->transform;
+	//auto anim = gameObject.lock()->GetGameComponent<CubeTransformAnimation>();
+	//if (!anim)
+	//{
+	//	m_vlp_timer->Reset();
+	//	m_vlp_timer->Start();
+	//	m_vlp_flashMeshTimer->Reset();
+	//	m_vlp_flashMeshTimer->Start();
+	//	m_vlp_expantionTimer->Reset();
+	//	m_vlp_expantionTimer->Start();
+	//	anim = gameObject.lock()->AddGameComponent<CubeTransformAnimation>();
+	//	anim->SetSpeed(1.0f / 10);
+	//	anim->SetTargetTransform(t->Clone());
+	//	anim->GetTargetTransform()->Translate(Vector3(0, m_length, m_length));
 
-		TargetTransformRotation_WorldXAxis_180(m_lookDirection, anim);
-		anim->SetEaseType(Easing::EasingType::Liner);
-		anim->SetYEaseType(Easing::EasingType::CubeRotate180);
-		anim->SetZEaseType(Easing::EasingType::CubeRotateMin180);
+	//	TargetTransformRotation_WorldXAxis_180(m_lookDirection, anim);
+	//	anim->SetEaseType(Easing::EasingType::Liner);
+	//	anim->SetYEaseType(Easing::EasingType::CubeRotate180);
+	//	anim->SetZEaseType(Easing::EasingType::CubeRotateMin180);
 
-		m_mapPos.y++;
-		m_mapPos.z++;
-	}
+	//	m_mapPos.y++;
+	//	m_mapPos.z++;
+	//}
+
+	MoveUp(AfterMoveDirection::Front);
 }
 
-void ButiEngine::Player::MoveFront()
+void ButiEngine::Player::MoveFront(std::uint16_t arg_frame)
 {
+	auto tAnim = gameObject.lock()->GetGameComponent<TransformAnimation>();
+	if (tAnim) { return; }
+
 	auto t = gameObject.lock()->transform;
 	auto anim = gameObject.lock()->GetGameComponent<CubeTransformAnimation>();
 	if (!anim)
 	{
-		m_vlp_timer->Reset();
-		m_vlp_timer->Start();
-		m_vlp_flashMeshTimer->Reset();
-		m_vlp_flashMeshTimer->Start();
-		m_vlp_expantionTimer->Reset();
-		m_vlp_expantionTimer->Start();
+		if (!m_isMoveUp)
+		{
+			m_vlp_timer->Reset();
+			m_vlp_timer->Start();
+			m_vlp_flashMeshTimer->Reset();
+			m_vlp_flashMeshTimer->Start();
+			m_vlp_expantionTimer->Reset();
+			m_vlp_expantionTimer->Start();
+		}
 		anim = gameObject.lock()->AddGameComponent<CubeTransformAnimation>();
-		anim->SetSpeed(1.0f / 10);
+		anim->SetSpeed(1.0f / arg_frame);
 		anim->SetTargetTransform(t->Clone());
 		anim->GetTargetTransform()->TranslateZ(m_length);
 
@@ -2030,73 +2087,86 @@ void ButiEngine::Player::MoveFront()
 
 void ButiEngine::Player::MoveDownFront()
 {
-	auto t = gameObject.lock()->transform;
-	auto anim = gameObject.lock()->GetGameComponent<CubeTransformAnimation>();
-	if (!anim)
-	{
-		m_vlp_timer->Reset();
-		m_vlp_timer->Start();
-		m_vlp_flashMeshTimer->Reset();
-		m_vlp_flashMeshTimer->Start();
-		m_vlp_expantionTimer->Reset();
-		m_vlp_expantionTimer->Start();
-		anim = gameObject.lock()->AddGameComponent<CubeTransformAnimation>();
-		anim->SetSpeed(1.0f / 10);
-		anim->SetTargetTransform(t->Clone());
-		anim->GetTargetTransform()->Translate(Vector3(0, -m_length, m_length));
+	//auto t = gameObject.lock()->transform;
+	//auto anim = gameObject.lock()->GetGameComponent<CubeTransformAnimation>();
+	//if (!anim)
+	//{
+	//	m_vlp_timer->Reset();
+	//	m_vlp_timer->Start();
+	//	m_vlp_flashMeshTimer->Reset();
+	//	m_vlp_flashMeshTimer->Start();
+	//	m_vlp_expantionTimer->Reset();
+	//	m_vlp_expantionTimer->Start();
+	//	anim = gameObject.lock()->AddGameComponent<CubeTransformAnimation>();
+	//	anim->SetSpeed(1.0f / 10);
+	//	anim->SetTargetTransform(t->Clone());
+	//	anim->GetTargetTransform()->Translate(Vector3(0, -m_length, m_length));
 
-		TargetTransformRotation_WorldXAxis_180(m_lookDirection, anim);
-		anim->SetEaseType(Easing::EasingType::Liner);
-		anim->SetYEaseType(Easing::EasingType::CubeRotate180);
-		anim->SetZEaseType(Easing::EasingType::CubeRotate180);
+	//	TargetTransformRotation_WorldXAxis_180(m_lookDirection, anim);
+	//	anim->SetEaseType(Easing::EasingType::Liner);
+	//	anim->SetYEaseType(Easing::EasingType::CubeRotate180);
+	//	anim->SetZEaseType(Easing::EasingType::CubeRotate180);
 
-		if (m_isFall) { return; }
-		m_mapPos.y--;
-		m_mapPos.z++;
-	}
+	//	if (m_isFall) { return; }
+	//	m_mapPos.y--;
+	//	m_mapPos.z++;
+	//}
+	auto cAnim = gameObject.lock()->GetGameComponent<CubeTransformAnimation>();
+	auto tAnim = gameObject.lock()->GetGameComponent<TransformAnimation>();
+	if (cAnim || tAnim) { return; }
+	m_isMoveDown = true;
+	MoveFront(5);
 }
 
 void ButiEngine::Player::MoveUpBack()
 {
-	auto t = gameObject.lock()->transform;
-	auto anim = gameObject.lock()->GetGameComponent<CubeTransformAnimation>();
-	if (!anim)
-	{
-		m_vlp_timer->Reset();
-		m_vlp_timer->Start();
-		m_vlp_flashMeshTimer->Reset();
-		m_vlp_flashMeshTimer->Start();
-		m_vlp_expantionTimer->Reset();
-		m_vlp_expantionTimer->Start();
-		anim = gameObject.lock()->AddGameComponent<CubeTransformAnimation>();
-		anim->SetSpeed(1.0f / 10);
-		anim->SetTargetTransform(t->Clone());
-		anim->GetTargetTransform()->Translate(Vector3(0, m_length, -m_length));
+	//auto t = gameObject.lock()->transform;
+	//auto anim = gameObject.lock()->GetGameComponent<CubeTransformAnimation>();
+	//if (!anim)
+	//{
+	//	m_vlp_timer->Reset();
+	//	m_vlp_timer->Start();
+	//	m_vlp_flashMeshTimer->Reset();
+	//	m_vlp_flashMeshTimer->Start();
+	//	m_vlp_expantionTimer->Reset();
+	//	m_vlp_expantionTimer->Start();
+	//	anim = gameObject.lock()->AddGameComponent<CubeTransformAnimation>();
+	//	anim->SetSpeed(1.0f / 10);
+	//	anim->SetTargetTransform(t->Clone());
+	//	anim->GetTargetTransform()->Translate(Vector3(0, m_length, -m_length));
 
-		TargetTransformRotation_WorldXAxis_m180(m_lookDirection, anim);
-		anim->SetEaseType(Easing::EasingType::Liner);
-		anim->SetYEaseType(Easing::EasingType::CubeRotate180);
-		anim->SetZEaseType(Easing::EasingType::CubeRotate180);
+	//	TargetTransformRotation_WorldXAxis_m180(m_lookDirection, anim);
+	//	anim->SetEaseType(Easing::EasingType::Liner);
+	//	anim->SetYEaseType(Easing::EasingType::CubeRotate180);
+	//	anim->SetZEaseType(Easing::EasingType::CubeRotate180);
 
-		m_mapPos.y++;
-		m_mapPos.z--;
-	}
+	//	m_mapPos.y++;
+	//	m_mapPos.z--;
+	//}
+
+	MoveUp(AfterMoveDirection::Back);
 }
 
-void ButiEngine::Player::MoveBack()
+void ButiEngine::Player::MoveBack(std::uint16_t arg_frame)
 {
+	auto tAnim = gameObject.lock()->GetGameComponent<TransformAnimation>();
+	if (tAnim) { return; }
+
 	auto t = gameObject.lock()->transform;
 	auto anim = gameObject.lock()->GetGameComponent<CubeTransformAnimation>();
 	if (!anim)
 	{
-		m_vlp_timer->Reset();
-		m_vlp_timer->Start();
-		m_vlp_flashMeshTimer->Reset();
-		m_vlp_flashMeshTimer->Start();
-		m_vlp_expantionTimer->Reset();
-		m_vlp_expantionTimer->Start();
+		if (!m_isMoveUp)
+		{
+			m_vlp_timer->Reset();
+			m_vlp_timer->Start();
+			m_vlp_flashMeshTimer->Reset();
+			m_vlp_flashMeshTimer->Start();
+			m_vlp_expantionTimer->Reset();
+			m_vlp_expantionTimer->Start();
+		}
 		anim = gameObject.lock()->AddGameComponent<CubeTransformAnimation>();
-		anim->SetSpeed(1.0f / 10);
+		anim->SetSpeed(1.0f / arg_frame);
 		anim->SetTargetTransform(t->Clone());
 		anim->GetTargetTransform()->TranslateZ(-m_length);
 
@@ -2110,29 +2180,82 @@ void ButiEngine::Player::MoveBack()
 
 void ButiEngine::Player::MoveDownBack()
 {
+	//auto t = gameObject.lock()->transform;
+	//auto anim = gameObject.lock()->GetGameComponent<CubeTransformAnimation>();
+	//if (!anim)
+	//{
+	//	m_vlp_timer->Reset();
+	//	m_vlp_timer->Start();
+	//	m_vlp_flashMeshTimer->Reset();
+	//	m_vlp_flashMeshTimer->Start();
+	//	m_vlp_expantionTimer->Reset();
+	//	m_vlp_expantionTimer->Start();
+	//	anim = gameObject.lock()->AddGameComponent<CubeTransformAnimation>();
+	//	anim->SetSpeed(1.0f / 10);
+	//	anim->SetTargetTransform(t->Clone());
+	//	anim->GetTargetTransform()->Translate(Vector3(0, -m_length, -m_length));
+
+	//	TargetTransformRotation_WorldXAxis_m180(m_lookDirection, anim);
+	//	anim->SetEaseType(Easing::EasingType::Liner);
+	//	anim->SetYEaseType(Easing::EasingType::CubeRotate180);
+	//	anim->SetZEaseType(Easing::EasingType::CubeRotateMin180);
+
+	//	if (m_isFall) { return; }
+	//	m_mapPos.y--;
+	//	m_mapPos.z--;
+	//}
+
+	auto cAnim = gameObject.lock()->GetGameComponent<CubeTransformAnimation>();
+	auto tAnim = gameObject.lock()->GetGameComponent<TransformAnimation>();
+	if (cAnim || tAnim) { return; }
+	m_isMoveDown = true;
+	MoveBack(5);
+}
+
+void ButiEngine::Player::MoveUp(const AfterMoveDirection arg_dir)
+{
 	auto t = gameObject.lock()->transform;
-	auto anim = gameObject.lock()->GetGameComponent<CubeTransformAnimation>();
-	if (!anim)
+	auto cAnim = gameObject.lock()->GetGameComponent<CubeTransformAnimation>();
+	auto tAnim = gameObject.lock()->GetGameComponent<TransformAnimation>();
+	if (!cAnim && !tAnim)
 	{
+		m_isMoveUp = true;
+		m_afterMoveDirection = arg_dir;
+
 		m_vlp_timer->Reset();
 		m_vlp_timer->Start();
 		m_vlp_flashMeshTimer->Reset();
 		m_vlp_flashMeshTimer->Start();
 		m_vlp_expantionTimer->Reset();
 		m_vlp_expantionTimer->Start();
-		anim = gameObject.lock()->AddGameComponent<CubeTransformAnimation>();
-		anim->SetSpeed(1.0f / 10);
-		anim->SetTargetTransform(t->Clone());
-		anim->GetTargetTransform()->Translate(Vector3(0, -m_length, -m_length));
+		tAnim = gameObject.lock()->AddGameComponent<TransformAnimation>();
+		tAnim->SetSpeed(1.0f / 4);
+		tAnim->SetTargetTransform(t->Clone());
+		tAnim->GetTargetTransform()->TranslateY(m_length);
 
-		TargetTransformRotation_WorldXAxis_m180(m_lookDirection, anim);
-		anim->SetEaseType(Easing::EasingType::Liner);
-		anim->SetYEaseType(Easing::EasingType::CubeRotate180);
-		anim->SetZEaseType(Easing::EasingType::CubeRotateMin180);
+		tAnim->SetEaseType(Easing::EasingType::Liner);
+
+		if (m_isFall) { return; }
+		m_mapPos.y++;
+	}
+}
+
+void ButiEngine::Player::MoveDown()
+{
+	auto t = gameObject.lock()->transform;
+	auto cAnim = gameObject.lock()->GetGameComponent<CubeTransformAnimation>();
+	auto tAnim = gameObject.lock()->GetGameComponent<TransformAnimation>();
+	if (!cAnim && !tAnim)
+	{
+		tAnim = gameObject.lock()->AddGameComponent<TransformAnimation>();
+		tAnim->SetSpeed(1.0f / 5);
+		tAnim->SetTargetTransform(t->Clone());
+		tAnim->GetTargetTransform()->TranslateY(-m_length);
+
+		tAnim->SetEaseType(Easing::EasingType::Liner);
 
 		if (m_isFall) { return; }
 		m_mapPos.y--;
-		m_mapPos.z--;
 	}
 }
 
@@ -2406,9 +2529,38 @@ bool ButiEngine::Player::IsCantThroughBlock(const Vector3& arg_mapPos)
 	return false;
 }
 
+void ButiEngine::Player::OnMoveUp()
+{
+	auto tAnim = gameObject.lock()->GetGameComponent<TransformAnimation>();
+	if (tAnim) { return; }
+	
+	switch (m_afterMoveDirection)
+	{
+	case AfterMoveDirection::Right:
+		MoveRight(6);
+		break;
+	case AfterMoveDirection::Left:
+		MoveLeft(6);
+		break;
+	case AfterMoveDirection::Front:
+		MoveFront(6);
+		break;
+	case AfterMoveDirection::Back:
+		MoveBack(6);
+		break;
+	}
+}
+
+void ButiEngine::Player::OnMoveDown()
+{
+	auto cAnim = gameObject.lock()->GetGameComponent<CubeTransformAnimation>();
+	if (cAnim) { return; }
+	MoveDown();
+}
+
 bool ButiEngine::Player::CanPutEyeBlock(Value_weak_ptr<GameObject> arg_object)
 {
-	if (!m_canPutEyeBlock) { return false; }
+	if (!g_canPutEyeBlock) { return false; }
 	if (!arg_object.lock()) { return true; }
 
 	auto name = arg_object.lock()->GetGameObjectName();

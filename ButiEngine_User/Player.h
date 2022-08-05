@@ -17,6 +17,14 @@ namespace ButiEngine {
 		No,
 	};
 
+	enum class AfterMoveDirection
+	{
+		Right,
+		Left,
+		Front,
+		Back,
+	};
+
 	enum class LookDirection
 	{
 		Right,
@@ -75,12 +83,19 @@ namespace ButiEngine {
 			FlashMeshSet(gameObject.lock()->transform, m_lookDirection, m_mapPos);
 		};
 
+		void MoveRight(std::uint16_t arg_frame = 10);
+		void MoveLeft(std::uint16_t arg_frame = 10);
+		void MoveFront(std::uint16_t arg_frame = 10);
+		void MoveBack(std::uint16_t arg_frame = 10);
+		void MoveUp(const AfterMoveDirection arg_dir);
+		void MoveDown();
+
 		static void SetCanPutEyeBlock(const bool arg_canPutEyeBlock);
 		static bool GetCanAlreadyPutEyeBlock();
 		static void SetCanAlreadyPutEyeBlock(const bool arg_canAlreadyPutEyeBlock);
 	private:
 		float m_length;
-		static bool m_canPutEyeBlock;
+		static bool g_canPutEyeBlock;
 		Value_weak_ptr<GameObject> m_vwp_eyeBlock;
 		Value_weak_ptr<EyeBlock> m_vwp_eyeBlockComponent;
 		Value_weak_ptr<Map> m_vwp_mapComponent;
@@ -108,6 +123,11 @@ namespace ButiEngine {
 		Value_ptr<RelativeTimer> m_vlp_expantionTimer;
 		Value_ptr<RelativeTimer> m_vlp_fallTimer;
 
+
+		bool m_isMoveUp;
+		AfterMoveDirection m_afterMoveDirection;
+		bool m_isMoveDown;
+
 		void Goal();
 		void CheckTouchNextStageBlock();
 		void CheckGoal();
@@ -120,18 +140,17 @@ namespace ButiEngine {
 		void Expansion();
 		void Shrink();
 		void MoveRightUp();
-		void MoveRight();
 		void MoveRightDown();
 		void MoveLeftUp();
-		void MoveLeft();
 		void MoveLeftDown();
 		void MoveUpFront();
-		void MoveFront();
 		void MoveDownFront();
 		void MoveUpBack();
-		void MoveBack();
 		void MoveDownBack();
 		void FlashMeshSet(Value_ptr<Transform> arg_vlp_transform, const LookDirection arg_dir, const Vector3& arg_pos);
+
+		void OnMoveUp();
+		void OnMoveDown();
 		
 		Value_weak_ptr<GameObject> GetRightBlock(const Vector3& arg_mapPos);
 		Value_weak_ptr<GameObject> GetLeftBlock(const Vector3& arg_mapPos);

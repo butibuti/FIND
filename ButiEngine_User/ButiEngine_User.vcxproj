@@ -353,6 +353,7 @@ cd ..\</Command>
     <ClCompile Include="CameraController.cpp" />
     <ClCompile Include="CameraMesh.cpp" />
     <ClCompile Include="ConfigManager.cpp" />
+    <ClCompile Include="CubeAnimation.cpp" />
     <ClCompile Include="DefaultGameComponent.cpp" />
     <ClCompile Include="DefaultGoal.cpp" />
     <ClCompile Include="EasyGoal.cpp" />
@@ -430,6 +431,7 @@ cd ..\</Command>
     <ClInclude Include="CameraController.h" />
     <ClInclude Include="CameraMesh.h" />
     <ClInclude Include="ConfigManager.h" />
+    <ClInclude Include="CubeAnimation.h" />
     <ClInclude Include="DefaultGoal.h" />
     <ClInclude Include="EasyGoal.h" />
     <ClInclude Include="EyeBlock.h" />
