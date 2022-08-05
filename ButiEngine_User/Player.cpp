@@ -92,7 +92,7 @@ void ButiEngine::Player::OnUpdate()
 			if (m_mapPos == m_vwp_eyeBlockComponent.lock()->GetMapPos())
 			{
 				gameObject.lock()->GetGameComponent<MeshDrawComponent>(1)->Regist();
-				gameObject.lock()->GetApplication().lock()->GetSoundManager()->PlaySE(SoundTag("Sound/select.wav"), 0.1f);
+				gameObject.lock()->GetApplication().lock()->GetSoundManager()->PlaySE(SoundTag("Sound/select.wav"), 0.075f);
 				m_vwp_eyeBlockComponent.lock()->Dead();
 				m_vwp_eyeBlock = Value_weak_ptr<GameObject>();
 				m_vwp_eyeBlockComponent = Value_weak_ptr<EyeBlock>();
@@ -141,7 +141,7 @@ void ButiEngine::Player::OnUpdate()
 
 			m_vwp_rightCameraMesh.lock()->transform->SetLocalScale(0.0f);
 
-			gameObject.lock()->GetApplication().lock()->GetSoundManager()->PlaySE(SoundTag("PutEye.wav"), 0.5f);
+			gameObject.lock()->GetApplication().lock()->GetSoundManager()->PlaySE(SoundTag("PutEye.wav"), 0.25f);
 		}
 	}
 }
