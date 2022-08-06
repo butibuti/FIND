@@ -94,7 +94,6 @@ namespace ButiEngine {
 		static bool GetCanAlreadyPutEyeBlock();
 		static void SetCanAlreadyPutEyeBlock(const bool arg_canAlreadyPutEyeBlock);
 	private:
-		float m_length;
 		static bool g_canPutEyeBlock;
 		Value_weak_ptr<GameObject> m_vwp_eyeBlock;
 		Value_weak_ptr<EyeBlock> m_vwp_eyeBlockComponent;
@@ -103,25 +102,16 @@ namespace ButiEngine {
 		Value_weak_ptr<NextStageBlock> m_vwp_nextStageBlockComponent;
 		Value_weak_ptr<GameObject> m_vwp_lookObject;
 
-		Value_weak_ptr<GameObject> m_vwp_rightCameraMesh;
-		Value_weak_ptr<GameObject> m_vwp_leftCameraMesh;
-		Value_ptr<Transform> m_vlp_rightEyeTransform;
-		Value_ptr<Transform> m_vlp_leftEyeTransform;
+		Value_weak_ptr<GameObject> m_vwp_rightCameraMesh, m_vwp_leftCameraMesh;
+		Value_ptr<Transform> m_vlp_rightEyeTransform, m_vlp_leftEyeTransform;
 
-		Vector3 m_mapPos;
-		Vector3 m_nextMapPos;
-		Vector3 m_offset;
-		Vector3 m_startPos;
-		float m_startRotation;
-		bool m_isGoal,m_isFall, m_isFallStart,m_isTouchNextStageBlock;
-		Vector3 m_afterFallPos;
-		float m_scale;
+		Vector3 m_mapPos, m_nextMapPos, m_offset, m_startPos, m_afterFallPos,m_activeGoalPos=Vector3(-256,-256,-256);
+		bool m_isGoal,m_isFall, m_isFallStart,m_isTouchNextStageBlock, m_isFoundGoal;
+		float m_scale, m_startRotation, m_length;
 		LookDirection m_lookDirection;
 		CameraDirection m_cameraDirection=CameraDirection::Front;
 
-		Value_ptr<RelativeTimer> m_vlp_timer,m_vlp_flashMeshTimer;
-		Value_ptr<RelativeTimer> m_vlp_expantionTimer;
-		Value_ptr<RelativeTimer> m_vlp_fallTimer;
+		Value_ptr<RelativeTimer> m_vlp_timer,m_vlp_flashMeshTimer, m_vlp_expantionTimer, m_vlp_fallTimer;
 
 
 		bool m_isMoveUp;

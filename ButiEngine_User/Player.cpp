@@ -292,14 +292,6 @@ void ButiEngine::Player::CheckLookBlock()
 	{
 		return;
 	}
-
-	auto seenObjectComponent = m_vwp_lookObject.lock()->GetGameComponent<SeenObject>();
-	if (!seenObjectComponent)
-	{
-		seenObjectComponent = m_vwp_lookObject.lock()->AddGameComponent<SeenObject>();
-	}
-	seenObjectComponent->AddObserverCount();
-
 	if (m_vwp_lookObject.lock()->HasGameObjectTag("Goal"))
 	{
 		auto eGoalComp = m_vwp_lookObject.lock()->GetGameComponent<EasyGoal>();
@@ -307,10 +299,12 @@ void ButiEngine::Player::CheckLookBlock()
 		if (eGoalComp)
 		{
 			eGoalComp->Seen();
+			m_isFoundGoal = true;
 		}
 		else if (dGoalComp)
 		{
-			dGoalComp->Seen();
+			dGoalComp->Seen(); 
+			m_isFoundGoal = true;
 		}
 	}
 	else if (m_vwp_lookObject.lock()->HasGameObjectTag("InvisibleBlock"))
@@ -328,6 +322,16 @@ void ButiEngine::Player::CheckLookBlock()
 		{
 			nextStageBlockComp->Seen();
 		}
+	}
+
+	auto seenObjectComponent = m_vwp_lookObject.lock()->GetGameComponent<SeenObject>();
+	if (!seenObjectComponent)
+	{
+		seenObjectComponent = m_vwp_lookObject.lock()->AddGameComponent<SeenObject>();
+	}
+	if (seenObjectComponent)
+	{
+		seenObjectComponent->AddObserverCount();
 	}
 }
 
@@ -509,6 +513,7 @@ void ButiEngine::Player::CheckTouchNextStageBlock()
 
 void ButiEngine::Player::CheckGoal()
 {
+	
 	auto& vec_mapDatas = m_vwp_mapComponent.lock()->GetCurrentMapData().lock()->m_vec_mapDatas;
 	std::uint16_t mapNum = vec_mapDatas[m_mapPos.y][m_mapPos.z][m_mapPos.x];
 	auto hitObject = m_vwp_mapComponent.lock()->GetMapObjectData()[m_mapPos.y][m_mapPos.z][m_mapPos.x];
@@ -2267,6 +2272,12 @@ ButiEngine::Value_weak_ptr<ButiEngine::GameObject> ButiEngine::Player::GetRightB
 		if (IsBlock(mapData[m_mapPos.y][m_mapPos.z][i]))
 		{
 			auto mapObjectData = m_vwp_mapComponent.lock()->GetMapObjectData();
+			if (mapObjectData[m_mapPos.y][m_mapPos.z][i].lock()->HasGameObjectTag("Goal")) {
+				if (m_isFoundGoal && m_activeGoalPos != Vector3(i, m_mapPos.y, m_mapPos.z).Round()) {
+					continue;
+				}
+				m_activeGoalPos = Vector3(i, m_mapPos.y, m_mapPos.z).Round();
+			}
 			return mapObjectData[m_mapPos.y][m_mapPos.z][i];
 		}
 	}
@@ -2281,6 +2292,12 @@ ButiEngine::Value_weak_ptr<ButiEngine::GameObject> ButiEngine::Player::GetLeftBl
 		if (IsBlock(mapData[m_mapPos.y][m_mapPos.z][i]))
 		{
 			auto mapObjectData = m_vwp_mapComponent.lock()->GetMapObjectData();
+			if (mapObjectData[m_mapPos.y][m_mapPos.z][i].lock()->HasGameObjectTag("Goal")) {
+				if (m_isFoundGoal && m_activeGoalPos != Vector3(i, m_mapPos.y, m_mapPos.z).Round()) {
+					continue;
+				}
+				m_activeGoalPos = Vector3(i, m_mapPos.y, m_mapPos.z).Round();
+			}
 			return mapObjectData[m_mapPos.y][m_mapPos.z][i];
 		}
 	}
@@ -2295,6 +2312,12 @@ ButiEngine::Value_weak_ptr<ButiEngine::GameObject> ButiEngine::Player::GetUpBloc
 		if (IsBlock(mapData[i][m_mapPos.z][m_mapPos.x]))
 		{
 			auto mapObjectData = m_vwp_mapComponent.lock()->GetMapObjectData();
+			if (mapObjectData[i][m_mapPos.z][m_mapPos.x].lock()->HasGameObjectTag("Goal")) {
+				if (m_isFoundGoal && m_activeGoalPos != Vector3(m_mapPos.x, i, m_mapPos.z).Round()) {
+					continue;
+				}
+				m_activeGoalPos = Vector3( m_mapPos.x, i, m_mapPos.z).Round();
+			}
 			return mapObjectData[i][m_mapPos.z][m_mapPos.x];
 		}
 	}
@@ -2320,7 +2343,13 @@ ButiEngine::Value_weak_ptr<ButiEngine::GameObject> ButiEngine::Player::GetDownBl
 		else if (IsBlock(mapData[i][m_mapPos.z][m_mapPos.x]))
 		{
 			ref_output_diff = abs(m_mapPos.y - i);
-			auto mapObjectData = m_vwp_mapComponent.lock()->GetMapObjectData();
+			auto mapObjectData = m_vwp_mapComponent.lock()->GetMapObjectData(); 
+			if (mapObjectData[i][m_mapPos.z][m_mapPos.x].lock()->HasGameObjectTag("Goal")) {
+				if (m_isFoundGoal && m_activeGoalPos != Vector3(m_mapPos.x, i, m_mapPos.z).Round()) {
+					continue;
+				}
+				m_activeGoalPos = Vector3(m_mapPos.x, i, m_mapPos.z).Round();
+			}
 			return mapObjectData[i][m_mapPos.z][m_mapPos.x];
 		}
 	}
@@ -2335,6 +2364,12 @@ ButiEngine::Value_weak_ptr<ButiEngine::GameObject> ButiEngine::Player::GetFrontB
 		if (IsBlock(mapData[m_mapPos.y][i][m_mapPos.x]))
 		{
 			auto mapObjectData = m_vwp_mapComponent.lock()->GetMapObjectData();
+			if (mapObjectData[m_mapPos.y][i][m_mapPos.x].lock()->HasGameObjectTag("Goal")) {
+				if (m_isFoundGoal && m_activeGoalPos != Vector3(m_mapPos.x, m_mapPos.y, i).Round()) {
+					continue;
+				}
+				m_activeGoalPos = Vector3(m_mapPos.x,  m_mapPos.y,i).Round();
+			}
 			return mapObjectData[m_mapPos.y][i][m_mapPos.x];
 		}
 	}
@@ -2348,7 +2383,13 @@ ButiEngine::Value_weak_ptr<ButiEngine::GameObject> ButiEngine::Player::GetBackBl
 	{
 		if (IsBlock(mapData[m_mapPos.y][i][m_mapPos.x]))
 		{
-			auto mapObjectData = m_vwp_mapComponent.lock()->GetMapObjectData();
+			auto mapObjectData = m_vwp_mapComponent.lock()->GetMapObjectData(); 
+			if (mapObjectData[m_mapPos.y][i][m_mapPos.x].lock()->HasGameObjectTag("Goal")) {
+				if (m_isFoundGoal&& m_activeGoalPos != Vector3(m_mapPos.x, m_mapPos.y, i).Round()) {
+					continue;
+				}
+				m_activeGoalPos = Vector3(m_mapPos.x, m_mapPos.y,i).Round();
+			}
 			return mapObjectData[m_mapPos.y][i][m_mapPos.x];
 		}
 	}

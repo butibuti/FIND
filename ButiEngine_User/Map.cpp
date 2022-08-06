@@ -28,7 +28,16 @@ void ButiEngine::Map::OnUpdate()
 	{
 		GameDevice::SetIsEnd(true);
 	}
-
+	if (GameDevice::GetInput()->GetPadButtonTrigger(PadButtons::XBOX_START)
+		&& GameDevice::GetInput()->GetRightTrigger() > 0.75f && GameDevice::GetInput()->GetLeftTrigger() > 0.75f
+		&& GameDevice::GetInput()->GetPadButton(PadButtons::XBOX_BUTTON_LEFT) && GameDevice::GetInput()->GetPadButton(PadButtons::XBOX_BUTTON_RIGHT)) {
+		auto sceneManager = gameObject.lock()->GetApplication().lock()->GetSceneManager();
+		std::string sceneName = sceneManager->GetCurrentScene()->GetSceneInformation()->GetSceneName()
+			=="NewStageSelectScene"? "TitleScene":"NewStageSelectScene";
+		sceneManager->RemoveScene(sceneName);
+		sceneManager->LoadScene(sceneName);
+		sceneManager->ChangeScene(sceneName);
+	}else
 	if (InputManager::IsTriggerResetKey())
 	{
 		auto sceneManager = gameObject.lock()->GetApplication().lock()->GetSceneManager();
