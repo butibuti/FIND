@@ -273,23 +273,28 @@ void ButiEngine::Player::CheckLookBlock()
 	}
 
 	auto seenObjectComponent = m_vwp_lookObject.lock()->GetGameComponent<SeenObject>();
-	if (!seenObjectComponent)
+	if (!seenObjectComponent&&!m_isFoundGoal)
 	{
 		seenObjectComponent = m_vwp_lookObject.lock()->AddGameComponent<SeenObject>();
 	}
-	seenObjectComponent->AddObserverCount();
+	if (seenObjectComponent)
+	{
+		seenObjectComponent->AddObserverCount();
+	}
 
-	if (m_vwp_lookObject.lock()->HasGameObjectTag("Goal"))
+	if (m_vwp_lookObject.lock()->HasGameObjectTag("Goal")&&!m_isFoundGoal)
 	{
 		auto eGoalComp = m_vwp_lookObject.lock()->GetGameComponent<EasyGoal>();
 		auto dGoalComp = m_vwp_lookObject.lock()->GetGameComponent<DefaultGoal>();
 		if (eGoalComp)
 		{
 			eGoalComp->Seen();
+			m_isFoundGoal = true;
 		}
 		else if (dGoalComp)
 		{
-			dGoalComp->Seen();
+			dGoalComp->Seen(); 
+			m_isFoundGoal = true;
 		}
 	}
 	else if (m_vwp_lookObject.lock()->HasGameObjectTag("InvisibleBlock"))
@@ -488,6 +493,7 @@ void ButiEngine::Player::CheckTouchNextStageBlock()
 
 void ButiEngine::Player::CheckGoal()
 {
+	
 	auto& vec_mapDatas = m_vwp_mapComponent.lock()->GetCurrentMapData().lock()->m_vec_mapDatas;
 	std::uint16_t mapNum = vec_mapDatas[m_mapPos.y][m_mapPos.z][m_mapPos.x];
 	auto hitObject = m_vwp_mapComponent.lock()->GetMapObjectData()[m_mapPos.y][m_mapPos.z][m_mapPos.x];
